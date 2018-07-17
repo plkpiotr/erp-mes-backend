@@ -1,4 +1,4 @@
-package com.herokuapp.erpmesbackend.erpmesbackend;
+package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
