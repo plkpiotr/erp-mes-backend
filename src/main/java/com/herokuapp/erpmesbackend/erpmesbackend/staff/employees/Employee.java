@@ -44,13 +44,12 @@ public class Employee {
     }
 
     private String passwordGenerator() {
-        char[] name = new char[PASSWORD_LENGTH];
+        char[] password = new char[PASSWORD_LENGTH];
         Random r = new Random();
         for (int i = 0; i < PASSWORD_LENGTH; i++) {
-            name[i] = (char) (r.nextInt('z' - 'a') + 'a');
+            password[i] = (char) (r.nextInt('z' - 'a') + 'a');
         }
-        name[0] = Character.toUpperCase(name[0]);
-        return new String(name);
+        return new String(password);
     }
 
     public boolean checkIfDataEquals(Employee employee) {

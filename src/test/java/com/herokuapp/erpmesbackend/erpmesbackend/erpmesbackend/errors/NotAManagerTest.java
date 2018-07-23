@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
@@ -16,43 +17,32 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class NotAManagerTest {
+public class NotAManagerTest extends FillBaseTemplate {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private TeamRequest request;
-    private EmployeeFactory employeeFactory;
+    TeamRequest invalidTeamRequest;
 
     @Before
     public void init() {
-        employeeFactory = new EmployeeFactory();
-        EmployeeRequest invalidManagerRequest = employeeFactory.generateNonAdminRequest();
-        List<Employee> employees = new ArrayList<>();
-        List<Long> ids = new ArrayList<>();
+        addOneNonAdminRequest(true);
+        addNonAdminRequests(true);
 
-        for (int i = 0; i < 3; i++) {
-            Employee employee = employeeFactory.generateNonAdmin();
-            employees.add(employee);
-            ids.add(employee.getId());
-        }
+        filterEmployeesByRole();
+        Long[] ids = {availableEmployeeIds.get(1), availableEmployeeIds.get(2), availableEmployeeIds.get(3)};
 
-        Employee body = restTemplate.postForEntity("/employees", invalidManagerRequest,
-                Employee.class).getBody();
-
-        request = new TeamRequest(Role.ACCOUNTANT, body.getId(), ids);
+        invalidTeamRequest = new TeamRequest(Role.ACCOUNTANT, availableEmployeeIds.get(0), Arrays.asList(ids));
     }
 
     @Test
     public void checkIfResponseStatus400BadRequest() {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/teams",
-                request, String.class);
+                invalidTeamRequest, String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

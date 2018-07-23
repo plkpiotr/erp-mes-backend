@@ -1,9 +1,11 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
 import org.junit.Before;
 import org.junit.Test;
@@ -22,50 +24,26 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class InvalidRequestTest {
-
-    @Autowired
-    private TestRestTemplate restTemplate;
+public class InvalidRequestTest extends FillBaseTemplate {
 
     private TeamRequest invalidManagerRequest;
     private TeamRequest invalidEmployeeRequest;
 
     @Before
     public void init() {
-        EmployeeFactory employeeFactory = new EmployeeFactory();
-        List<EmployeeRequest> employeeRequests = new ArrayList<>();
-        EmployeeRequest managerRequest = employeeFactory.generateAdminRequest();
+        addOneAdminRequest(true);
+        addNonAdminRequests(true);
+        addOneTeamRequest(true, teamRequest);
 
-        restTemplate.postForEntity("/employees", managerRequest, Employee.class);
-
-        for (int i = 0; i < 5; i++) {
-            employeeRequests.add(employeeFactory.generateNonAdminRequest());
-        }
-
-        employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                request, Employee.class));
-
-        Employee manager = restTemplate.getForEntity("/employees/{id}", Employee.class, 1)
-                .getBody();
-        List<Employee> employees = new ArrayList<>();
+        Team team = restTemplate.getForEntity("/teams/{id}", Team.class, 1).getBody();
         List<Long> ids = new ArrayList<>();
-        for (int i = 2; i < 5; i++) {
-            Employee employee = restTemplate.getForEntity("/employees/{id}", Employee.class, i).getBody();
-            ids.add(employee.getId());
-            employees.add(employee);
-        }
-
-        Role role = employeeFactory.generateRole();
-        TeamRequest validRequest = new TeamRequest(role, manager.getId(), ids);
-
-        restTemplate.postForEntity("/teams", validRequest, String.class);
-
-        invalidManagerRequest = new TeamRequest(role, manager.getId(), ids);
+        team.getEmployees().forEach(employee -> ids.add(employee.getId()));
+        invalidManagerRequest = new TeamRequest(team.getRole(), team.getManager().getId(), ids);
 
         EmployeeRequest secondManagerRequest = employeeFactory.generateAdminRequest();
         Employee body = restTemplate.postForEntity("/employees", secondManagerRequest,
                 Employee.class).getBody();
-        invalidEmployeeRequest = new TeamRequest(role, body.getId(), ids);
+        invalidEmployeeRequest = new TeamRequest(team.getRole(), body.getId(), ids);
     }
 
     @Test

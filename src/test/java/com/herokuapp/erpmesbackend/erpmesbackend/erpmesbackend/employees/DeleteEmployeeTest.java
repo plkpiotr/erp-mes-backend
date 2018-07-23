@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
@@ -23,27 +24,13 @@ import static org.junit.Assert.assertFalse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class DeleteEmployeeTest {
+public class DeleteEmployeeTest extends FillBaseTemplate {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private EmployeeFactory employeeFactory;
-    private List<EmployeeRequest> employeeRequests;
     private Employee deletedEmployee;
 
     @Before
     public void init() {
-        employeeFactory = new EmployeeFactory();
-        employeeRequests = new ArrayList<>();
-
-        for (int i = 0; i < 10; i++) {
-            employeeRequests.add(employeeFactory.generateEmployeeRequest());
-        }
-
-        employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                request, Employee.class));
-
+        addEmployeeRequests(true);
         deletedEmployee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1)
                 .getBody();
     }

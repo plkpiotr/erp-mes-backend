@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
@@ -19,17 +20,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddOneEmployeeTest {
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private EmployeeRequest employeeRequest;
+public class AddOneEmployeeTest extends FillBaseTemplate {
 
     @Before
-    private void init() {
-        EmployeeFactory employeeFactory = new EmployeeFactory();
-        employeeRequest = employeeFactory.generateEmployeeRequest();
+    public void init() {
+        addOneEmployeeRequest(false);
     }
 
     @Test

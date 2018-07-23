@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.teams;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
@@ -24,28 +25,14 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class AddOneTeamTest {
+public class AddOneTeamTest extends FillBaseTemplate {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private TeamRequest request;
     private Team team;
 
     @Before
     public void init() {
-        EmployeeFactory employeeFactory = new EmployeeFactory();
-        List<EmployeeRequest> employeeRequests = new ArrayList<>();
-        EmployeeRequest managerRequest = employeeFactory.generateAdminRequest();
-
-        restTemplate.postForEntity("/employees", managerRequest, Employee.class);
-
-        for (int i = 0; i < 5; i++) {
-            employeeRequests.add(employeeFactory.generateNonAdminRequest());
-        }
-
-        employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                request, Employee.class));
+        addOneAdminRequest(true);
+        addNonAdminRequests(true);
 
         Employee manager = restTemplate.getForEntity("/employees/{id}", Employee.class, 1)
                 .getBody();
@@ -58,14 +45,14 @@ public class AddOneTeamTest {
         }
 
         Role role = employeeFactory.generateRole();
-        request = new TeamRequest(role, manager.getId(), ids);
+        teamRequest = new TeamRequest(role, manager.getId(), ids);
         team = new Team(role, manager, employees);
     }
 
     @Test
     public void checkIfResponseContainsAddedTeam() {
         ResponseEntity<Team> teamResponseEntity = restTemplate.postForEntity("/teams",
-                request, Team.class);
+                teamRequest, Team.class);
 
         assertThat(teamResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 

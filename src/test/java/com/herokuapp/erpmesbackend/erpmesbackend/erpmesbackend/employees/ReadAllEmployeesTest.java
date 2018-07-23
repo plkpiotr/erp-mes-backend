@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
@@ -23,25 +24,11 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadAllEmployeesTest {
-
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private EmployeeFactory employeeFactory;
-    private List<EmployeeRequest> employeeRequests;
+public class ReadAllEmployeesTest extends FillBaseTemplate {
 
     @Before
     public void init() {
-        employeeFactory = new EmployeeFactory();
-        employeeRequests = new ArrayList<>();
-
-        for(int i = 0; i < 10; i++) {
-            employeeRequests.add(employeeFactory.generateEmployeeRequest());
-        }
-
-        employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                request, Employee.class));
+        addEmployeeRequests(true);
     }
 
     @Test

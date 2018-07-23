@@ -31,7 +31,7 @@ public class TeamController {
 
     @PostMapping("/teams")
     @ResponseStatus(HttpStatus.CREATED)
-    public Team addNewTeam(@RequestBody @Valid TeamRequest request) {
+    public Team addNewTeam(@RequestBody TeamRequest request) {
         checkTeamConditions(request);
 
         Employee manager = employeeRepository.findById(request.getManagerId()).get();
