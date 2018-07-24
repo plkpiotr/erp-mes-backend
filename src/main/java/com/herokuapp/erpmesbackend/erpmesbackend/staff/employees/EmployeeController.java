@@ -6,8 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
-import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -22,18 +22,30 @@ public class EmployeeController {
     public void init() {
         EmployeeFactory employeeFactory = new EmployeeFactory();
         employeeRepository.save(employeeFactory.generateAdmin());
-        for(int i = 0; i < 5; i++) {
+        for (int i = 0; i < 5; i++) {
             employeeRepository.save(employeeFactory.generateNonAdmin());
         }
-        for(int i = 0; i < 10; i++) {
+        for (int i = 0; i < 10; i++) {
             employeeRepository.save(employeeFactory.generateEmployee());
         }
     }*/
 
     @GetMapping("/employees")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    public List<Employee> getAllEmployees(@RequestParam(value = "privilege", required = false) String privilege) {
+        List<Employee> employees = employeeRepository.findAll();
+        if(privilege != null) {
+            if (privilege.equalsIgnoreCase("admin")) {
+                return employees.stream()
+                        .filter(employee -> employee.isManager())
+                        .collect(Collectors.toList());
+            } else if (privilege.equalsIgnoreCase("user")) {
+                return employees.stream()
+                        .filter(employee -> !employee.isManager())
+                        .collect(Collectors.toList());
+            }
+        }
+        return employees;
     }
 
     @PostMapping("/employees")
