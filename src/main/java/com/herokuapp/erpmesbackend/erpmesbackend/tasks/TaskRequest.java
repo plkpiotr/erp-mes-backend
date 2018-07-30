@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.tasks;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,21 +15,23 @@ import java.util.List;
 @AllArgsConstructor
 public class TaskRequest {
 
+    @NotNull
+    private String name;
+
     @NonNull
     private Category category;
 
     @NonNull
     private Long assigneeId;
 
-    @NonNull
-    private List<Long> precedingTasksId;
+    private List<Long> precedingTasksIds;
 
-    @NonNull
-    private boolean isReadyToDoing;
+    @NotNull
+    private String details;
 
-    @NonNull
     private int estimatedTimeInMinutes;
 
     @NotNull
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime deadline;
 }

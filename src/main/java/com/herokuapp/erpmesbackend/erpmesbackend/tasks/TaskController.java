@@ -8,9 +8,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -46,22 +46,21 @@ public class TaskController {
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
     public Task addNewTask(@RequestBody TaskRequest taskRequest) {
+        String name = taskRequest.getName();
         Category category = taskRequest.getCategory();
         Employee assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
 
         boolean isReadyToDoing = true;
         List<Task> precedingTasks = new ArrayList<>();
 
-        if (!taskRequest.getPrecedingTasksId().isEmpty()) {
-            taskRequest.getPrecedingTasksId().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
-            if (!checkReadyToDoing(precedingTasks))
-                isReadyToDoing = false;
-        }
+        if (!taskRequest.getPrecedingTasksIds().isEmpty())
+            taskRequest.getPrecedingTasksIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
 
+        String details = taskRequest.getDetails();
         int estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
         LocalDateTime deadline = taskRequest.getDeadline();
 
-        Task task = new Task(category, assignee, precedingTasks, isReadyToDoing, estimatedTimeInMinutes, deadline);
+        Task task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
         taskRepository.save(task);
         return task;
     }
@@ -83,34 +82,26 @@ public class TaskController {
             throw new NotFoundException("Chosen assignee doesn't exist!");
     }
 
-    // TODO: Check it:
-    private boolean checkReadyToDoing(List<Task> precedingTasks) {
-        for (Task task : precedingTasks) {
-            if (precedingTasks.stream().noneMatch(t -> t.getCategory().name().contains("DONE")))
-                return false;
-        }
-        return true;
-    }
-
     private TaskDTO mapToDTO(Task task) {
 
         String name = task.getName();
         String category = task.getCategory().name();
-        String assignee = task.getAssignee().getFirstName() + task.getAssignee().getLastName();
+        String assignee = task.getAssignee().getFirstName() + " " + task.getAssignee().getLastName();
 
         List<String> precedingTasks = new ArrayList<>();
         task.getPrecedingTasks().stream().map(Task::getName).forEach(precedingTasks::add);
 
         String details = task.getDetails();
-        boolean isReadyToDoing = task.isReadyToDoing();
         int estimatedTimeInMinutes = task.getEstimatedTimeInMinutes();
-        String deadline = String.valueOf(task.getDeadline());
-        String creationTime = String.valueOf(task.getCreationTime());
 
-        String startTime = Optional.ofNullable(String.valueOf(task.getStartTime())).orElse("Not yet started");
-        String endTime = Optional.ofNullable(String.valueOf(task.getEndTime())).orElse("Not done");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        String deadline = task.getDeadline().format(formatter);
+        String creationTime = task.getCreationTime().format(formatter);
 
-        return new TaskDTO(name, category, assignee, precedingTasks, details, isReadyToDoing, estimatedTimeInMinutes,
-                deadline, creationTime, startTime, endTime);
+        String startTime = task.getStartTime() == null ? "----" : task.getStartTime().format(formatter);
+        String endTime = task.getEndTime() == null ? "----" : task.getEndTime().format(formatter);
+
+        return new TaskDTO(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
+                creationTime, startTime, endTime);
     }
 }

@@ -15,7 +15,6 @@ public class TaskDTO {
     private String assignee;
     private List<String> precedingTasks;
     private String details;
-    private boolean isReadyToDoing;
     private int estimatedTimeInMinutes;
     private String deadline;
     private String creationTime;
