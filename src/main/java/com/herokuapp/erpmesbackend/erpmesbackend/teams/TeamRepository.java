@@ -1,4 +1,4 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.staff.teams;
+package com.herokuapp.erpmesbackend.erpmesbackend.teams;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

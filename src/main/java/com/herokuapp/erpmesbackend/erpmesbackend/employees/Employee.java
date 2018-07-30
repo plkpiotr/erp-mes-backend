@@ -1,10 +1,14 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.staff.employees;
+package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 @Entity
@@ -30,6 +34,21 @@ public class Employee {
     private String password;
     private boolean isPasswordValid;
 
+    private LocalDate hireDate;
+
+    @OneToMany
+    private List<Holiday> holidays;
+
+    /**
+     * TODO: implement a class to track:
+     * banking account number
+     * type of contract
+     * salary
+     * number days off
+     **/
+    //private Contract contract
+
+
     public Employee(String firstName, String lastName, String email, Role role) {
         this.firstName = firstName;
         this.lastName = lastName;
@@ -37,6 +56,8 @@ public class Employee {
         this.role = role;
         this.password = passwordGenerator();
         this.isPasswordValid = false;
+
+        holidays = new ArrayList<>();
     }
 
     public boolean isManager() {
@@ -50,6 +71,10 @@ public class Employee {
             password[i] = (char) (r.nextInt('z' - 'a') + 'a');
         }
         return new String(password);
+    }
+
+    public void requestHoliday(Holiday holiday) {
+        holidays.add(holiday);
     }
 
     public boolean checkIfDataEquals(Employee employee) {

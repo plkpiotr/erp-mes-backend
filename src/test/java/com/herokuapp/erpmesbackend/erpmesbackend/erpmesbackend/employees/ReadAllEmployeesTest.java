@@ -1,21 +1,16 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 

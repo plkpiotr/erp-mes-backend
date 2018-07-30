@@ -1,20 +1,19 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.staff.teams;
+package com.herokuapp.erpmesbackend.erpmesbackend.teams;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+//@CrossOrigin("http://localhost:4200")
 public class TeamController {
 
     @Autowired

@@ -1,18 +1,15 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.Team;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -34,6 +31,11 @@ public class InvalidRequestTest extends FillBaseTemplate {
         addOneAdminRequest(true);
         addNonAdminRequests(true);
         addOneTeamRequest(true, teamRequest);
+        addOneHolidayRequest(2, true);
+        restTemplate.postForEntity(
+                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
+                1, String.class, 1, 2
+        );
 
         Team team = restTemplate.getForEntity("/teams/{id}", Team.class, 1).getBody();
         List<Long> ids = new ArrayList<>();
@@ -60,5 +62,14 @@ public class InvalidRequestTest extends FillBaseTemplate {
                 invalidEmployeeRequest, String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEntity.getBody()).contains("employee");
+    }
+
+    @Test
+    public void checkIfResponseStatus400HolidayAlreadyApprovedOrDeclined() {
+        ResponseEntity<String> holidayResponseEntity = restTemplate.postForEntity(
+                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=false",
+                1, String.class, 1, 2
+        );
+        assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 }

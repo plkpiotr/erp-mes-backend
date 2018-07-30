@@ -1,6 +1,6 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.staff.teams;
+package com.herokuapp.erpmesbackend.erpmesbackend.teams;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

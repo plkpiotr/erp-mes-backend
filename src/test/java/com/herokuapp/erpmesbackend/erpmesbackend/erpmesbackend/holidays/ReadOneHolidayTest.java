@@ -1,7 +1,7 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.teams;
+package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.teams.Team;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -11,33 +11,30 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadAllTeamsTest extends FillBaseTemplate {
-
-    private List<Team> teams;
+public class ReadOneHolidayTest extends FillBaseTemplate {
 
     @Before
     public void init() {
         addOneAdminRequest(true);
         addNonAdminRequests(true);
-        teams = addTeamRequests(true);
+        addOneTeamRequest(true, teamRequest);
+        addOneHolidayRequest(2, true);
     }
 
     @Test
-    public void checkIfResponseContainsAllTeams() {
-        ResponseEntity<Team[]> forEntity = restTemplate.getForEntity("/teams", Team[].class);
+    public void checkIfResponseContainsHoliday() {
+        ResponseEntity<Holiday[]> holidayResponseEntity = restTemplate.getForEntity(
+                "/employees/{id}/holidays", Holiday[].class, 2
+        );
 
-        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-        List<Team> fetchedTeams = Arrays.asList(forEntity.getBody());
-        for (Team team : fetchedTeams) {
-            assertTrue(teams.stream().anyMatch(t -> t.checkIfDataEquals(team)));
-        }
+        assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        Holiday holiday = Arrays.asList(holidayResponseEntity.getBody()).get(0);
+        assertTrue(holiday.checkIfDataEquals(holidayRequest.extractHoliday()));
     }
 }

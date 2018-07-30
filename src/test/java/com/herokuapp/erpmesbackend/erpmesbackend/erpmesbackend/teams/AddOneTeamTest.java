@@ -1,18 +1,14 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.teams;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.Team;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
