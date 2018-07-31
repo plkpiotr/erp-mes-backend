@@ -1,5 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.ApprovalState;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
@@ -19,9 +21,12 @@ public class ManageHolidayRequestsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
-        addOneAdminRequest(true);
-        addNonAdminRequests(true);
-        addOneTeamRequest(true, teamRequest);
+        addOneAdminRequest(false);
+        addOneNonAdminRequest(false);
+        adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
+        nonAdminRequest.setRole(Role.ACCOUNTANT);
+        restTemplate.postForEntity("/employees", adminRequest, String.class);
+        restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
         addManyHolidayRequests(2, true);
     }
 

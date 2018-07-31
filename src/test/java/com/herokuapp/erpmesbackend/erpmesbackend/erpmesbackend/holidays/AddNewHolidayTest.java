@@ -21,7 +21,6 @@ public class AddNewHolidayTest extends FillBaseTemplate {
     public void init() {
         addOneAdminRequest(true);
         addNonAdminRequests(true);
-        addOneTeamRequest(true, teamRequest);
         addOneHolidayRequest(2, false);
     }
 
@@ -32,6 +31,9 @@ public class AddNewHolidayTest extends FillBaseTemplate {
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
-        assertTrue(holidayResponseEntity.getBody().checkIfDataEquals(holidayRequest.extractHoliday()));
+        Holiday holiday = holidayResponseEntity.getBody();
+        assertTrue(holiday.getStartDate().equals(holidayRequest.getStartDate()));
+        assertTrue(holiday.getDuration() == holidayRequest.getDuration());
+        assertTrue(holiday.getHolidayType().equals(holidayRequest.getHolidayType()));
     }
 }

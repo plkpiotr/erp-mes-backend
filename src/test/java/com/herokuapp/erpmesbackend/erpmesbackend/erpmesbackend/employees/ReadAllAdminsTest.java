@@ -29,6 +29,8 @@ public class ReadAllAdminsTest extends FillBaseTemplate {
     public void checkIfResponseContainsAllManagers() {
         long adminCount = employeeRequests.stream()
                 .filter(request -> request.getRole().name().contains("ADMIN"))
+                .map(request -> request.getRole())
+                .distinct()
                 .count();
 
         ResponseEntity<Employee[]> forEntity = restTemplate

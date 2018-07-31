@@ -21,7 +21,4 @@ public class HolidayRequest {
     @NotNull
     private HolidayType holidayType;
 
-    public Holiday extractHoliday() {
-        return new Holiday(startDate, duration, holidayType);
-    }
 }

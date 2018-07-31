@@ -2,6 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +25,6 @@ public class ReadAllHolidaysTest extends FillBaseTemplate {
     public void init() {
         addOneAdminRequest(true);
         addNonAdminRequests(true);
-        addOneTeamRequest(true, teamRequest);
         addManyHolidayRequests(2, true);
     }
 
@@ -36,7 +36,13 @@ public class ReadAllHolidaysTest extends FillBaseTemplate {
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         List<Holiday> holidays = Arrays.asList(forEntity.getBody());
         holidayRequests.forEach(request -> assertTrue(holidays.stream()
-                .anyMatch(holiday -> holiday.checkIfDataEquals(request
-                        .extractHoliday()))));
+                .anyMatch(holiday -> checkIfHolidayAndRequestMatch(holiday, request))));
+    }
+
+    private boolean checkIfHolidayAndRequestMatch(Holiday holiday,
+                                                  HolidayRequest holidayRequest) {
+        return holiday.getStartDate().equals(holidayRequest.getStartDate()) &&
+                holiday.getDuration() == holidayRequest.getDuration() &&
+                holiday.getHolidayType().equals(holidayRequest.getHolidayType());
     }
 }

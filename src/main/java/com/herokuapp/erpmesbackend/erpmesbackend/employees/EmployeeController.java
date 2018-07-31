@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.teams.Team;
@@ -8,13 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-//@CrossOrigin("http://localhost:4200")
+@CrossOrigin("http://localhost:4200")
 public class EmployeeController {
 
     @Autowired
@@ -59,7 +59,9 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public Employee addNewEmployee(@RequestBody EmployeeRequest request) {
         Employee employee = request.extractUser();
+        checkIfCanBeAdded(request);
         employeeRepository.save(employee);
+        addToTeam(employee);
         return employee;
     }
 
@@ -73,7 +75,9 @@ public class EmployeeController {
     @DeleteMapping("/employees/{id}")
     public HttpStatus fireEmployee(@PathVariable("id") long id) {
         checkIfEmployeeExists(id);
-        employeeRepository.delete(employeeRepository.findById(id).get());
+        Employee employee = employeeRepository.findById(id).get();
+        removeFromTeam(employee);
+        employeeRepository.delete(employee);
         return HttpStatus.OK;
     }
 
@@ -97,6 +101,68 @@ public class EmployeeController {
     private void checkIfIsManager(Long id) {
         if (!employeeRepository.findById(id).get().isManager()) {
             throw new NotAManagerException("This employee is not a manager and therefore can't have subordinates!");
+        }
+    }
+
+    private void addToTeam(Employee employee) {
+        Role role = employee.getRole();
+        Team team;
+        if (role.name().contains("ADMIN")) {
+            Team adminTeam = teamRepository.findByRole(Role.ADMIN);
+            adminTeam.addEmployee(employee);
+            teamRepository.save(adminTeam);
+            Role newRole = mapToNoAdmin(role);
+            team = teamRepository.findByRole(newRole);
+            team.addEmployee(employee);
+        } else {
+            team = teamRepository.findByRole(role);
+            team.addEmployee(employee);
+        }
+        teamRepository.save(team);
+    }
+
+    private Role mapToNoAdmin(Role role) {
+        switch (role) {
+            case ADMIN_ACCOUNTANT:
+                return Role.ACCOUNTANT;
+            case ADMIN_HR:
+                return Role.HR;
+            case ADMIN_SUPPLY_CHAIN:
+                return Role.SUPPLY_CHAIN;
+            case ADMIN_WAREHOUSE:
+                return Role.WAREHOUSE;
+            case ADMIN:
+                return Role.ADMIN;
+        }
+        return role;
+    }
+
+    private void checkIfCanBeAdded(EmployeeRequest request) {
+        if (request.getRole().name().contains("ADMIN") &&
+                employeeRepository.findByRole(request.getRole()).isPresent()) {
+            throw new InvalidRequestException("There can only be one " + request
+                    .getRole().name());
+        }
+    }
+
+    private void removeFromTeam(Employee employee) {
+        Role role = employee.isManager() ? mapToNoAdmin(employee.getRole()) : employee.getRole();
+        Team team = teamRepository.findByRole(role);
+        if (employee.isManager()) {
+            if (employee.getRole().equals(Role.ADMIN)) {
+                Team adminTeam = teamRepository.findByRole(Role.ADMIN);
+                adminTeam.removeManager();
+                teamRepository.save(adminTeam);
+            } else {
+                Team adminTeam = teamRepository.findByRole(Role.ADMIN);
+                adminTeam.removeEmployee(employee);
+                teamRepository.save(adminTeam);
+                team.removeManager();
+                teamRepository.save(team);
+            }
+        } else {
+            team.removeEmployee(employee);
+            teamRepository.save(team);
         }
     }
 }

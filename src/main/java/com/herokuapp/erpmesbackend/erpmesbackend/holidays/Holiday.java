@@ -1,5 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.holidays;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -24,12 +26,16 @@ public class Holiday {
 
     ApprovalState approvalState;
 
-    public Holiday(LocalDate startDate, int duration, HolidayType holidayType) {
+    @ManyToOne
+    private Employee employee;
+
+    public Holiday(LocalDate startDate, int duration, HolidayType holidayType, Employee employee) {
         this.startDate = startDate;
         this.duration = duration;
         this.holidayType = holidayType;
-        this.approvalState = holidayType.equals(HolidayType.VACATION) ?
-                ApprovalState.PENDING : ApprovalState.APPROVED;
+        this.employee = employee;
+        this.approvalState = (!holidayType.equals(HolidayType.VACATION) || employee.getRole().equals(Role.ADMIN)) ?
+                ApprovalState.APPROVED : ApprovalState.PENDING;
     }
 
     public void approve() {
@@ -58,6 +64,7 @@ public class Holiday {
     public boolean checkIfDataEquals(Holiday holiday) {
         return startDate.equals(holiday.getStartDate()) &&
                 duration == holiday.getDuration() &&
-                approvalState.equals(holiday.getApprovalState());
+                approvalState.equals(holiday.getApprovalState()) &&
+                employee.checkIfDataEquals(holiday.getEmployee());
     }
 }

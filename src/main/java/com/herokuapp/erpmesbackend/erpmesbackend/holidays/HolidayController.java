@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-//@CrossOrigin("http://localhost:4200")
+@CrossOrigin("http://localhost:4200")
 public class HolidayController {
 
     @Autowired
@@ -32,7 +32,8 @@ public class HolidayController {
     @ResponseStatus(HttpStatus.OK)
     public List<Holiday> getAllHolidays(@PathVariable("id") long id) {
         checkIfEmployeeExists(id);
-        return employeeRepository.findById(id).get().getHolidays();
+        return holidayRepository.findByEmployeeId(id).isPresent() ?
+                holidayRepository.findByEmployeeId(id).get() : new ArrayList<>();
     }
 
     @PostMapping("/employees/{id}/holidays")
@@ -40,11 +41,9 @@ public class HolidayController {
     public Holiday addNewHoliday(@PathVariable("id") long id,
                                  @RequestBody HolidayRequest request) {
         checkIfEmployeeExists(id);
-        Holiday holiday = request.extractHoliday();
-        Employee employee = employeeRepository.findById(id).get();
-        employee.requestHoliday(holiday);
+        Holiday holiday = new Holiday(request.getStartDate(), request.getDuration(),
+                request.getHolidayType(), employeeRepository.findById(id).get());
         holidayRepository.save(holiday);
-        employeeRepository.save(employee);
         return holiday;
     }
 
@@ -56,8 +55,9 @@ public class HolidayController {
         List<Holiday> holidays = new ArrayList<>();
         List<Employee> employees = teamRepository.findByManagerId(managerId)
                 .get().getEmployees();
-        employees.forEach(employee -> holidays.addAll(employee.getHolidays()));
-        return holidays;
+        employees.forEach(employee -> holidays.addAll(holidayRepository
+                .findByEmployeeId(employee.getId()).get()));
+        return holidays.size() > 0 ? holidays : new ArrayList<>();
     }
 
     @PostMapping("/employees/{managerId}/subordinates/{subordinateId}/holidays")
@@ -82,12 +82,10 @@ public class HolidayController {
         checkIfEmployeeExists(managerId);
         checkIfIsManager(managerId);
         checkIfEmployeeExists(subordinateId);
-        checkIfManagerAndSubordinateHaveTheSameTeam(managerId, subordinateId);
     }
 
     private void checkHoliday(long holidayId, long subordinateId) {
         checkIfHolidayExists(holidayId);
-        checkIfCorrectHolidayRequestor(holidayId, subordinateId);
         checkIfHolidayPending(holidayId);
     }
 
@@ -97,23 +95,9 @@ public class HolidayController {
         }
     }
 
-    private void checkIfCorrectHolidayRequestor(long holidayId, long subordinateId) {
-        List<Holiday> holidays = employeeRepository.findById(subordinateId).get().getHolidays();
-        if (holidays.stream().noneMatch(holiday -> holiday.getId() == holidayId)) {
-            throw new EntitiesConflictException("This employee didn't make this holiday request!");
-        }
-    }
-
     private void checkIfHolidayExists(long id) {
         if (!holidayRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such holiday request doesn't exist!");
-        }
-    }
-
-    private void checkIfManagerAndSubordinateHaveTheSameTeam(long managerId, long subordinateId) {
-        Team team = teamRepository.findByManagerId(managerId).get();
-        if (team.getEmployees().stream().noneMatch(employee -> employee.getId() == subordinateId)) {
-            throw new EntitiesConflictException("Manager and employee do not belong to the same team!");
         }
     }
 

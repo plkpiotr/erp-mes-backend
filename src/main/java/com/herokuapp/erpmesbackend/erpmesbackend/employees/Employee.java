@@ -36,9 +36,6 @@ public class Employee {
 
     private LocalDate hireDate;
 
-    @OneToMany
-    private List<Holiday> holidays;
-
     /**
      * TODO: implement a class to track:
      * banking account number
@@ -57,7 +54,6 @@ public class Employee {
         this.password = passwordGenerator();
         this.isPasswordValid = false;
 
-        holidays = new ArrayList<>();
     }
 
     public boolean isManager() {
@@ -71,10 +67,6 @@ public class Employee {
             password[i] = (char) (r.nextInt('z' - 'a') + 'a');
         }
         return new String(password);
-    }
-
-    public void requestHoliday(Holiday holiday) {
-        holidays.add(holiday);
     }
 
     public boolean checkIfDataEquals(Employee employee) {

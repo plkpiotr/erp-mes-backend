@@ -23,7 +23,6 @@ public class ReadOneHolidayTest extends FillBaseTemplate {
     public void init() {
         addOneAdminRequest(true);
         addNonAdminRequests(true);
-        addOneTeamRequest(true, teamRequest);
         addOneHolidayRequest(2, true);
     }
 
@@ -35,6 +34,8 @@ public class ReadOneHolidayTest extends FillBaseTemplate {
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         Holiday holiday = Arrays.asList(holidayResponseEntity.getBody()).get(0);
-        assertTrue(holiday.checkIfDataEquals(holidayRequest.extractHoliday()));
+        assertTrue(holiday.getStartDate().equals(holidayRequest.getStartDate()));
+        assertTrue(holiday.getDuration() == holidayRequest.getDuration());
+        assertTrue(holiday.getHolidayType().equals(holidayRequest.getHolidayType()));
     }
 }
