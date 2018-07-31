@@ -29,14 +29,6 @@ public class TaskFactory {
         return generate(DETAILS);
     }
 
-    public Category generateCategory() {
-        return Category.values()[random.nextInt(Category.values().length)];
-    }
-
-    public Category generateDoneCategory() {
-        return Category.DONE;
-    }
-
     public Category generateTodoCategory() {
         return Category.TODO;
     }
@@ -48,12 +40,4 @@ public class TaskFactory {
     public LocalDateTime generateDeadline() {
         return LocalDateTime.now();
     }
-
-//    public TaskRequest generateTaskWithoutPrecedingTasks() {
-//
-//    }
-//
-//    public TaskRequest generateTaskWithPrecedingTasks() {
-//
-//    }
 }

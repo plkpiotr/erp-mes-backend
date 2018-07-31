@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.tasks;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,9 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Optional;
 
 @Entity
 @Getter
@@ -35,17 +32,9 @@ public class Task {
 
     private String details;
     private int estimatedTimeInMinutes;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime deadline;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime creationTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime startTime;
-
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
     private LocalDateTime endTime;
 
     public Task(String name, Category category, Employee assignee, List<Task> precedingTasks, String details,
@@ -58,22 +47,24 @@ public class Task {
         this.estimatedTimeInMinutes = estimatedTimeInMinutes;
         this.deadline = deadline;
         this.creationTime = LocalDateTime.now();
+        this.startTime = null;
+        this.endTime = null;
     }
 
     public boolean checkIfDataEquals(Task task) {
+
         return name.equals(task.getName()) &&
                 category.equals(task.getCategory()) &&
-                //assignee.equals(task.getAssignee());
-                //comparePrecedingTasks(task.getPrecedingTasks()) &&
+                assignee.checkIfDataEquals(task.getAssignee()) &&
+                comparePrecedingTasks(task.getPrecedingTasks()) &&
                 details.equals(task.getDetails()) &&
                 estimatedTimeInMinutes == task.getEstimatedTimeInMinutes() &&
                 deadline.isEqual(task.getDeadline());
-                //creationTime.isEqual(task.getCreationTime());
-                //startTime.isEqual(task.getStartTime()) &&
-                //endTime.isEqual(task.getEndTime());
     }
 
     private boolean comparePrecedingTasks(List<Task> tasksList) {
+        if (tasksList.isEmpty())
+            return true;
         for (Task task : precedingTasks) {
             if (tasksList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
                 return false;

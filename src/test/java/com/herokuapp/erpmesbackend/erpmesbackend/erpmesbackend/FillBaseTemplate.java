@@ -6,9 +6,14 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -23,24 +28,29 @@ public abstract class FillBaseTemplate {
     protected EmployeeRequest adminRequest;
     protected EmployeeRequest nonAdminRequest;
     protected TeamRequest teamRequest;
+    protected TaskRequest taskRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
     protected List<EmployeeRequest> nonAdminRequests;
     protected List<TeamRequest> teamRequests;
+    protected List<TaskRequest> taskRequests;
 
     protected List<Long> availableManagerIds;
     protected List<Long> availableEmployeeIds;
 
     protected EmployeeFactory employeeFactory;
+    protected TaskFactory taskFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
+        taskFactory = new TaskFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
         nonAdminRequests = new ArrayList<>();
         teamRequests = new ArrayList<>();
+        taskRequests = new ArrayList<>();
     }
 
     public void addOneEmployeeRequest(boolean shouldPost) {
@@ -125,6 +135,38 @@ public abstract class FillBaseTemplate {
             teams.add(addOneTeamRequest(shouldPost, teamRequests.get(i)));
         }
         return teams;
+    }
+
+    public Task addOneTaskRequest(boolean shouldPost, TaskRequest taskRequest) {
+        checkEmployeeBase();
+
+        String name = taskFactory.generateName();
+        Category category = taskFactory.generateTodoCategory();
+        long assigneeId = 1;
+        List<Long> precedingTasksIds = new ArrayList<>();
+        String details = taskFactory.generateDetails();
+        int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
+        LocalDateTime deadline = taskFactory.generateDeadline();
+
+        taskRequest = new TaskRequest(name, category, assigneeId, precedingTasksIds, details,
+                estimatedTimeInMinutes, deadline);
+
+        if (shouldPost)
+            restTemplate.postForEntity("/tasks", taskRequest, Task.class);
+
+        Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+
+        List<Task> precedingTasks = new ArrayList<>();
+        return new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
+    }
+
+    public List<Task> addTaskRequests(boolean shouldPost) {
+        List<Task> tasks = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            taskRequests.add(new TaskRequest());
+            tasks.add(addOneTaskRequest(shouldPost, taskRequests.get(i)));
+        }
+        return tasks;
     }
 
     private void removeUsedIds() {

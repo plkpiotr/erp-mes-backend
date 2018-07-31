@@ -8,10 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -25,22 +23,22 @@ public class TaskController {
 
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskDTO> getAllTasks() {
-        return taskRepository.findAll().stream().map(this::mapToDTO).collect(Collectors.toList());
+    public List<Task> getAllTasks() {
+        return new ArrayList<>(taskRepository.findAll());
     }
 
     @GetMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public TaskDTO getOneTask(@PathVariable("id") Long id) {
+    public Task getOneTask(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
-        return taskRepository.findById(id).map(this::mapToDTO).get();
+        return taskRepository.findById(id).get();
     }
 
     @GetMapping(value = "/tasks", params = {"assigneeId"})
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskDTO> getTasksByAssignee(@RequestParam("assigneeId") Long assigneeId) {
+    public List<Task> getTasksByAssignee(@RequestParam("assigneeId") Long assigneeId) {
         checkIfAssigneeExists(assigneeId);
-        return taskRepository.findByAssigneeId(assigneeId).stream().map(this::mapToDTO).collect(Collectors.toList());
+        return new ArrayList<>(taskRepository.findByAssigneeId(assigneeId));
     }
 
     @PostMapping("/tasks")
@@ -48,13 +46,14 @@ public class TaskController {
     public Task addNewTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
         Category category = taskRequest.getCategory();
+
+        checkIfAssigneeExists(taskRequest.getAssigneeId());
         Employee assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
 
-        boolean isReadyToDoing = true;
         List<Task> precedingTasks = new ArrayList<>();
 
-        if (!taskRequest.getPrecedingTasksIds().isEmpty())
-            taskRequest.getPrecedingTasksIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
+        if (taskRequest.getPrecedingTaskIds() != null)
+            taskRequest.getPrecedingTaskIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
 
         String details = taskRequest.getDetails();
         int estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
@@ -80,28 +79,5 @@ public class TaskController {
     private void checkIfAssigneeExists(Long id) {
         if (!employeeRepository.findById(id).isPresent())
             throw new NotFoundException("Chosen assignee doesn't exist!");
-    }
-
-    private TaskDTO mapToDTO(Task task) {
-
-        String name = task.getName();
-        String category = task.getCategory().name();
-        String assignee = task.getAssignee().getFirstName() + " " + task.getAssignee().getLastName();
-
-        List<String> precedingTasks = new ArrayList<>();
-        task.getPrecedingTasks().stream().map(Task::getName).forEach(precedingTasks::add);
-
-        String details = task.getDetails();
-        int estimatedTimeInMinutes = task.getEstimatedTimeInMinutes();
-
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        String deadline = task.getDeadline().format(formatter);
-        String creationTime = task.getCreationTime().format(formatter);
-
-        String startTime = task.getStartTime() == null ? "----" : task.getStartTime().format(formatter);
-        String endTime = task.getEndTime() == null ? "----" : task.getEndTime().format(formatter);
-
-        return new TaskDTO(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
-                creationTime, startTime, endTime);
     }
 }
