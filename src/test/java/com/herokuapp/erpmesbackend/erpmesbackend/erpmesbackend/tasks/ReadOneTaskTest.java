@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -18,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadAllTasksTest extends FillBaseTemplate {
+public class ReadOneTaskTest extends FillBaseTemplate {
 
     private List<Task> tasks;
 
@@ -29,12 +28,12 @@ public class ReadAllTasksTest extends FillBaseTemplate {
     }
 
     @Test
-    public void checkIfResponseContainsAllTasks() {
-        ResponseEntity<Task[]> forEntity = restTemplate.getForEntity("/tasks", Task[].class);
-        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+    public void checkIfResponseContainsTaskWithGivenId() {
+        for (int i = 0; i < 3; i++) {
+            ResponseEntity<Task> forEntity = restTemplate.getForEntity("/tasks/{id}", Task.class, i + 1);
+            assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Task> fetchedTasks = Arrays.asList(forEntity.getBody());
-        for (Task task : fetchedTasks) {
+            Task task = forEntity.getBody();
             assertTrue(tasks.stream().anyMatch(t -> t.checkIfDataEquals(task)));
         }
     }

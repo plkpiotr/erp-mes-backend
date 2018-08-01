@@ -1,7 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +23,6 @@ public class DeleteTaskTest extends FillBaseTemplate {
     @Before
     public void init() {
         addOneAdminRequest(true);
-        addNonAdminRequests(true);
         tasks = addTaskRequests(true);
         deletedTask = restTemplate.getForEntity("/tasks/{id}", Task.class, 1).getBody();
     }
@@ -32,9 +30,7 @@ public class DeleteTaskTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseDoesNotContainDeletedTask() {
         restTemplate.delete("/tasks/{id}", 1);
-        List<Task> fetchedTasks = Arrays.asList(restTemplate
-                .getForEntity("/tasks", Task[].class).getBody());
-
+        List<Task> fetchedTasks = Arrays.asList(restTemplate.getForEntity("/tasks", Task[].class).getBody());
         assertFalse(fetchedTasks.stream().anyMatch(task -> task.checkIfDataEquals(deletedTask)));
     }
 }

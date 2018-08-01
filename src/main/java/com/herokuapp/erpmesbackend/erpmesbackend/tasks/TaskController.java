@@ -51,7 +51,6 @@ public class TaskController {
         Employee assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
 
         List<Task> precedingTasks = new ArrayList<>();
-
         if (taskRequest.getPrecedingTaskIds() != null)
             taskRequest.getPrecedingTaskIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
 
@@ -62,6 +61,29 @@ public class TaskController {
         Task task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
         taskRepository.save(task);
         return task;
+    }
+
+    @PutMapping("/tasks/{id}")
+    public HttpStatus update(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+        checkIfTaskExists(id);
+
+        Task task = taskRepository.findById(id).get();
+
+        task.setName(taskRequest.getName());
+        task.setCategory(taskRequest.getCategory());
+        task.setAssignee(employeeRepository.findById(taskRequest.getAssigneeId()).get());
+
+        List<Task> precedingTasks = new ArrayList<>();
+        if (taskRequest.getPrecedingTaskIds() != null)
+            taskRequest.getPrecedingTaskIds().forEach(index -> precedingTasks.add(taskRepository.findById(index).get()));
+        task.setPrecedingTasks(precedingTasks);
+
+        task.setDetails(taskRequest.getDetails());
+        task.setEstimatedTimeInMinutes(taskRequest.getEstimatedTimeInMinutes());
+        task.setDeadline(taskRequest.getDeadline());
+
+        taskRepository.save(task);
+        return HttpStatus.OK;
     }
 
     @DeleteMapping("/tasks/{id}")

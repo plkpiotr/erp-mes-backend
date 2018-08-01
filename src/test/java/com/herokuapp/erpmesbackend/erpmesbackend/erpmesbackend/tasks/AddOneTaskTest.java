@@ -43,7 +43,7 @@ public class AddOneTaskTest extends FillBaseTemplate {
         List<Task> precedingTasks = new ArrayList<>();
         List<Long> precedingTaskIds = new ArrayList<>();
 
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i < 4; i++) {
             Task precedingTask = restTemplate.getForEntity("/tasks/{id}", Task.class, i).getBody();
             precedingTaskIds.add(precedingTask.getId());
             precedingTasks.add(precedingTask);
