@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,22 +21,27 @@ public class Task {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @NotBlank
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
+    //@Pattern(regexp="^(TODO|DOING|DONE)$")
     private Category category;
 
     @OneToOne
     private Employee assignee;
 
-    @OneToMany
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     private List<Task> precedingTasks;
 
     private String details;
     private int estimatedTimeInMinutes;
     private LocalDateTime deadline;
+
+    @Column(nullable = false)
     private LocalDateTime creationTime;
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

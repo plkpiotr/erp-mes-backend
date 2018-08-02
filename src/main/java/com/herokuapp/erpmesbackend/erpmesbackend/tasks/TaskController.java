@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.tasks;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRepository;
@@ -46,7 +47,6 @@ public class TaskController {
     public Task addNewTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
         Category category = taskRequest.getCategory();
-
         checkIfAssigneeExists(taskRequest.getAssigneeId());
         Employee assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
 
@@ -70,7 +70,6 @@ public class TaskController {
         Task task = taskRepository.findById(id).get();
 
         task.setName(taskRequest.getName());
-        task.setCategory(taskRequest.getCategory());
         task.setAssignee(employeeRepository.findById(taskRequest.getAssigneeId()).get());
 
         List<Task> precedingTasks = new ArrayList<>();
@@ -83,7 +82,26 @@ public class TaskController {
         task.setDeadline(taskRequest.getDeadline());
 
         taskRepository.save(task);
-        return HttpStatus.OK;
+        return HttpStatus.NO_CONTENT;
+    }
+
+    @PatchMapping("/tasks/{id}")
+    public HttpStatus changeTaskToDoing(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+        checkIfTaskExists(id);
+        Task task = taskRepository.findById(id).get();
+
+        if (task.getCategory().equals(Category.DOING)) {
+            checkIfCategoryOfTaskMayBeDoing(task.getCategory());
+            task.setCategory(Category.DOING);
+            task.setStartTime(LocalDateTime.now());
+        } else if (task.getCategory().equals(Category.DONE)) {
+            checkIfCategoryOfTaskMayBeDone(task.getCategory());
+            task.setCategory(Category.DONE);
+            task.setEndTime(LocalDateTime.now());
+        }
+
+        taskRepository.save(task);
+        return HttpStatus.NO_CONTENT;
     }
 
     @DeleteMapping("/tasks/{id}")
@@ -101,5 +119,15 @@ public class TaskController {
     private void checkIfAssigneeExists(Long id) {
         if (!employeeRepository.findById(id).isPresent())
             throw new NotFoundException("Chosen assignee doesn't exist!");
+    }
+
+    private void checkIfCategoryOfTaskMayBeDoing(Category category) {
+        if (!category.equals(Category.TODO))
+            throw new InvalidRequestException("The task can't have 'DOING' category!");
+    }
+
+    private void checkIfCategoryOfTaskMayBeDone(Category category) {
+        if (!category.equals(Category.DOING))
+            throw new InvalidRequestException("The task can't have 'DONE' category!");
     }
 }
