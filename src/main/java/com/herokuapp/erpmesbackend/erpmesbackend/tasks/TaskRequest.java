@@ -24,7 +24,9 @@ public class TaskRequest {
     @NonNull
     private List<Long> precedingTaskIds;
 
+    @NonNull
     private String details;
+
     private int estimatedTimeInMinutes;
 
     @NonNull

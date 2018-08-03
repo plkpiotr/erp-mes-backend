@@ -6,8 +6,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -26,13 +24,13 @@ public class Task {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    //@Pattern(regexp="^(TODO|DOING|DONE)$")
     private Category category;
 
     @OneToOne
     private Employee assignee;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "preceding_tasks_id")
     private List<Task> precedingTasks;
 
     private String details;
