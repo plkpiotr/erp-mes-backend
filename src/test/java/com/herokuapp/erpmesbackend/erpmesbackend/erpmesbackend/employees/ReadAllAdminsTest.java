@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +29,8 @@ public class ReadAllAdminsTest extends FillBaseTemplate {
     public void checkIfResponseContainsAllManagers() {
         long adminCount = employeeRequests.stream()
                 .filter(request -> request.getRole().name().contains("ADMIN"))
+                .map(request -> request.getRole())
+                .distinct()
                 .count();
 
         ResponseEntity<Employee[]> forEntity = restTemplate
