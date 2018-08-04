@@ -5,11 +5,13 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
@@ -27,64 +29,64 @@ public abstract class FillBaseTemplate {
     protected EmployeeRequest employeeRequest;
     protected EmployeeRequest adminRequest;
     protected EmployeeRequest nonAdminRequest;
-    protected TeamRequest teamRequest;
+
     protected TaskRequest taskRequest;
+    protected HolidayRequest holidayRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
     protected List<EmployeeRequest> nonAdminRequests;
-    protected List<TeamRequest> teamRequests;
     protected List<TaskRequest> taskRequests;
-
-    protected List<Long> availableManagerIds;
-    protected List<Long> availableEmployeeIds;
+    protected List<HolidayRequest> holidayRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
+    protected HolidayFactory holidayFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
         taskFactory = new TaskFactory();
+        holidayFactory = new HolidayFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
         nonAdminRequests = new ArrayList<>();
-        teamRequests = new ArrayList<>();
         taskRequests = new ArrayList<>();
+        holidayRequests = new ArrayList<>();
     }
 
-    public void addOneEmployeeRequest(boolean shouldPost) {
+    protected void addOneEmployeeRequest(boolean shouldPost) {
         employeeRequest = employeeFactory.generateEmployeeRequest();
         if (shouldPost) {
-            restTemplate.postForEntity("/employees", employeeRequest, Employee.class);
+            restTemplate.postForEntity("/employees", employeeRequest, String.class);
         }
     }
 
-    public void addOneAdminRequest(boolean shouldPost) {
+    protected void addOneAdminRequest(boolean shouldPost) {
         adminRequest = employeeFactory.generateAdminRequest();
         if (shouldPost) {
-            restTemplate.postForEntity("/employees", adminRequest, Employee.class);
+            restTemplate.postForEntity("/employees", adminRequest, String.class);
         }
     }
 
-    public void addOneNonAdminRequest(boolean shouldPost) {
+    protected void addOneNonAdminRequest(boolean shouldPost) {
         nonAdminRequest = employeeFactory.generateNonAdminRequest();
         if (shouldPost) {
-            restTemplate.postForEntity("/employees", nonAdminRequest, Employee.class);
+            restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
         }
     }
 
-    public void addEmployeeRequests(boolean shouldPost) {
+    protected void addEmployeeRequests(boolean shouldPost) {
         for (int i = 0; i < 10; i++) {
             employeeRequests.add(employeeFactory.generateEmployeeRequest());
         }
         if (shouldPost) {
             employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    request, Employee.class));
+                    request, String.class));
         }
     }
 
-    public void addAdminRequests(boolean shouldPost) {
+    protected void addAdminRequests(boolean shouldPost) {
         for (int i = 0; i < 10; i++) {
             adminRequests.add(employeeFactory.generateAdminRequest());
         }
@@ -94,7 +96,7 @@ public abstract class FillBaseTemplate {
         }
     }
 
-    public void addNonAdminRequests(boolean shouldPost) {
+    protected void addNonAdminRequests(boolean shouldPost) {
         for (int i = 0; i < 10; i++) {
             nonAdminRequests.add(employeeFactory.generateNonAdminRequest());
         }
@@ -104,37 +106,12 @@ public abstract class FillBaseTemplate {
         }
     }
 
-    public Team addOneTeamRequest(boolean shouldPost, TeamRequest request) {
-        checkEmployeeBase();
-        Long[] employeeValues = {availableEmployeeIds.get(0), availableEmployeeIds
-                .get(availableEmployeeIds.size() - 1)};
-
-        Role role = employeeFactory.generateRole();
-        Employee manager = restTemplate.getForEntity("/employees/{id}", Employee.class,
-                availableManagerIds.get(0)).getBody();
-        Employee[] employees = {
-                restTemplate.getForEntity("/employees/{id}", Employee.class, availableEmployeeIds
-                        .get(0)).getBody(),
-                restTemplate.getForEntity("/employees/{id}", Employee.class, availableEmployeeIds
-                        .get(availableEmployeeIds.size()-1)).getBody()
-        };
-
-        request = new TeamRequest(role,
-                availableManagerIds.get(0), Arrays.asList(employeeValues));
-        removeUsedIds();
-        if (shouldPost) {
-            restTemplate.postForEntity("/teams", request, Team.class);
+    protected void addOneHolidayRequest(long employeeId, boolean shouldPost) {
+        holidayRequest = holidayFactory.generateHolidayRequest();
+        if(shouldPost) {
+            restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest,
+                    Holiday.class, employeeId);
         }
-        return new Team(role, manager, Arrays.asList(employees));
-    }
-
-    public List<Team> addTeamRequests(boolean shouldPost) {
-        List<Team> teams = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
-            teamRequests.add(new TeamRequest());
-            teams.add(addOneTeamRequest(shouldPost, teamRequests.get(i)));
-        }
-        return teams;
     }
 
     public Task addOneTaskRequest(boolean shouldPost, TaskRequest taskRequest) {
@@ -169,58 +146,12 @@ public abstract class FillBaseTemplate {
         return tasks;
     }
 
-    private void removeUsedIds() {
-        availableManagerIds.remove(0);
-        availableEmployeeIds.remove(0);
-        availableEmployeeIds.remove(availableEmployeeIds.size() - 1);
-    }
-
-    private void checkEmployeeBase() {
-        if (availableManagerIds == null &&
-                availableEmployeeIds == null) {
-            filterEmployeesByRole();
+    protected void addManyHolidayRequests(long employeeId, boolean shouldPost) {
+        for(int i = 0; i < 4; i++) {
+            holidayRequests.add(holidayFactory.generateHolidayRequest());        }
+        if(shouldPost) {
+            holidayRequests.forEach(request -> restTemplate.postForEntity("/employees/{id}/holidays",
+                    request, Holiday.class, employeeId));
         }
-        boolean shouldRefilter = false;
-        if (availableManagerIds.size() == 0) {
-            addOneAdminRequest(true);
-            shouldRefilter = true;
-        }
-        if (availableEmployeeIds.size() < 2) {
-            addNonAdminRequests(true);
-            shouldRefilter = true;
-        }
-        if (shouldRefilter) {
-            filterEmployeesByRole();
-        }
-    }
-
-    public void filterEmployeesByRole() {
-        List<Employee> employees = Arrays.asList(restTemplate
-                .getForEntity("/employees", Employee[].class).getBody());
-
-        availableManagerIds = employees.stream()
-                .filter(employee -> employee.isManager())
-                .map(employee -> employee.getId())
-                .collect(Collectors.toList());
-
-        availableEmployeeIds = employees.stream()
-                .filter(employee -> !employee.isManager())
-                .map(employee -> employee.getId())
-                .collect(Collectors.toList());
-
-        List<Team> teams = Arrays.asList(restTemplate
-                .getForEntity("/teams", Team[].class).getBody());
-
-        List<Long> collectManagerIds = teams.stream()
-                .map(team -> team.getManager().getId())
-                .collect(Collectors.toList());
-
-        List<Long> collectEmployeeIds = new ArrayList<>();
-        teams.forEach(team -> team.getEmployees().forEach(
-                employee -> collectEmployeeIds.add(employee.getId())
-        ));
-
-        availableManagerIds.removeAll(collectManagerIds);
-        availableEmployeeIds.removeAll(collectEmployeeIds);
     }
 }

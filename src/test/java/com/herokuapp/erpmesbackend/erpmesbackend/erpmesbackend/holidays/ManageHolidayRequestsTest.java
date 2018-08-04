@@ -1,7 +1,9 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
+package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.ApprovalState;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class InvalidRequestTest extends FillBaseTemplate {
+public class ManageHolidayRequestsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
@@ -25,28 +27,28 @@ public class InvalidRequestTest extends FillBaseTemplate {
         nonAdminRequest.setRole(Role.ACCOUNTANT);
         restTemplate.postForEntity("/employees", adminRequest, String.class);
         restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
-        addOneHolidayRequest(2, true);
-        restTemplate.postForEntity(
-                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                1, String.class, 1, 2
-        );
+        addManyHolidayRequests(2, true);
     }
 
     @Test
-    public void checkIfResponse400InvalidRequest() {
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees",
-                adminRequest, String.class);
-        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    public void approveHoliday() {
+        ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
+                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
+                1, Holiday.class, 1, 2
+        );
+
+        assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(holidayResponseEntity.getBody().getApprovalState()).isEqualTo(ApprovalState.APPROVED);
     }
 
     @Test
-    public void checkIfResponse400InvalidApprovalRequest() {
-        ResponseEntity<String> holidayResponseEntity = restTemplate.postForEntity(
-                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                1, String.class, 2, 3
+    public void declineHoliday() {
+        ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
+                "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=false",
+                2, Holiday.class, 1, 2
         );
-        assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+
+        assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(holidayResponseEntity.getBody().getApprovalState()).isEqualTo(ApprovalState.DECLINED);
     }
-
-
 }

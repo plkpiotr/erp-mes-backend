@@ -1,4 +1,4 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.staff.employees;
+package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
