@@ -1,10 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.EmployeeRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskFactory;
@@ -115,8 +113,6 @@ public abstract class FillBaseTemplate {
     }
 
     public Task addOneTaskRequest(boolean shouldPost, TaskRequest taskRequest) {
-        checkEmployeeBase();
-
         String name = taskFactory.generateName();
         Category category = taskFactory.generateTodoCategory();
         long assigneeId = 1;

@@ -1,10 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Role;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.Team;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.teams.TeamRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
