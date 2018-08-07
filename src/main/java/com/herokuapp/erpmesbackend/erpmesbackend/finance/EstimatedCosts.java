@@ -24,6 +24,7 @@ public class EstimatedCosts {
     private double stockCosts;
     private double socialFund;
     private double unexpected;
+    private double taxes;
 
     public EstimatedCosts() {
         estimatedIncome = 175000.00;
@@ -34,6 +35,7 @@ public class EstimatedCosts {
         stockCosts = 30000.00;
         socialFund = 2000.00;
         unexpected = 5000.00;
+        taxes = 0.2*estimatedIncome + 0.2*salaries; //TODO: check how it's calculated irl
     }
 
     public EstimatedCosts(double estimatedIncome, double estimatedShippingCosts,
@@ -47,6 +49,7 @@ public class EstimatedCosts {
         this.stockCosts = stockCosts;
         this.socialFund = socialFund;
         this.unexpected = unexpected;
+        taxes = 0.2*estimatedIncome + 0.2*salaries;
     }
 
     public void recalculateCosts(EstimatedCostsRequest reestimatedCosts) {
@@ -58,5 +61,6 @@ public class EstimatedCosts {
         this.stockCosts = reestimatedCosts.getStockCosts();
         this.socialFund = reestimatedCosts.getSocialFund();
         this.unexpected = reestimatedCosts.getUnexpected();
+        taxes = 0.2*estimatedIncome + 0.2*salaries;
     }
 }

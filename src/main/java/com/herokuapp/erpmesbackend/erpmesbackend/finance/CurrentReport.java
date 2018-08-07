@@ -1,7 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -26,6 +28,7 @@ public class CurrentReport {
     @OneToOne
     private EstimatedCosts estimatedCosts;
 
+    @Setter
     private LocalDate startDate;
 
     public CurrentReport(EstimatedCosts estimatedCosts) {

@@ -1,12 +1,16 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
+import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -24,6 +28,9 @@ public class ReportsController {
     @Autowired
     EstimatedCostsRepository estimatedCostsRepository;
 
+    @Autowired
+    EmployeeRepository employeeRepository;
+
     //TODO: setup only once when the app is up and running, then comment out
     @PostConstruct
     public void init() {
@@ -31,9 +38,28 @@ public class ReportsController {
         estimatedCostsRepository.save(estimatedCosts);
         CurrentReport currentReport = new CurrentReport(estimatedCosts);
         currentReportRepository.save(currentReport);
+
+        //this is only for testing purposes!!!
+        Month months[] = {Month.FEBRUARY, Month.MARCH, Month.APRIL, Month.MAY, Month.JUNE};
+        for (Month month : months) {
+            currentReport.setStartDate(LocalDate.of(2018, month, 1));
+            Expense expense = new Expense(ExpenseType.SALARIES, 120000.00);
+            currentReport.addExpense(expense);
+            expenseRepository.save(expense);
+            currentReport.addIncome(50000.00);
+            MonthlyReport monthlyReport = new MonthlyReport(currentReport);
+            monthlyReport.setIncome(new ArrayList<>(currentReport.getIncome()));
+            monthlyReport.setExpenses(new ArrayList<>(currentReport.getExpenses()));
+            monthlyReportRepository.save(monthlyReport);
+            currentReport.clearReport();
+        }
+        //only for saving tests
+        currentReport.setStartDate(LocalDate.of(2018, Month.JULY, 1));
+        currentReportRepository.save(currentReport);
     }
 
     @GetMapping("/reports")
+    @ResponseStatus(HttpStatus.OK)
     public List<MonthlyReport> getReports() {
         if (shouldSaveReport()) {
             saveReport();
@@ -42,6 +68,7 @@ public class ReportsController {
     }
 
     @GetMapping("/reports/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public MonthlyReport getReport(@PathVariable("id") long id) {
         if (shouldSaveReport()) {
             saveReport();
@@ -50,7 +77,17 @@ public class ReportsController {
         return monthlyReportRepository.findById(id).get();
     }
 
+    @GetMapping("/current-report")
+    @ResponseStatus(HttpStatus.OK)
+    public CurrentReport getCurrentReport() {
+        if (shouldSaveReport()) {
+            saveReport();
+        }
+        return currentReportRepository.findById((long) 1).get();
+    }
+
     @PutMapping("/current-report")
+    @ResponseStatus(HttpStatus.OK)
     public EstimatedCosts recalculateCosts(@RequestBody  EstimatedCostsRequest reestimatedCosts) {
         if (shouldSaveReport()) {
             saveReport();
@@ -64,16 +101,9 @@ public class ReportsController {
         return estimatedCosts;
     }
 
-    @GetMapping("/current-report")
-    public CurrentReport getCurrentReport() {
-        if (shouldSaveReport()) {
-            saveReport();
-        }
-        return currentReportRepository.findById((long) 1).get();
-    }
-
     @PostMapping("/current-report/income")
-    public CurrentReport addIncome(@RequestParam("amount") double amount) {
+    @ResponseStatus(HttpStatus.OK)
+    public CurrentReport addIncome(@RequestBody double amount) {
         if (shouldSaveReport()) {
             saveReport();
         }
@@ -84,6 +114,7 @@ public class ReportsController {
     }
 
     @PostMapping("/current-report/expense")
+    @ResponseStatus(HttpStatus.OK)
     public CurrentReport addIncome(@RequestBody ExpenseRequest request) {
         if (shouldSaveReport()) {
             saveReport();
@@ -110,9 +141,35 @@ public class ReportsController {
 
     private void saveReport() {
         CurrentReport currentReport = currentReportRepository.findById((long) 1).get();
-        monthlyReportRepository.save(new MonthlyReport(currentReport));
+        MonthlyReport monthlyReport = new MonthlyReport(currentReport);
+        monthlyReport.setIncome(new ArrayList<>(currentReport.getIncome()));
+        monthlyReport.setExpenses(new ArrayList<>(currentReport.getExpenses()));
+        payTaxes(monthlyReport);
+        monthlyReportRepository.save(monthlyReport);
         currentReport.clearReport();
+        paySalaries(currentReport);
         currentReportRepository.save(currentReport);
+    }
+
+    private void payTaxes(MonthlyReport monthlyReport) {
+        double allSalaries = monthlyReport.getExpenses().stream()
+                .filter(expense -> expense.getExpenseType().equals(ExpenseType.SALARIES))
+                .map(Expense::getAmount)
+                .mapToDouble(Double::doubleValue)
+                .sum();
+        Expense taxes = new Expense(ExpenseType.TAXES, 0.2*allSalaries+0.2*monthlyReport.getOverallIncome());
+        expenseRepository.save(taxes);
+        monthlyReport.payTaxes(taxes);
+    }
+
+    private void paySalaries(CurrentReport currentReport) {
+        double salaries = employeeRepository.findAll().stream()
+                .map(employee -> employee.getContract().getSalary())
+                .mapToDouble(Double::doubleValue)
+                .sum();
+        Expense expense = new Expense(ExpenseType.SALARIES, salaries);
+        expenseRepository.save(expense);
+        currentReport.addExpense(expense);
     }
 
     private void checkIfReportExists(long id) {

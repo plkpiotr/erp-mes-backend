@@ -19,7 +19,7 @@ public class HolidayFactory {
     }
 
     private int generateDuration() {
-        return r.nextInt(14) + 1;
+        return r.nextInt(5) + 1;
     }
 
     public HolidayRequest generateHolidayRequest() {

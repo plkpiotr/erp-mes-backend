@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
@@ -48,5 +49,42 @@ public class InvalidRequestTest extends FillBaseTemplate {
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
+    @Test
+    public void checkIfResponse400VacationAlreadyUsed() {
+        addOneNonAdminRequest(false);
+        nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
+        ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
+                nonAdminRequest, Employee.class);
+        long id = employeeResponseEntity.getBody().getId();
+        addOneHolidayRequest(id, false);
+        holidayRequest.setDuration(20);
+        restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest, Holiday.class, id);
+        addOneHolidayRequest(id, false);
 
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees/{id}/holidays",
+                holidayRequest, String.class, id);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseEntity.getBody()).contains("already used all");
+    }
+
+    @Test
+    public void checkIfResponse400VacationTooLong() {
+        addOneNonAdminRequest(false);
+        nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
+        ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
+                nonAdminRequest, Employee.class);
+        long id = employeeResponseEntity.getBody().getId();
+        addOneHolidayRequest(id, false);
+        holidayRequest.setDuration(15);
+        restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest, Holiday.class, id);
+        addOneHolidayRequest(id, false);
+        holidayRequest.setDuration(7);
+
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees/{id}/holidays",
+                holidayRequest, String.class, id);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+        assertThat(responseEntity.getBody()).contains("have enough");
+    }
 }

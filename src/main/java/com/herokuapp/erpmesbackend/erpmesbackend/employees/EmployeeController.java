@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
@@ -22,6 +23,9 @@ public class EmployeeController {
 
     @Autowired
     private TeamRepository teamRepository;
+
+    @Autowired
+    private ContractRepository contractRepository;
 
     //sequence for manual testing
     //unit tests fail with this enabled
@@ -60,6 +64,7 @@ public class EmployeeController {
     public Employee addNewEmployee(@RequestBody EmployeeRequest request) {
         Employee employee = request.extractUser();
         checkIfCanBeAdded(request);
+        contractRepository.save(employee.getContract());
         employeeRepository.save(employee);
         addToTeam(employee);
         return employee;
@@ -78,6 +83,7 @@ public class EmployeeController {
         Employee employee = employeeRepository.findById(id).get();
         removeFromTeam(employee);
         employeeRepository.delete(employee);
+        contractRepository.delete(employee.getContract());
         return HttpStatus.OK;
     }
 

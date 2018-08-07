@@ -1,6 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -9,16 +11,19 @@ import java.util.List;
 
 @Entity
 @Getter
+@NoArgsConstructor
 public class MonthlyReport {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
-    @OneToMany
+    @ManyToMany
+    @Setter
     private List<Expense> expenses;
 
     @ElementCollection
+    @Setter
     private List<Double> income;
 
     private LocalDate startDate;
@@ -32,8 +37,8 @@ public class MonthlyReport {
 
     public MonthlyReport(CurrentReport currentReport) {
         estimatedCosts = currentReport.getEstimatedCosts();
-        expenses = currentReport.getExpenses();
-        income = currentReport.getIncome();
+        expenses = new ArrayList<>();
+        income = new ArrayList<>();
         startDate = currentReport.getStartDate();
         updateIncome();
         updateExpenses();
@@ -53,5 +58,10 @@ public class MonthlyReport {
                 .mapToDouble(Double::doubleValue)
                 .sum();
         balance = overallIncome - overallExpenses;
+    }
+
+    public void payTaxes(Expense taxes) {
+        expenses.add(taxes);
+        updateExpenses();
     }
 }
