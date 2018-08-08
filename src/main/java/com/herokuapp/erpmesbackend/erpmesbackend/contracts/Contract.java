@@ -17,15 +17,15 @@ public class Contract {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
+    private String accountNumber;
+    private int daysOffPerYear;
+    private double salary;
+
     public Contract(String accountNumber, int daysOffPerYear, double salary) {
         this.accountNumber = accountNumber;
         this.daysOffPerYear = daysOffPerYear;
         this.salary = salary;
     }
-
-    private String accountNumber;
-    private int daysOffPerYear;
-    private double salary;
 
     public boolean checkIfDataEquals(Contract contract) {
         return accountNumber.equals(contract.getAccountNumber()) &&

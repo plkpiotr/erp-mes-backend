@@ -61,8 +61,13 @@ public class HolidayController {
         if (employees.size() == 0) {
             return new ArrayList<>();
         }
-        employees.forEach(employee -> holidays.addAll(holidayRepository
-                .findByEmployeeId(employee.getId()).get()));
+        employees.forEach(employee -> {
+            if(holidayRepository
+                    .findByEmployeeId(employee.getId()).isPresent()) {
+                holidays.addAll(holidayRepository
+                        .findByEmployeeId(employee.getId()).get());
+            }
+        });
         return holidays.size() > 0 ? holidays : new ArrayList<>();
     }
 

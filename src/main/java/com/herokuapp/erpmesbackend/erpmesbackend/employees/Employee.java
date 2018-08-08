@@ -35,8 +35,6 @@ public class Employee {
     private String password;
     private boolean isPasswordValid;
 
-    private LocalDate hireDate;
-
     @OneToOne
     private Contract contract;
 

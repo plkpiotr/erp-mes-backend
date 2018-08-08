@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@CrossOrigin("http://localhost:4200")
 public class ReportsController {
 
     @Autowired
@@ -88,7 +89,7 @@ public class ReportsController {
 
     @PutMapping("/current-report")
     @ResponseStatus(HttpStatus.OK)
-    public EstimatedCosts recalculateCosts(@RequestBody  EstimatedCostsRequest reestimatedCosts) {
+    public CurrentReport recalculateCosts(@RequestBody  EstimatedCostsRequest reestimatedCosts) {
         if (shouldSaveReport()) {
             saveReport();
         }
@@ -98,7 +99,7 @@ public class ReportsController {
         estimatedCostsRepository.save(estimatedCosts);
         currentReport.updateEstimatedCosts(estimatedCosts);
         currentReportRepository.save(currentReport);
-        return estimatedCosts;
+        return currentReport;
     }
 
     @PostMapping("/current-report/income")

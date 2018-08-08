@@ -19,11 +19,9 @@ public class MonthlyReport {
     private long id;
 
     @ManyToMany
-    @Setter
     private List<Expense> expenses;
 
     @ElementCollection
-    @Setter
     private List<Double> income;
 
     private LocalDate startDate;
@@ -43,6 +41,16 @@ public class MonthlyReport {
         updateIncome();
         updateExpenses();
         balance = overallIncome - overallExpenses;
+    }
+
+    public void setExpenses(List<Expense> expenses) {
+        this.expenses = expenses;
+        updateExpenses();
+    }
+
+    public void setIncome(List<Double> income) {
+        this.income = income;
+        updateIncome();
     }
 
     private void updateIncome() {
