@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.tasks;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

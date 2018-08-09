@@ -1,5 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRequest;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -46,25 +49,34 @@ public class EmployeeFactory {
         return nonAdminRoles.get(r.nextInt(nonAdminRoles.size()));
     }
 
+    private ContractRequest generateContractRequest() {
+        StringBuilder accountNumberBuilder = new StringBuilder();
+        for(int i = 0; i < 26; i++) {
+            accountNumberBuilder.append(r.nextInt(10));
+        }
+        return new ContractRequest(accountNumberBuilder.toString(), r.nextInt(7)+20,
+                r.nextDouble());
+    }
+
     public EmployeeRequest generateEmployeeRequest() {
         String firstName = generate(FIRST_NAMES);
         String lastName = generate(LAST_NAMES);
         return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateRole());
+                generateRole(), generateContractRequest());
     }
 
     public EmployeeRequest generateAdminRequest() {
         String firstName = generate(FIRST_NAMES);
         String lastName = generate(LAST_NAMES);
         return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateAdminRole());
+                generateAdminRole(), generateContractRequest());
     }
 
     public EmployeeRequest generateNonAdminRequest() {
         String firstName = generate(FIRST_NAMES);
         String lastName = generate(LAST_NAMES);
         return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateNonAdminRole());
+                generateNonAdminRole(), generateContractRequest());
     }
 
     public Employee generateEmployee() {

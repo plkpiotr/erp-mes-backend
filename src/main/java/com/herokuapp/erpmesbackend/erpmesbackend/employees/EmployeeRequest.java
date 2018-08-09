@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +26,11 @@ public class EmployeeRequest {
     @NotNull
     private Role role;
 
+    @NotNull
+    private ContractRequest contractRequest;
+
     public Employee extractUser() {
-        return new Employee(firstName, lastName, email, role);
+        return new Employee(firstName, lastName, email, role,
+                contractRequest.extractContract());
     }
 }

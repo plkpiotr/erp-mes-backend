@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,26 +35,17 @@ public class Employee {
     private String password;
     private boolean isPasswordValid;
 
-    private LocalDate hireDate;
+    @OneToOne
+    private Contract contract;
 
-    /**
-     * TODO: implement a class to track:
-     * banking account number
-     * type of contract
-     * salary
-     * number days off
-     **/
-    //private Contract contract
-
-
-    public Employee(String firstName, String lastName, String email, Role role) {
+    public Employee(String firstName, String lastName, String email, Role role, Contract contract) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.role = role;
         this.password = passwordGenerator();
         this.isPasswordValid = false;
-
+        this.contract = contract;
     }
 
     public boolean isManager() {
@@ -69,11 +61,16 @@ public class Employee {
         return new String(password);
     }
 
+    public void changePassword(String newPassword) {
+        this.password = newPassword;
+    }
+
     public boolean checkIfDataEquals(Employee employee) {
         return firstName.equals(employee.getFirstName()) &&
                 lastName.equals(employee.getLastName()) &&
                 email.equals(employee.getEmail()) &&
                 role.equals(employee.getRole()) &&
-                (isPasswordValid == employee.isPasswordValid());
+                (isPasswordValid == employee.isPasswordValid()) &&
+                contract.checkIfDataEquals(employee.getContract());
     }
 }
