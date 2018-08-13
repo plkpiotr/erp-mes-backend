@@ -141,17 +141,23 @@ public class ReportsController {
 
         if (allReports.size() >= 5) {
             double newIncomeValue = getNewIncome(allReports);
-            double newShippingValue = getNewValue(allReports, ExpenseType.SHIPPING);
-            double newBillsValue = getNewValue(allReports, ExpenseType.BILLS);
-            double newRentValue = getNewValue(allReports, ExpenseType.RENT);
+            double newShippingValue = getNewValue(allReports, ExpenseType.SHIPPING, currentReport
+                    .getEstimatedCosts().getEstimatedShippingCosts());
+            double newBillsValue = getNewValue(allReports, ExpenseType.BILLS, currentReport.getEstimatedCosts()
+                    .getEstimatedBills());
+            double newRentValue = getNewValue(allReports, ExpenseType.RENT, currentReport
+                    .getEstimatedCosts().getRent());
             double newSalariesValue = contractRepository.findAll().size() > 0 ?
                     contractRepository.findAll().stream()
                             .map(Contract::getSalary)
                             .mapToDouble(Double::doubleValue)
                             .sum() : 0;
-            double newStockValue = getNewValue(allReports, ExpenseType.STOCK);
-            double newSocialFundValue = getNewValue(allReports, ExpenseType.SOCIAL_FUND);
-            double newUnexpectedValue = getNewValue(allReports, ExpenseType.UNEXPECTED);
+            double newStockValue = getNewValue(allReports, ExpenseType.STOCK, currentReport
+                    .getEstimatedCosts().getStockCosts());
+            double newSocialFundValue = getNewValue(allReports, ExpenseType.SOCIAL_FUND, currentReport
+                    .getEstimatedCosts().getSocialFund());
+            double newUnexpectedValue = getNewValue(allReports, ExpenseType.UNEXPECTED, currentReport
+                    .getEstimatedCosts().getUnexpected());
 
             return new EstimatedCostsRequest(newIncomeValue, newShippingValue, newBillsValue, newRentValue,
                     newSalariesValue, newStockValue, newSocialFundValue, newUnexpectedValue);
@@ -167,7 +173,7 @@ public class ReportsController {
 
     private double getNewIncome(List<MonthlyReport> allReports) {
         double newIncomeValue;
-        double oldIncomeValue = allReports.get(allReports.size() - 1).getOverallIncome();
+        double oldIncomeValue = getCurrentReport().getEstimatedCosts().getEstimatedIncome();
         double meanIncome = allReports.stream()
                 .map(MonthlyReport::getOverallIncome)
                 .mapToDouble(Double::doubleValue)
@@ -182,14 +188,8 @@ public class ReportsController {
         return newIncomeValue;
     }
 
-    private double getNewValue(List<MonthlyReport> allReports, ExpenseType expenseType) {
+    private double getNewValue(List<MonthlyReport> allReports, ExpenseType expenseType, double oldValue) {
         double newValue;
-        double oldValue = allReports.get(allReports.size() - 1)
-                .getExpenses().stream()
-                .filter(expense -> expense.getExpenseType().equals(expenseType))
-                .map(Expense::getAmount)
-                .mapToDouble(Double::doubleValue)
-                .sum();
         List<Double> meanValues = new ArrayList<>();
         allReports.forEach(report -> {
             List<Expense> collect = report.getExpenses().stream()
