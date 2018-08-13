@@ -33,9 +33,4 @@ public class AddOneEmployeeTest extends FillBaseTemplate {
         Employee body = employeeResponseEntity.getBody();
         assertTrue(body.checkIfDataEquals(employeeRequest.extractUser()));
     }
-
-    @After
-    public void clean() {
-        restTemplate.delete("/employees/{id}", 1);
-    }
 }

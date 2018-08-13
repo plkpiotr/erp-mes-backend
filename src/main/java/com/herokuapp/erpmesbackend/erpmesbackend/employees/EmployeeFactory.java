@@ -55,7 +55,7 @@ public class EmployeeFactory {
             accountNumberBuilder.append(r.nextInt(10));
         }
         return new ContractRequest(accountNumberBuilder.toString(), r.nextInt(7)+20,
-                r.nextDouble());
+                r.nextDouble()+2000.00);
     }
 
     public EmployeeRequest generateEmployeeRequest() {
