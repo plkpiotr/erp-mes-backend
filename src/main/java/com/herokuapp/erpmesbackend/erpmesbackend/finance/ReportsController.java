@@ -1,7 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("http://localhost:4200")
@@ -31,6 +33,9 @@ public class ReportsController {
 
     @Autowired
     EmployeeRepository employeeRepository;
+
+    @Autowired
+    ContractRepository contractRepository;
 
     //TODO: setup only once when the app is up and running, then comment out
     @PostConstruct
@@ -89,7 +94,7 @@ public class ReportsController {
 
     @PutMapping("/current-report")
     @ResponseStatus(HttpStatus.OK)
-    public CurrentReport recalculateCosts(@RequestBody  EstimatedCostsRequest reestimatedCosts) {
+    public CurrentReport recalculateCosts(@RequestBody EstimatedCostsRequest reestimatedCosts) {
         if (shouldSaveReport()) {
             saveReport();
         }
@@ -128,6 +133,92 @@ public class ReportsController {
         return currentReport;
     }
 
+    @GetMapping("current-report/recommended-recalculations")
+    @ResponseStatus(HttpStatus.OK)
+    public EstimatedCostsRequest countRecommendations() {
+        CurrentReport currentReport = currentReportRepository.findById((long) 1).get();
+        List<MonthlyReport> allReports = monthlyReportRepository.findAll();
+
+        if (allReports.size() >= 5) {
+            double newIncomeValue = getNewIncome(allReports);
+            double newShippingValue = getNewValue(allReports, ExpenseType.SHIPPING);
+            double newBillsValue = getNewValue(allReports, ExpenseType.BILLS);
+            double newRentValue = getNewValue(allReports, ExpenseType.RENT);
+            double newSalariesValue = contractRepository.findAll().size() > 0 ?
+                    contractRepository.findAll().stream()
+                            .map(Contract::getSalary)
+                            .mapToDouble(Double::doubleValue)
+                            .sum() : 0;
+            double newStockValue = getNewValue(allReports, ExpenseType.STOCK);
+            double newSocialFundValue = getNewValue(allReports, ExpenseType.SOCIAL_FUND);
+            double newUnexpectedValue = getNewValue(allReports, ExpenseType.UNEXPECTED);
+
+            return new EstimatedCostsRequest(newIncomeValue, newShippingValue, newBillsValue, newRentValue,
+                    newSalariesValue, newStockValue, newSocialFundValue, newUnexpectedValue);
+        } else {
+            EstimatedCosts estimatedCosts = currentReport.getEstimatedCosts();
+            return new EstimatedCostsRequest(estimatedCosts.getEstimatedIncome(),
+                    estimatedCosts.getEstimatedShippingCosts(), estimatedCosts.getEstimatedBills(),
+                    estimatedCosts.getRent(), estimatedCosts.getSalaries(), estimatedCosts.getStockCosts(),
+                    estimatedCosts.getSocialFund(), estimatedCosts.getUnexpected());
+        }
+
+    }
+
+    private double getNewIncome(List<MonthlyReport> allReports) {
+        double newIncomeValue;
+        double oldIncomeValue = allReports.get(allReports.size() - 1).getOverallIncome();
+        double meanIncome = allReports.stream()
+                .map(MonthlyReport::getOverallIncome)
+                .mapToDouble(Double::doubleValue)
+                .sum() / allReports.size();
+        if (meanIncome >= oldIncomeValue) {
+            newIncomeValue = meanIncome / oldIncomeValue >= 1.2 ?
+                    1.1 * oldIncomeValue : oldIncomeValue;
+        } else {
+            newIncomeValue = oldIncomeValue / meanIncome >= 1.15 ?
+                    0.9 * oldIncomeValue : oldIncomeValue;
+        }
+        return newIncomeValue;
+    }
+
+    private double getNewValue(List<MonthlyReport> allReports, ExpenseType expenseType) {
+        double newValue;
+        double oldValue = allReports.get(allReports.size() - 1)
+                .getExpenses().stream()
+                .filter(expense -> expense.getExpenseType().equals(expenseType))
+                .map(Expense::getAmount)
+                .mapToDouble(Double::doubleValue)
+                .sum();
+        List<Double> meanValues = new ArrayList<>();
+        allReports.forEach(report -> {
+            List<Expense> collect = report.getExpenses().stream()
+                    .filter(expense -> expense.getExpenseType().equals(expenseType))
+                    .collect(Collectors.toList());
+            if (collect.size() > 0) {
+                meanValues.add(collect.stream()
+                        .map(Expense::getAmount)
+                        .mapToDouble(Double::doubleValue)
+                        .sum() / collect.size());
+            }
+        });
+        if (meanValues.size() == 0) {
+            newValue = oldValue;
+        } else {
+            double mean = meanValues.stream()
+                    .mapToDouble(Double::doubleValue)
+                    .sum() / meanValues.size();
+            if (mean >= oldValue) {
+                newValue = mean / oldValue >= 1.15 ?
+                        1.1 * oldValue : oldValue;
+            } else {
+                newValue = oldValue / mean >= 1.2 ?
+                        0.9 * oldValue : oldValue;
+            }
+        }
+        return newValue;
+    }
+
     private boolean shouldSaveReport() {
         CurrentReport currentReport = currentReportRepository.findById((long) 1).get();
         return LocalDate.now().getMonth() != currentReport.getStartDate().getMonth() &&
@@ -158,7 +249,7 @@ public class ReportsController {
                 .map(Expense::getAmount)
                 .mapToDouble(Double::doubleValue)
                 .sum();
-        Expense taxes = new Expense(ExpenseType.TAXES, 0.2*allSalaries+0.2*monthlyReport.getOverallIncome());
+        Expense taxes = new Expense(ExpenseType.TAXES, 0.2 * allSalaries + 0.2 * monthlyReport.getOverallIncome());
         expenseRepository.save(taxes);
         monthlyReport.payTaxes(taxes);
     }
@@ -174,7 +265,7 @@ public class ReportsController {
     }
 
     private void checkIfReportExists(long id) {
-        if(!monthlyReportRepository.findById(id).isPresent()) {
+        if (!monthlyReportRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such report doesn't exist!");
         }
     }
