@@ -29,7 +29,7 @@ public class Task {
     @OneToOne
     private Employee assignee;
 
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "preceding_tasks_id")
     private List<Task> precedingTasks;
 
