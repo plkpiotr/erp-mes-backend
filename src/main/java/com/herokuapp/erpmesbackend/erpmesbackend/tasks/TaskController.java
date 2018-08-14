@@ -35,11 +35,11 @@ public class TaskController {
         return taskRepository.findById(id).get();
     }
 
-    @GetMapping(value = "/tasks", params = {"assigneeId"})
+    @GetMapping(value = "/employees/{id}/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getTasksByAssignee(@RequestParam("assigneeId") Long assigneeId) {
-        checkIfAssigneeExists(assigneeId);
-        return new ArrayList<>(taskRepository.findByAssigneeId(assigneeId));
+    public List<Task> getTasksByAssignee(@PathVariable("id") Long id) {
+        checkIfAssigneeExists(id);
+        return new ArrayList<>(taskRepository.findByAssigneeId(id));
     }
 
     @PostMapping("/tasks")
