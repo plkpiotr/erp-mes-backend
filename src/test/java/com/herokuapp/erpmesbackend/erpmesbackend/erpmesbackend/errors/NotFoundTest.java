@@ -54,4 +54,16 @@ public class NotFoundTest extends FillBaseTemplate {
         ResponseEntity<String> forEntity = restTemplate.getForEntity("/reports/{id}", String.class, 10);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    public void checkIfResponseStatus404ItemNotFound() {
+        ResponseEntity<String> forEntity = restTemplate.getForEntity("/items/{id}", String.class, 255);
+        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void checkIfResponseStatus404DeliveryNotFound() {
+        ResponseEntity<String> forEntity = restTemplate.getForEntity("/deliveries/{id}", String.class, 255);
+        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

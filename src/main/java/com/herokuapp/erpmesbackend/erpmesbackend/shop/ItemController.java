@@ -3,6 +3,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.shop;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,11 +15,13 @@ public class ItemController {
     private ItemRepository itemRepository;
 
     @GetMapping("/items")
+    @ResponseStatus(HttpStatus.OK)
     public List<Item> getAllItems() {
         return itemRepository.findAll();
     }
 
     @PostMapping("/items")
+    @ResponseStatus(HttpStatus.CREATED)
     public Item addNewItem(@RequestBody ItemRequest request) {
         Item item = request.extractItem();
         itemRepository.save(item);
@@ -26,12 +29,14 @@ public class ItemController {
     }
 
     @GetMapping("/items/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Item getOneItem(@PathVariable("id") long id) {
         checkIfItemExists(id);
         return itemRepository.findById(id).get();
     }
 
     @PostMapping("/items/{id}/supply")
+    @ResponseStatus(HttpStatus.OK)
     public Item supplyItem(@PathVariable("id") long id, @RequestBody int q) {
         checkIfItemExists(id);
         Item item = itemRepository.findById(id).get();
@@ -41,6 +46,7 @@ public class ItemController {
     }
 
     @PostMapping("/items/{id}/buy")
+    @ResponseStatus(HttpStatus.OK)
     public Item buyItem(@PathVariable("id") long id, @RequestBody int q) {
         checkIfItemExists(id);
         Item item = itemRepository.findById(id).get();

@@ -4,6 +4,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -22,11 +23,13 @@ public class DeliveryController {
     private ItemRepository itemRepository;
 
     @GetMapping("/deliveries")
+    @ResponseStatus(HttpStatus.OK)
     public List<Delivery> getAllDeliveries() {
         return deliveryRepository.findAll();
     }
 
     @PostMapping("/deliveries")
+    @ResponseStatus(HttpStatus.CREATED)
     public Delivery addNewDelivery(@RequestBody DeliveryRequest request) {
         List<DeliveryItem> deliveryItems = new ArrayList<>();
         request.getDeliveryItemRequests().forEach(deliveryItemRequest -> {
@@ -43,6 +46,7 @@ public class DeliveryController {
     }
 
     @GetMapping("/deliveries/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public Delivery getOneDelivery(@PathVariable("id") long id) {
         checkIfDeliveryExists(id);
         return deliveryRepository.findById(id).get();
