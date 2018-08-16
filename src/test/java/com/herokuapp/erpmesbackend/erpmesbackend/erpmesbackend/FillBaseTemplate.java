@@ -3,6 +3,11 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskFactory;
@@ -13,6 +18,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -30,12 +36,16 @@ public abstract class FillBaseTemplate {
 
     protected TaskRequest taskRequest;
     protected HolidayRequest holidayRequest;
+    protected ItemRequest itemRequest;
+    protected DeliveryRequest deliveryRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
     protected List<EmployeeRequest> nonAdminRequests;
     protected List<TaskRequest> taskRequests;
     protected List<HolidayRequest> holidayRequests;
+    protected List<ItemRequest> itemRequests;
+    protected List<DeliveryRequest> deliveryRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
@@ -51,6 +61,8 @@ public abstract class FillBaseTemplate {
         nonAdminRequests = new ArrayList<>();
         taskRequests = new ArrayList<>();
         holidayRequests = new ArrayList<>();
+        itemRequests = new ArrayList<>();
+        deliveryRequests = new ArrayList<>();
     }
 
     protected void addOneEmployeeRequest(boolean shouldPost) {
@@ -148,6 +160,46 @@ public abstract class FillBaseTemplate {
         if(shouldPost) {
             holidayRequests.forEach(request -> restTemplate.postForEntity("/employees/{id}/holidays",
                     request, Holiday.class, employeeId));
+        }
+    }
+
+    protected void addOneItemRequest(boolean shouldPost) {
+        itemRequest = new ItemRequest("Random name", 8.00, 10.00);
+        if(shouldPost) {
+            restTemplate.postForEntity("/items", itemRequest, Item.class);
+        }
+    }
+
+    protected void addManyItemRequests(boolean shouldPost) {
+        for(int i = 0; i < 10; i++) {
+            itemRequests.add(new ItemRequest("Random name" + i, i*2+5, i*3+5));
+        }
+        if(shouldPost) {
+            itemRequests.forEach(request -> restTemplate.postForEntity("/items", request, Item.class));
+        }
+    }
+
+    protected void addOneDeliveryRequest(boolean shouldPost) {
+        List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+        for(int i = 0; i < 3; i++) {
+            deliveryItemRequests.add(new DeliveryItemRequest(i+1, i+10));
+        }
+        deliveryRequest = new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3));
+        if(shouldPost) {
+            restTemplate.postForEntity("/deliveries", deliveryRequest, Delivery.class);
+        }
+    }
+
+    protected void addManyDeliveryRequests(boolean shouldPost) {
+        for(int i = 0; i < 3; i++) {
+            List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+            for(int j = 0; j < 3; j++) {
+                deliveryItemRequests.add(new DeliveryItemRequest(i+j+1, j+10));
+            }
+            deliveryRequests.add(new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3)));
+        }
+        if(shouldPost) {
+            deliveryRequests.forEach(request -> restTemplate.postForEntity("/deliveries", request, Delivery.class));
         }
     }
 }

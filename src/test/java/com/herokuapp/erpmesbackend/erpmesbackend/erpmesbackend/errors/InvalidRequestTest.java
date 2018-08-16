@@ -87,4 +87,13 @@ public class InvalidRequestTest extends FillBaseTemplate {
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEntity.getBody()).contains("have enough");
     }
+
+    @Test
+    public void checkIfResponseStatus400NotEnoughItems() {
+        addManyItemRequests(true);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/items/{id}/buy", 5,
+                String.class, 2);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }
