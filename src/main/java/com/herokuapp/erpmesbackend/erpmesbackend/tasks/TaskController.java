@@ -16,11 +16,14 @@ import java.util.List;
 @CrossOrigin("http://localhost:4200")
 public class TaskController {
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private EmployeeRepository employeeRepository;
+    public TaskController(TaskRepository taskRepository, EmployeeRepository employeeRepository) {
+        this.taskRepository = taskRepository;
+        this.employeeRepository = employeeRepository;
+    }
 
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
@@ -39,7 +42,8 @@ public class TaskController {
     @ResponseStatus(HttpStatus.OK)
     public List<Task> getTasksByAssignee(@PathVariable("id") Long id) {
         checkIfAssigneeExists(id);
-        return new ArrayList<>(taskRepository.findByAssigneeId(id));
+        return taskRepository.findByAssigneeId(id).isPresent() ?
+                taskRepository.findByAssigneeId(id).get() : new ArrayList<>();
     }
 
     @PostMapping("/tasks")
@@ -48,7 +52,10 @@ public class TaskController {
         String name = taskRequest.getName();
         Category category = taskRequest.getCategory();
         checkIfAssigneeExists(taskRequest.getAssigneeId());
-        Employee assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
+
+        Employee assignee = new Employee();
+        assignee = taskRequest.getAssigneeId() != null ?
+                employeeRepository.findById(taskRequest.getAssigneeId()).get() : null;
 
         List<Task> precedingTasks = new ArrayList<>();
         if (taskRequest.getPrecedingTaskIds() != null)

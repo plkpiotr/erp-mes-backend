@@ -40,13 +40,12 @@ public class Suggestion {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    public Suggestion(Phase phase, String name, String details, Employee author, List<Employee> consignees,
-                      LocalDateTime creationTime) {
+    public Suggestion(Phase phase, String name, String details, Employee author, List<Employee> consignees) {
         this.phase = phase;
         this.name = name;
         this.details = name;
         this.author = author;
-        this.creationTime = creationTime;
+        this.creationTime = LocalDateTime.now();
     }
 
     public boolean checkIfDataEquals(Suggestion suggestion) {

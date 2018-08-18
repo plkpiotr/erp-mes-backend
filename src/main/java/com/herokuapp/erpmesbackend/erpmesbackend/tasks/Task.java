@@ -58,7 +58,6 @@ public class Task {
     }
 
     public boolean checkIfDataEquals(Task task) {
-
         return name.equals(task.getName()) &&
                 category.equals(task.getCategory()) &&
                 assignee.checkIfDataEquals(task.getAssignee()) &&
@@ -68,11 +67,11 @@ public class Task {
                 deadline.isEqual(task.getDeadline());
     }
 
-    private boolean comparePrecedingTasks(List<Task> tasksList) {
-        if (tasksList.isEmpty())
+    private boolean comparePrecedingTasks(List<Task> taskList) {
+        if (taskList.isEmpty())
             return true;
         for (Task task : precedingTasks) {
-            if (tasksList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
+            if (taskList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
                 return false;
         }
         return true;

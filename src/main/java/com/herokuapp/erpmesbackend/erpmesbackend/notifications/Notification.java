@@ -1,6 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -28,6 +29,9 @@ public class Notification {
     private String description;
 
     @OneToOne
+    private Order order;
+
+    @OneToOne
     private Employee notifier;
 
     @OneToOne
@@ -38,11 +42,12 @@ public class Notification {
     //@JoinColumn(name = "consignees_id")
     private List<Employee> consignees;
 
-    public Notification(State state, String instruction, String description, Employee notifier, Employee transferee,
-                        List<Employee> consignees) {
+    public Notification(State state, String instruction, String description, Order order, Employee notifier,
+                        Employee transferee, List<Employee> consignees) {
         this.state = state;
         this.instruction = instruction;
         this.description = description;
+        this.order = order;
         this.notifier = notifier;
         this.transferee = transferee;
         this.consignees = consignees;
@@ -50,10 +55,11 @@ public class Notification {
 
     public boolean checkIfDataEquals(Notification notification) {
         return state.equals(notification.getState()) &&
-                instruction.equals(notification.instruction) &&
-                description.equals(notification.description) &&
-                notifier.checkIfDataEquals(notification.notifier) &&
-                transferee.checkIfDataEquals(notification.transferee) &&
+                instruction.equals(notification.getInstruction()) &&
+                description.equals(notification.getDescription()) &&
+                order.checkIfDataEquals(notification.getOrder()) &&
+                notifier.checkIfDataEquals(notification.getNotifier()) &&
+                transferee.checkIfDataEquals(notification.getTransferee()) &&
                 compareConsignees(notification.getConsignees());
     }
 

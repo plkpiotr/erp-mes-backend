@@ -31,8 +31,8 @@ public class Order {
     @Column(nullable = false)
     private String lastName;
 
-    @Email
     @Column(nullable = false)
+    @Email
     private String email;
 
     @Pattern(regexp = "[0-9]{9}")
@@ -54,7 +54,13 @@ public class Order {
     @OneToMany
     private List<Item> items;
 
-    public Order(String street, String houseNumber, String city, String postalCode, List<Item> items) {
+    public Order(Status status, String firstName, String lastName, String email, String phoneNumber, String street,
+                 String houseNumber, String city, String postalCode, List<Item> items) {
+        this.status = status;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
         this.street = street;
         this.houseNumber = houseNumber;
         this.city = city;
@@ -63,7 +69,12 @@ public class Order {
     }
 
     public boolean checkIfDataEquals(Order order) {
-        return street.equals(order.getStreet()) &&
+        return status.equals(order.getStatus()) &&
+                firstName.equals(order.getLastName()) &&
+                lastName.equals(order.getLastName()) &&
+                email.equals(order.getEmail()) &&
+                phoneNumber.equals(order.getPhoneNumber()) &&
+                street.equals(order.getStreet()) &&
                 houseNumber.equals(order.getHouseNumber()) &&
                 city.equals(order.getCity()) &&
                 postalCode.equals(order.getPostalCode()) &&
