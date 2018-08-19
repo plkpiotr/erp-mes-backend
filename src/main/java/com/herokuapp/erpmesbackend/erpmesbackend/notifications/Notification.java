@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -42,15 +43,19 @@ public class Notification {
     //@JoinColumn(name = "consignees_id")
     private List<Employee> consignees;
 
+    @Column(nullable = false)
+    private LocalDateTime creationTime;
+
     public Notification(State state, String instruction, String description, Order order, Employee notifier,
-                        Employee transferee, List<Employee> consignees) {
+                        List<Employee> consignees) {
         this.state = state;
         this.instruction = instruction;
         this.description = description;
         this.order = order;
         this.notifier = notifier;
-        this.transferee = transferee;
+        this.transferee = null;
         this.consignees = consignees;
+        this.creationTime = LocalDateTime.now();
     }
 
     public boolean checkIfDataEquals(Notification notification) {

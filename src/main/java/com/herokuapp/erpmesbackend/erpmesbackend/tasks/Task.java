@@ -17,7 +17,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -34,7 +34,7 @@ public class Task {
     private List<Task> precedingTasks;
 
     private String details;
-    private int estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
     private LocalDateTime deadline;
 
     @Column(nullable = false)
@@ -63,7 +63,7 @@ public class Task {
                 assignee.checkIfDataEquals(task.getAssignee()) &&
                 comparePrecedingTasks(task.getPrecedingTasks()) &&
                 details.equals(task.getDetails()) &&
-                estimatedTimeInMinutes == task.getEstimatedTimeInMinutes() &&
+                estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes()) &&
                 deadline.isEqual(task.getDeadline());
     }
 

@@ -20,10 +20,9 @@ public class NotificationRequest {
     private String instruction;
 
     private String description;
-    private long orderId;
-
-    @NonNull
-    private long notifierId;
+    private Long orderId;
+    private Long notifierId;
+    private Long transfereeId;
 
     @NonNull
     private List<Long> consigneeIds;

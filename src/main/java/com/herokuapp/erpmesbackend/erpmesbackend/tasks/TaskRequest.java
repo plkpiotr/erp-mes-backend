@@ -27,7 +27,7 @@ public class TaskRequest {
     @NonNull
     private String details;
 
-    private int estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
 
     @NonNull
     private LocalDateTime deadline;

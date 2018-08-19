@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -35,13 +36,12 @@ public class Warehouse {
     @OneToMany
     private List<Item> items;
 
-    public Warehouse(String street, String houseNumber, String city, String postalCode, String country,
-                     List<Item> items) {
+    public Warehouse(String street, String houseNumber, String city, String postalCode) {
         this.street = street;
         this.houseNumber = houseNumber;
         this.city = city;
         this.postalCode = postalCode;
-        this.items = items;
+        this.items = new ArrayList<>();
     }
 
     public boolean checkIfDataEquals(Warehouse warehouse) {

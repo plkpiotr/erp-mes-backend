@@ -48,18 +48,21 @@ public class TaskController {
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public Task addNewTask(@RequestBody TaskRequest taskRequest) {
+    public Task addOneTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
         Category category = taskRequest.getCategory();
-        checkIfAssigneeExists(taskRequest.getAssigneeId());
 
-        Employee assignee = new Employee();
-        assignee = taskRequest.getAssigneeId() != null ?
-                employeeRepository.findById(taskRequest.getAssigneeId()).get() : null;
+        Employee assignee = null;
+        if (taskRequest.getAssigneeId() != null) {
+            checkIfAssigneeExists(taskRequest.getAssigneeId());
+            assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
+        }
 
         List<Task> precedingTasks = new ArrayList<>();
-        if (taskRequest.getPrecedingTaskIds() != null)
+        if (taskRequest.getPrecedingTaskIds() != null) {
+            taskRequest.getPrecedingTaskIds().forEach(this::checkIfTaskExists);
             taskRequest.getPrecedingTaskIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
+        }
 
         String details = taskRequest.getDetails();
         int estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
@@ -71,7 +74,7 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    public HttpStatus update(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+    public HttpStatus updateTask(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
         checkIfTaskExists(id);
 
         Task task = taskRepository.findById(id).get();
@@ -93,7 +96,7 @@ public class TaskController {
     }
 
     @PatchMapping("/tasks/{id}")
-    public HttpStatus changeTaskToDoing(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+    public HttpStatus changeTaskCategory(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
         Task task = taskRepository.findById(id).get();
 

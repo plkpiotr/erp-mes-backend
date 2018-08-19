@@ -23,7 +23,4 @@ public class WarehouseRequest {
 
     @NonNull
     private String postalCode;
-
-    @NonNull
-    private List<Long> itemIds;
 }
