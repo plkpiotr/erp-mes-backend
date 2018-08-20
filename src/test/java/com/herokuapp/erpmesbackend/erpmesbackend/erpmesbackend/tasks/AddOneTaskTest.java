@@ -49,9 +49,13 @@ public class AddOneTaskTest extends FillBaseTemplate {
         String details = taskFactory.generateDetails();
         int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
         LocalDateTime deadline = taskFactory.generateDeadline();
+        //TODO: ORDER = TYPE + REFERENCE!
+        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
-        taskRequest = new TaskRequest(name, category, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes, deadline);
-        task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
+        taskRequest = new TaskRequest(name, category, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
+                deadline, null, null, scheduledTime);
+        task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
+                null, scheduledTime);
     }
 
     @Test

@@ -31,4 +31,8 @@ public class TaskRequest {
 
     @NonNull
     private LocalDateTime deadline;
+
+    private Type type;
+    private Long reference;
+    private LocalDateTime scheduledTime;
 }

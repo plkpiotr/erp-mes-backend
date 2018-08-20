@@ -38,6 +38,14 @@ public class TaskFactory {
     }
 
     public LocalDateTime generateDeadline() {
-        return LocalDateTime.now();
+        return LocalDateTime.now().plusDays(2);
+    }
+
+    public Type generateType() {
+        return Type.values()[random.nextInt(Type.values().length)];
+    }
+
+    public LocalDateTime generateScheduledTime() {
+        return LocalDateTime.now().plusDays(1);
     }
 }

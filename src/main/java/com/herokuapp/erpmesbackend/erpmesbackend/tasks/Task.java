@@ -37,6 +37,12 @@ public class Task {
     private Integer estimatedTimeInMinutes;
     private LocalDateTime deadline;
 
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    private Long reference;
+    private LocalDateTime scheduledTime;
+
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
@@ -44,7 +50,8 @@ public class Task {
     private LocalDateTime endTime;
 
     public Task(String name, Category category, Employee assignee, List<Task> precedingTasks, String details,
-                int estimatedTimeInMinutes, LocalDateTime deadline) {
+                Integer estimatedTimeInMinutes, LocalDateTime deadline, Type type, Long reference,
+                LocalDateTime scheduledTime) {
         this.name = name;
         this.category = category;
         this.assignee = assignee;
@@ -52,6 +59,9 @@ public class Task {
         this.details = details;
         this.estimatedTimeInMinutes = estimatedTimeInMinutes;
         this.deadline = deadline;
+        this.reference = reference;
+        this.scheduledTime = scheduledTime;
+        this.type = type;
         this.creationTime = LocalDateTime.now();
         this.startTime = null;
         this.endTime = null;

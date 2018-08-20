@@ -65,10 +65,27 @@ public class TaskController {
         }
 
         String details = taskRequest.getDetails();
-        int estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
+
+        Integer estimatedTimeInMinutes = null;
+        if (taskRequest.getEstimatedTimeInMinutes() != null)
+            estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
+
         LocalDateTime deadline = taskRequest.getDeadline();
 
-        Task task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
+        Type type = null;
+        if (taskRequest.getType() != null)
+            type = taskRequest.getType();
+
+        Long reference = null;
+        if (taskRequest.getReference() != null)
+            reference = taskRequest.getReference();
+
+        LocalDateTime scheduledTime = null;
+        if (taskRequest.getScheduledTime() != null)
+            scheduledTime = taskRequest.getScheduledTime();
+
+        Task task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, type,
+                reference, scheduledTime);
         taskRepository.save(task);
         return task;
     }
@@ -88,8 +105,20 @@ public class TaskController {
         task.setPrecedingTasks(precedingTasks);
 
         task.setDetails(taskRequest.getDetails());
-        task.setEstimatedTimeInMinutes(taskRequest.getEstimatedTimeInMinutes());
+
+        if (taskRequest.getEstimatedTimeInMinutes() != null)
+            taskRequest.setEstimatedTimeInMinutes(taskRequest.getEstimatedTimeInMinutes());
+
         task.setDeadline(taskRequest.getDeadline());
+
+        if (taskRequest.getType() != null)
+            taskRequest.setType(taskRequest.getType());
+
+        if (taskRequest.getReference() != null)
+            taskRequest.setReference(taskRequest.getReference());
+
+        if (taskRequest.getScheduledTime() != null)
+            taskRequest.setScheduledTime(taskRequest.getScheduledTime());
 
         taskRepository.save(task);
         return HttpStatus.NO_CONTENT;
