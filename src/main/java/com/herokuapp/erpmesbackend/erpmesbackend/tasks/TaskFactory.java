@@ -29,10 +29,6 @@ public class TaskFactory {
         return generate(DETAILS);
     }
 
-    public Category generateTodoCategory() {
-        return Category.TODO;
-    }
-
     public int generateEstimatedTimeInMinutes() {
         return random.nextInt(15) + 5;
     }

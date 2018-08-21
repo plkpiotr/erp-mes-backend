@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.orders.Order;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,9 +11,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class NotificationRequest {
-
-    @NonNull
-    private State state;
 
     @NonNull
     private String instruction;

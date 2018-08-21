@@ -3,8 +3,8 @@ package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.orders.Order;
-import com.herokuapp.erpmesbackend.erpmesbackend.orders.OrderRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -51,7 +51,6 @@ public class NotificationController {
     @PostMapping("/notifications")
     @ResponseStatus(HttpStatus.CREATED)
     public Notification addOneNotification(@RequestBody NotificationRequest notificationRequest) {
-        State state = notificationRequest.getState();
         String instruction = notificationRequest.getInstruction();
         String description = notificationRequest.getDescription();
 
@@ -71,18 +70,17 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Notification notification = new Notification(state, instruction, description, order, notifier, consignees);
+        Notification notification = new Notification(instruction, description, order, notifier, consignees);
         notificationRepository.save(notification);
         return notification;
     }
 
     @PutMapping("notifications/{id}")
-    public HttpStatus updateNotification(@PathVariable("id") Long id,
-                                         @RequestBody NotificationRequest notificationRequest) {
+    public HttpStatus updateDetailsNotification(@PathVariable("id") Long id,
+                                                @RequestBody NotificationRequest notificationRequest) {
         checkIfNotifierExists(id);
         Notification notification = notificationRepository.findById(id).get();
 
-        notification.setState(notificationRequest.getState());
         notification.setInstruction(notificationRequest.getInstruction());
         notification.setDescription(notificationRequest.getDescription());
 
@@ -95,11 +93,15 @@ public class NotificationController {
         return HttpStatus.NO_CONTENT;
     }
 
-    @DeleteMapping("/notifications/{id}")
-    public HttpStatus removeNotification(@PathVariable("id") Long id) {
+    @PatchMapping("notification/{id}")
+    public HttpStatus updateStateNotification(@PathVariable("id") Long id, @RequestBody State state) {
         checkIfNotifierExists(id);
-        notificationRepository.delete(notificationRepository.findById(id).get());
-        return HttpStatus.OK;
+        Notification notification = notificationRepository.findById(id).get();
+
+        notification.setState(state);
+
+        notificationRepository.save(notification);
+        return HttpStatus.NO_CONTENT;
     }
 
     private void checkIfNotificationExists(Long id) {

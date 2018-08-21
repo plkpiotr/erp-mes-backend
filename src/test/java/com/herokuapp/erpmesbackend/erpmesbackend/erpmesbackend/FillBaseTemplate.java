@@ -3,27 +3,34 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Status;
+import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public abstract class FillBaseTemplate {
 
@@ -38,6 +45,9 @@ public abstract class FillBaseTemplate {
     protected HolidayRequest holidayRequest;
     protected ItemRequest itemRequest;
     protected DeliveryRequest deliveryRequest;
+    protected OrderRequest orderRequest;
+    protected NotificationRequest notificationRequest;
+    protected SuggestionRequest suggestionRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
@@ -46,15 +56,24 @@ public abstract class FillBaseTemplate {
     protected List<HolidayRequest> holidayRequests;
     protected List<ItemRequest> itemRequests;
     protected List<DeliveryRequest> deliveryRequests;
+    protected List<OrderRequest> orderRequests;
+    protected List<NotificationRequest> notificationRequests;
+    protected List<SuggestionRequest> suggestionRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
     protected HolidayFactory holidayFactory;
+    protected NotificationFactory notificationFactory;
+    protected SuggestionFactory suggestionFactory;
+    protected OrderFactory orderFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
         taskFactory = new TaskFactory();
         holidayFactory = new HolidayFactory();
+        notificationFactory = new NotificationFactory();
+        suggestionFactory = new SuggestionFactory();
+        orderFactory = new OrderFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
@@ -63,6 +82,8 @@ public abstract class FillBaseTemplate {
         holidayRequests = new ArrayList<>();
         itemRequests = new ArrayList<>();
         deliveryRequests = new ArrayList<>();
+        notificationRequests = new ArrayList<>();
+        suggestionRequests = new ArrayList<>();
     }
 
     protected void addOneEmployeeRequest(boolean shouldPost) {
@@ -124,17 +145,17 @@ public abstract class FillBaseTemplate {
         }
     }
 
-    public Task addOneTaskRequest(boolean shouldPost, TaskRequest taskRequest) {
+    protected Task addOneTaskRequest(boolean shouldPost) {
         String name = taskFactory.generateName();
-        Category category = taskFactory.generateTodoCategory();
-        long assigneeId = 1;
+        Long assigneeId = 1L;
         List<Long> precedingTasksIds = new ArrayList<>();
         String details = taskFactory.generateDetails();
-        int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
-        LocalDateTime deadline = taskFactory.generateDeadline();
+        Integer estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
+        LocalDateTime deadline = taskFactory.generateDeadline(); // TODO: FILL ORDERS (TYPE + REFERENCE)
+        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
-        taskRequest = new TaskRequest(name, category, assigneeId, precedingTasksIds, details,
-                estimatedTimeInMinutes, deadline);
+        TaskRequest taskRequest = new TaskRequest(name, assigneeId, precedingTasksIds, details,
+                estimatedTimeInMinutes, deadline, null, null, scheduledTime);
 
         if (shouldPost)
             restTemplate.postForEntity("/tasks", taskRequest, Task.class);
@@ -142,17 +163,19 @@ public abstract class FillBaseTemplate {
         Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
 
         List<Task> precedingTasks = new ArrayList<>();
-        return new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
+        return new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
+                null, scheduledTime);
     }
 
-    public List<Task> addTaskRequests(boolean shouldPost) {
+    protected List<Task> addTaskRequests(boolean shouldPost) {
         List<Task> tasks = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             taskRequests.add(new TaskRequest());
-            tasks.add(addOneTaskRequest(shouldPost, taskRequests.get(i)));
+            tasks.add(addOneTaskRequest(shouldPost));
         }
         return tasks;
     }
+
 
     protected void addManyHolidayRequests(long employeeId, boolean shouldPost) {
         for(int i = 0; i < 4; i++) {
@@ -201,5 +224,50 @@ public abstract class FillBaseTemplate {
         if(shouldPost) {
             deliveryRequests.forEach(request -> restTemplate.postForEntity("/deliveries", request, Delivery.class));
         }
+    }
+
+    protected void addOneOrderRequest(boolean shouldPost) {
+        List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++)
+            deliveryItemRequests.add(new DeliveryItemRequest(i + 1, i + 10));
+
+        String firstName = orderFactory.generateFirstName();
+        String lastName = orderFactory.generateLastName();
+        String email = orderFactory.generateEmail();
+        String phoneNumber = orderFactory.generatePhoneNumber();
+        String street = orderFactory.generateStreet();
+        String houseNumber = orderFactory.generateHouseNumber();
+        String city = orderFactory.generateCity();
+        String postalCode = orderFactory.generatePostalCode();
+
+        OrderRequest orderRequest= new OrderRequest(Status.WAITING_FOR_PAYMENT, firstName, lastName, email, phoneNumber,
+                street, houseNumber, city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
+
+        if (shouldPost)
+            restTemplate.postForEntity("/orders", orderRequest, Order.class);
+    }
+
+    protected void addManyOrderRequests(boolean shouldPost) {
+        for (int i = 0; i < 3; i++) {
+            List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+            for (int j = 0; j < 3; j++)
+                deliveryItemRequests.add(new DeliveryItemRequest(i + j + 1, j + 10));
+
+            String firstName = orderFactory.generateFirstName();
+            String lastName = orderFactory.generateLastName();
+            String email = orderFactory.generateEmail();
+            String phoneNumber = orderFactory.generatePhoneNumber();
+            String street = orderFactory.generateStreet();
+            String houseNumber = orderFactory.generateHouseNumber();
+            String city = orderFactory.generateCity();
+            String postalCode = orderFactory.generatePostalCode();
+
+            OrderRequest orderRequest= new OrderRequest(Status.WAITING_FOR_PAYMENT, firstName, lastName, email, phoneNumber,
+                    street, houseNumber, city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
+        }
+
+        if (shouldPost)
+            orderRequests.forEach(orderRequest -> restTemplate.postForEntity("/orders", orderRequest, Order.class));
     }
 }

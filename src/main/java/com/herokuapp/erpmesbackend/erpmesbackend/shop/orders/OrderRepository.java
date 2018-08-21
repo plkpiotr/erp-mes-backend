@@ -1,4 +1,4 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.orders;
+package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

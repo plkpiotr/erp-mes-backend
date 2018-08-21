@@ -1,6 +1,7 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.orders;
+package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -8,6 +9,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 import java.util.List;
 
 @Entity
@@ -52,10 +54,14 @@ public class Order {
     private String postalCode;
 
     @OneToMany
-    private List<Item> items;
+    private List<DeliveryItem> deliveryItems;
+
+    private LocalDate scheduledFor;
+    private Double value;
 
     public Order(Status status, String firstName, String lastName, String email, String phoneNumber, String street,
-                 String houseNumber, String city, String postalCode, List<Item> items) {
+                 String houseNumber, String city, String postalCode, List<DeliveryItem> deliveryItems,
+                 LocalDate scheduledFor) {
         this.status = status;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -65,7 +71,12 @@ public class Order {
         this.houseNumber = houseNumber;
         this.city = city;
         this.postalCode = postalCode;
-        this.items = items;
+        this.deliveryItems = deliveryItems;
+        this.scheduledFor = scheduledFor;
+        this.value = deliveryItems.stream()
+            .map(deliveryItem -> deliveryItem.getItem().getCurrentPrice() * deliveryItem.getQuantity())
+            .mapToDouble(Double::doubleValue)
+            .sum();
     }
 
     public boolean checkIfDataEquals(Order order) {
@@ -78,14 +89,16 @@ public class Order {
                 houseNumber.equals(order.getHouseNumber()) &&
                 city.equals(order.getCity()) &&
                 postalCode.equals(order.getPostalCode()) &&
-                compareItems(order.getItems());
+                compareDeliveryItems(order.getDeliveryItems()) &&
+                scheduledFor.isEqual(order.getScheduledFor()) &&
+                value.equals(order.getValue());
     }
 
-    private boolean compareItems(List<Item> itemsList) {
-        if (itemsList.isEmpty())
+    private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {
+        if (deliveryItemList.isEmpty())
             return true;
-        for (Item item: items) {
-            if (itemsList.stream().noneMatch(i -> i.checkIfDataEquals(item)))
+        for (DeliveryItem deliveryItem: deliveryItems) {
+            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem)))
                 return false;
         }
         return true;

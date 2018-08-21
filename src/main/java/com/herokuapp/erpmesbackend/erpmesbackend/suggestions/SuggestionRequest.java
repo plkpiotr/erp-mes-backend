@@ -13,13 +13,10 @@ import java.util.List;
 public class SuggestionRequest {
 
     @NonNull
-    private Phase phase;
-
-    @NonNull
     private String name;
 
     @NonNull
-    private String details;
+    private String description;
 
     private Long authorId;
 

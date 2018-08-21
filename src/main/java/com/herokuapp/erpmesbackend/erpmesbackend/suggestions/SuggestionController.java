@@ -46,9 +46,8 @@ public class SuggestionController {
     @PostMapping("/suggestions")
     @ResponseStatus(HttpStatus.CREATED)
     public Suggestion addOneSuggestion(@RequestBody SuggestionRequest suggestionRequest) {
-        Phase phase = suggestionRequest.getPhase();
         String name = suggestionRequest.getName();
-        String details = suggestionRequest.getDetails();
+        String details = suggestionRequest.getDescription();
 
         Employee author = null;
         if (suggestionRequest.getAuthorId() != null) {
@@ -60,19 +59,19 @@ public class SuggestionController {
         suggestionRequest.getRecipientIds().forEach(this::checkIfRecipientExists);
         suggestionRequest.getRecipientIds().forEach(id -> recipients.add(employeeRepository.findById(id).get()));
 
-        Suggestion suggestion = new Suggestion(phase, name, details, author, recipients);
+        Suggestion suggestion = new Suggestion(name, details, author, recipients);
         suggestionRepository.save(suggestion);
         return suggestion;
     }
 
     @PutMapping("/suggestions/{id}")
-    public HttpStatus updateSuggestion(@PathVariable("id") Long id, @RequestBody SuggestionRequest suggestionRequest) {
+    public HttpStatus updateDetailsSuggestion(@PathVariable("id") Long id,
+                                              @RequestBody SuggestionRequest suggestionRequest) {
         checkIfSuggestionExists(id);
         Suggestion suggestion = suggestionRepository.findById(id).get();
 
-        suggestion.setPhase(suggestionRequest.getPhase());
         suggestion.setName(suggestionRequest.getName());
-        suggestion.setDetails(suggestionRequest.getDetails());
+        suggestion.setDescription(suggestionRequest.getDescription());
 
         Employee author = new Employee();
         if (suggestionRequest.getAuthorId() != null) {
@@ -91,11 +90,15 @@ public class SuggestionController {
         return HttpStatus.NO_CONTENT;
     }
 
-    @DeleteMapping("/suggestions/{id}")
-    public HttpStatus removeSuggestion(@PathVariable("id") Long id) {
+    @PatchMapping("suggestions/{id}")
+    public HttpStatus updateStateNotification(@PathVariable("id") Long id, @RequestBody Phase phase) {
         checkIfSuggestionExists(id);
-        suggestionRepository.delete(suggestionRepository.findById(id).get());
-        return HttpStatus.OK;
+        Suggestion suggestion = suggestionRepository.findById(id).get();
+
+        suggestion.setPhase(phase);
+
+        suggestionRepository.save(suggestion);
+        return HttpStatus.NO_CONTENT;
     }
 
     private void checkIfSuggestionExists(Long id) {

@@ -1,11 +1,13 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.orders;
+package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
@@ -40,5 +42,8 @@ public class OrderRequest {
     private String postalCode;
 
     @NonNull
-    private List<Item> itemIds;
+    private List<DeliveryItemRequest> deliveryItemRequests;
+
+    @NonNull
+    private LocalDate scheduledFor;
 }

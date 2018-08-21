@@ -21,8 +21,4 @@ public class SuggestionFactory {
     public String generateName() {
         return generate(NAMES);
     }
-
-    public Phase generatePhase() {
-        return Phase.values()[random.nextInt(Phase.values().length)];
-    }
 }

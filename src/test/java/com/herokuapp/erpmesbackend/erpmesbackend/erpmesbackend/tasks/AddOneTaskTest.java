@@ -33,7 +33,6 @@ public class AddOneTaskTest extends FillBaseTemplate {
         addTaskRequests(true);
 
         String name = taskFactory.generateName();
-        Category category = taskFactory.generateTodoCategory();
         Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
         Long assigneeId = assignee.getId();
 
@@ -52,9 +51,9 @@ public class AddOneTaskTest extends FillBaseTemplate {
         //TODO: ORDER = TYPE + REFERENCE!
         LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
-        taskRequest = new TaskRequest(name, category, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
+        taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
                 deadline, null, null, scheduledTime);
-        task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
+        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
                 null, scheduledTime);
     }
 

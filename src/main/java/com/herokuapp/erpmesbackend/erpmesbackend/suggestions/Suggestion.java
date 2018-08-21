@@ -27,7 +27,7 @@ public class Suggestion {
     private String name;
 
     @Column(nullable = false)
-    private String details;
+    private String description;
 
     @OneToOne
     private Employee author;
@@ -40,17 +40,17 @@ public class Suggestion {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    public Suggestion(Phase phase, String name, String details, Employee author, List<Employee> consignees) {
-        this.phase = phase;
+    public Suggestion(String name, String description, Employee author, List<Employee> consignees) {
+        this.phase = Phase.REPORTED;
         this.name = name;
-        this.details = name;
+        this.description = name;
         this.author = author;
         this.creationTime = LocalDateTime.now();
     }
 
     public boolean checkIfDataEquals(Suggestion suggestion) {
         return name.equals(suggestion.getName()) &&
-                details.equals(suggestion.getDetails()) &&
+                description.equals(suggestion.getDescription()) &&
                 author.checkIfDataEquals(suggestion.getAuthor()) &&
                 creationTime.isEqual(suggestion.getCreationTime());
     }

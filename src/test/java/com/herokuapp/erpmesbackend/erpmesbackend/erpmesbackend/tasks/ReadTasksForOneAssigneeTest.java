@@ -30,7 +30,7 @@ public class ReadTasksForOneAssigneeTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAllTeams() {
-        ResponseEntity<Task[]> forEntity = restTemplate.getForEntity("/tasks/?assignee=1", Task[].class);
+        ResponseEntity<Task[]> forEntity = restTemplate.getForEntity("/employees/1/tasks", Task[].class);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         List<Task> fetchedTasks = Arrays.asList(forEntity.getBody());

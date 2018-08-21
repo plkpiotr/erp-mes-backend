@@ -17,12 +17,7 @@ public class NotificationFactory {
         random = new Random();
     }
 
-    private String generateInstruction() {
+    public String generateInstruction() {
         return generate(INSTRUCTIONS);
-    }
-
-    private State generateState() {
-        return State.values()[random.nextInt(State.values().length)];
-
     }
 }

@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.orders.Order;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -46,9 +46,9 @@ public class Notification {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    public Notification(State state, String instruction, String description, Order order, Employee notifier,
+    public Notification(String instruction, String description, Order order, Employee notifier,
                         List<Employee> consignees) {
-        this.state = state;
+        this.state = State.REPORTED;
         this.instruction = instruction;
         this.description = description;
         this.order = order;

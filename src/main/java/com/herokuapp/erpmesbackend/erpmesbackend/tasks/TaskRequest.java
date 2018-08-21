@@ -16,9 +16,6 @@ public class TaskRequest {
     @NonNull
     private String name;
 
-    @NonNull
-    private Category category;
-
     private Long assigneeId;
 
     @NonNull

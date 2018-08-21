@@ -50,7 +50,6 @@ public class TaskController {
     @ResponseStatus(HttpStatus.CREATED)
     public Task addOneTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
-        Category category = taskRequest.getCategory();
 
         Employee assignee = null;
         if (taskRequest.getAssigneeId() != null) {
@@ -84,7 +83,7 @@ public class TaskController {
         if (taskRequest.getScheduledTime() != null)
             scheduledTime = taskRequest.getScheduledTime();
 
-        Task task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, type,
+        Task task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, type,
                 reference, scheduledTime);
         taskRepository.save(task);
         return task;
@@ -93,7 +92,6 @@ public class TaskController {
     @PutMapping("/tasks/{id}")
     public HttpStatus updateTask(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
         checkIfTaskExists(id);
-
         Task task = taskRepository.findById(id).get();
 
         task.setName(taskRequest.getName());
@@ -125,7 +123,7 @@ public class TaskController {
     }
 
     @PatchMapping("/tasks/{id}")
-    public HttpStatus changeTaskCategory(@PathVariable("id") Long id) {
+    public HttpStatus updateTaskCategory(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
         Task task = taskRepository.findById(id).get();
 
