@@ -131,10 +131,8 @@ public class EmployeeController {
         switch (role) {
             case ADMIN_ACCOUNTANT:
                 return Role.ACCOUNTANT;
-            case ADMIN_HR:
-                return Role.HR;
-            case ADMIN_SUPPLY_CHAIN:
-                return Role.SUPPLY_CHAIN;
+            case ADMIN_ANALYST:
+                return Role.ANALYST;
             case ADMIN_WAREHOUSE:
                 return Role.WAREHOUSE;
             case ADMIN:

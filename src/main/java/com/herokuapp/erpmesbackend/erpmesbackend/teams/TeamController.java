@@ -25,8 +25,7 @@ public class TeamController {
     public void setupTeams() {
         teamRepository.save(new Team(Role.ADMIN));
         teamRepository.save(new Team(Role.ACCOUNTANT));
-        teamRepository.save(new Team(Role.HR));
-        teamRepository.save(new Team(Role.SUPPLY_CHAIN));
+        teamRepository.save(new Team(Role.ANALYST));
         teamRepository.save(new Team(Role.WAREHOUSE));
     }
 
