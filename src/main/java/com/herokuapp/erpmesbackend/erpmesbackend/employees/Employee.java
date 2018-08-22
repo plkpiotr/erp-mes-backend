@@ -1,16 +1,12 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 @Entity
 @Getter
@@ -32,6 +28,7 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Setter
     private String password;
     private boolean isPasswordValid;
 
@@ -53,16 +50,19 @@ public class Employee {
     }
 
     private String passwordGenerator() {
-        char[] password = new char[PASSWORD_LENGTH];
-        Random r = new Random();
-        for (int i = 0; i < PASSWORD_LENGTH; i++) {
-            password[i] = (char) (r.nextInt('z' - 'a') + 'a');
-        }
-        return new String(password);
+//        char[] password = new char[PASSWORD_LENGTH];
+//        Random r = new Random();
+//        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+//            password[i] = (char) (r.nextInt('z' - 'a') + 'a');
+//        }
+//        return new String(password);
+        //TODO: restore
+        return "haslo123";
     }
 
     public void changePassword(String newPassword) {
         this.password = newPassword;
+        this.isPasswordValid = true;
     }
 
     public boolean checkIfDataEquals(Employee employee) {

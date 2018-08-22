@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
@@ -8,14 +9,19 @@ import com.herokuapp.erpmesbackend.erpmesbackend.teams.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class EmployeeController {
 
     @Autowired
@@ -27,19 +33,35 @@ public class EmployeeController {
     @Autowired
     private ContractRepository contractRepository;
 
+    @Autowired
+    private BCryptPasswordEncoder bcryptEncoder;
+
     //sequence for manual testing
     //unit tests fail with this enabled
-//    @PostConstruct
-//    public void init() {
-//        EmployeeFactory employeeFactory = new EmployeeFactory();
-//        employeeRepository.save(employeeFactory.generateAdmin());
-//        for (int i = 0; i < 5; i++) {
-//            employeeRepository.save(employeeFactory.generateNonAdmin());
-//        }
-//        for (int i = 0; i < 10; i++) {
-//            employeeRepository.save(employeeFactory.generateEmployee());
-//        }
-//    }
+    @PostConstruct
+    public void init() {
+        EmployeeFactory employeeFactory = new EmployeeFactory();
+        Employee admin = employeeFactory.generateAdmin();
+        admin.setPassword(bcryptEncoder.encode(admin.getPassword()));
+        contractRepository.save(admin.getContract());
+        employeeRepository.save(admin);
+        for (int i = 0; i < 5; i++) {
+            Employee employee = employeeFactory.generateNonAdmin();
+            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
+                contractRepository.save(employee.getContract());
+                employeeRepository.save(employee);
+            }
+        }
+        for (int i = 0; i < 10; i++) {
+            Employee employee = employeeFactory.generateEmployee();
+            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
+                contractRepository.save(employee.getContract());
+                employeeRepository.save(employee);
+            }
+        }
+    }
 
     @GetMapping("/employees")
     @ResponseStatus(HttpStatus.OK)
@@ -63,6 +85,7 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public Employee addNewEmployee(@RequestBody EmployeeRequest request) {
         Employee employee = request.extractUser();
+        employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
         checkIfCanBeAdded(request);
         contractRepository.save(employee.getContract());
         employeeRepository.save(employee);
@@ -72,9 +95,9 @@ public class EmployeeController {
 
     @GetMapping("/employees/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Employee getOneEmployee(@PathVariable("id") long id) {
+    public UserDTO getOneEmployee(@PathVariable("id") long id) {
         checkIfEmployeeExists(id);
-        return employeeRepository.findById(id).get();
+        return new UserDTO(employeeRepository.findById(id).get());
     }
 
     @DeleteMapping("/employees/{id}")
@@ -88,14 +111,51 @@ public class EmployeeController {
     }
 
     @GetMapping("/employees/{id}/subordinates")
-    public List<Employee> getSubordinates(@PathVariable("id") long id) {
+    public List<EmployeeDTO> getSubordinates(@PathVariable("id") long id) {
         checkIfEmployeeExists(id);
         checkIfIsManager(id);
         Optional<Team> team = teamRepository.findByManagerId(id);
         if (!team.isPresent()) {
-            throw new NotFoundException("This manager doesn't have a team!");
+            return new ArrayList<>();
         }
-        return team.get().getEmployees();
+        List<EmployeeDTO> employeeDTOS = new ArrayList<>();
+        team.get().getEmployees().forEach(employee -> employeeDTOS.add(new EmployeeDTO(employee)));
+        return employeeDTOS;
+    }
+
+    @PostMapping("/employees/{id}/validate-password")
+    public HttpStatus validatePassword(@PathVariable("id") long id, @RequestBody String password) {
+        checkIfEmployeeExists(id);
+        Employee employee = employeeRepository.findById(id).get();
+        if (employee.isPasswordValid()) {
+            throw new InvalidRequestException("This employee has already validated their password!");
+        }
+        employee.changePassword(bcryptEncoder.encode(password));
+        employeeRepository.save(employee);
+        return HttpStatus.NO_CONTENT;
+    }
+
+    @GetMapping("/logged-in-user")
+    public Employee getLoggedInUser() {
+        Object principal = SecurityContextHolder.getContext()
+                .getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        if (!employeeRepository.findByEmail(username).isPresent()) {
+            throw new NotFoundException("There is no such user!");
+        }
+        return employeeRepository.findByEmail(username).get();
+    }
+
+    @GetMapping("/profiles/{id}")
+    public EmployeeDTO getProfile(@PathVariable("id") long id) {
+        checkIfEmployeeExists(id);
+        return new EmployeeDTO(employeeRepository.findById(id).get());
+    }
+
+    @GetMapping("profiles/{id}/contract")
+    public Contract getContract(@PathVariable("id") long id) {
+        checkIfEmployeeExists(id);
+        return employeeRepository.findById(id).get().getContract();
     }
 
     private void checkIfEmployeeExists(long id) {
@@ -142,6 +202,9 @@ public class EmployeeController {
     }
 
     private void checkIfCanBeAdded(EmployeeRequest request) {
+        if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
+            throw new InvalidRequestException("This username (email) is already taken!");
+        }
         if (request.getRole().name().contains("ADMIN") &&
                 employeeRepository.findByRole(request.getRole()).isPresent()) {
             throw new InvalidRequestException("There can only be one " + request
