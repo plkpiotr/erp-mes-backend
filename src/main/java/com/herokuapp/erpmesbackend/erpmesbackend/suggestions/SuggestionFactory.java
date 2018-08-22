@@ -8,6 +8,10 @@ public class SuggestionFactory {
                                     "Przed następnym podziałem zadań organizować krótkie spotkanie",
                                     "Zmienić liczbę pracowników przy wysyłaniu przesyłek wielkogabarytowych"};
 
+    private final String[] DESCRIPTIONS = {"Propozycja przedstawiana przez wielu współpracowników",
+                                           "Zgłoszone po konsultacjach z przełożonym",
+                                           "Zaproponowane podczas konferencji"};
+
     private final Random random;
 
     public SuggestionFactory() {
@@ -20,5 +24,9 @@ public class SuggestionFactory {
 
     public String generateName() {
         return generate(NAMES);
+    }
+
+    public String generateDescription() {
+        return generate(DESCRIPTIONS);
     }
 }

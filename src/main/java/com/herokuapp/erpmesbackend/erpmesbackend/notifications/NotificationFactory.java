@@ -7,6 +7,9 @@ public class NotificationFactory {
     private String[] INSTRUCTIONS = {"Uszkodzona przesyłka podczas transportu", "Nieopłacone zamówienie",
             "Brak jednego z przedmiotów do wysłania zamówienia"};
 
+    private String[] DESCRIPTIONS = {"Zadzwonić do odbiorcy", "Wykonać w pierwszej kolejności",
+            "Przesłać uwagi przełożonemu"};
+
     private final Random random;
 
     private String generate(String[] array) {
@@ -19,5 +22,9 @@ public class NotificationFactory {
 
     public String generateInstruction() {
         return generate(INSTRUCTIONS);
+    }
+
+    public String generateDescription() {
+        return generate(DESCRIPTIONS);
     }
 }

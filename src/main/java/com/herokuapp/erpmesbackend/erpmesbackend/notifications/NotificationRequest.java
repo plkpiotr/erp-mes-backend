@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,10 +17,11 @@ public class NotificationRequest {
     private String instruction;
 
     private String description;
-    private Long orderId;
     private Long notifierId;
-    private Long transfereeId;
 
     @NonNull
     private List<Long> consigneeIds;
+
+    private Type type;
+    private Long reference;
 }

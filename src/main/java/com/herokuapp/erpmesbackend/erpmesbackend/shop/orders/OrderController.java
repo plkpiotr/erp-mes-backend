@@ -55,7 +55,7 @@ public class OrderController {
                 deliveryItems.add(deliveryItem);
             }
         });
-        Order order = new Order(Status.WAITING_FOR_PAYMENT, firstName, lastName, email, phoneNumber, street,
+        Order order = new Order(firstName, lastName, email, phoneNumber, street,
                 houseNumber, city, postalCode, deliveryItems, scheduledFor);
         orderRepository.save(order);
         return order;

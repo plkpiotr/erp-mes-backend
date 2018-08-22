@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -59,10 +59,10 @@ public class Order {
     private LocalDate scheduledFor;
     private Double value;
 
-    public Order(Status status, String firstName, String lastName, String email, String phoneNumber, String street,
+    public Order(String firstName, String lastName, String email, String phoneNumber, String street,
                  String houseNumber, String city, String postalCode, List<DeliveryItem> deliveryItems,
                  LocalDate scheduledFor) {
-        this.status = status;
+        this.status = Status.WAITING_FOR_PAYMENT;
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

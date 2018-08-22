@@ -2,6 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,9 +31,6 @@ public class Notification {
     private String description;
 
     @OneToOne
-    private Order order;
-
-    @OneToOne
     private Employee notifier;
 
     @OneToOne
@@ -40,29 +38,34 @@ public class Notification {
 
     @Column(nullable = false)
     @OneToMany
-    //@JoinColumn(name = "consignees_id")
+    @JoinColumn(name = "consignees_id")
     private List<Employee> consignees;
 
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    public Notification(String instruction, String description, Order order, Employee notifier,
-                        List<Employee> consignees) {
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    private Long reference;
+
+    public Notification(String instruction, String description, Employee notifier, List<Employee> consignees, Type type,
+                        Long reference) {
         this.state = State.REPORTED;
         this.instruction = instruction;
         this.description = description;
-        this.order = order;
         this.notifier = notifier;
         this.transferee = null;
         this.consignees = consignees;
         this.creationTime = LocalDateTime.now();
+        this.type = type;
+        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(Notification notification) {
         return state.equals(notification.getState()) &&
                 instruction.equals(notification.getInstruction()) &&
                 description.equals(notification.getDescription()) &&
-                order.checkIfDataEquals(notification.getOrder()) &&
                 notifier.checkIfDataEquals(notification.getNotifier()) &&
                 transferee.checkIfDataEquals(notification.getTransferee()) &&
                 compareConsignees(notification.getConsignees());

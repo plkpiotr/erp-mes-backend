@@ -34,17 +34,18 @@ public class Suggestion {
 
     @Column(nullable = false)
     @OneToMany
-    //@JoinColumn(name = "recipients_id")
+    @JoinColumn(name = "recipients_id")
     private List<Employee> recipients;
 
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    public Suggestion(String name, String description, Employee author, List<Employee> consignees) {
+    public Suggestion(String name, String description, Employee author, List<Employee> recipients) {
         this.phase = Phase.REPORTED;
         this.name = name;
-        this.description = name;
+        this.description = description;
         this.author = author;
+        this.recipients = recipients;
         this.creationTime = LocalDateTime.now();
     }
 
@@ -52,6 +53,17 @@ public class Suggestion {
         return name.equals(suggestion.getName()) &&
                 description.equals(suggestion.getDescription()) &&
                 author.checkIfDataEquals(suggestion.getAuthor()) &&
+                compareRecipients(suggestion.recipients) &&
                 creationTime.isEqual(suggestion.getCreationTime());
+    }
+
+    private boolean compareRecipients(List<Employee> recipientList) {
+        if (recipientList.isEmpty())
+            return true;
+        for (Employee employee : recipients) {
+            if (recipientList.stream().noneMatch(r -> r.checkIfDataEquals(employee)))
+                return false;
+        }
+        return true;
     }
 }

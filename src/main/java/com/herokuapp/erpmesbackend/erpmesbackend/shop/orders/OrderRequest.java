@@ -16,9 +16,6 @@ import java.util.List;
 public class OrderRequest {
 
     @NonNull
-    private Status status;
-
-    @NonNull
     private String firstName;
 
     @NonNull

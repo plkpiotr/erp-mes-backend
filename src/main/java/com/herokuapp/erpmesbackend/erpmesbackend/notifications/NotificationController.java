@@ -5,6 +5,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -54,12 +55,6 @@ public class NotificationController {
         String instruction = notificationRequest.getInstruction();
         String description = notificationRequest.getDescription();
 
-        Order order = null;
-        if (notificationRequest.getOrderId() != null) {
-            checkIfOrderExists(notificationRequest.getOrderId());
-            order = orderRepository.findById(notificationRequest.getOrderId()).get();
-        }
-
         Employee notifier = null;
         if (notificationRequest.getNotifierId() != null) {
             checkIfNotifierExists(notificationRequest.getNotifierId());
@@ -70,23 +65,23 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Notification notification = new Notification(instruction, description, order, notifier, consignees);
+        Type type = notificationRequest.getType();
+        Long reference = notificationRequest.getReference();
+
+        Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
+
         notificationRepository.save(notification);
         return notification;
     }
 
     @PutMapping("notifications/{id}")
-    public HttpStatus updateDetailsNotification(@PathVariable("id") Long id,
-                                                @RequestBody NotificationRequest notificationRequest) {
+    public HttpStatus updateTransfereeNotification(@PathVariable("id") Long id, @RequestBody Long transfereeId) {
         checkIfNotifierExists(id);
         Notification notification = notificationRepository.findById(id).get();
 
-        notification.setInstruction(notificationRequest.getInstruction());
-        notification.setDescription(notificationRequest.getDescription());
-
-        if (notificationRequest.getNotifierId() != null) {
-            checkIfTransfereeExists(notificationRequest.getTransfereeId());
-            notification.setTransferee(employeeRepository.findById(notificationRequest.getNotifierId()).get());
+        if (transfereeId != null) {
+            checkIfTransfereeExists(transfereeId);
+            notification.setTransferee(employeeRepository.findById(transfereeId).get());
         }
 
         notificationRepository.save(notification);
@@ -107,11 +102,6 @@ public class NotificationController {
     private void checkIfNotificationExists(Long id) {
         if (!notificationRepository.findById(id).isPresent())
             throw new NotFoundException("Such notification doesn't exist!");
-    }
-
-    private void checkIfOrderExists(Long id) {
-        if (!orderRepository.findById(id).isPresent())
-            throw new NotFoundException("Chosen order doesn't exist!");
     }
 
     private void checkIfNotifierExists(Long id) {

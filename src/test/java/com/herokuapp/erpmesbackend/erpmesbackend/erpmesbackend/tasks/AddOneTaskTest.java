@@ -13,7 +13,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +32,7 @@ public class AddOneTaskTest extends FillBaseTemplate {
         addTaskRequests(true);
 
         String name = taskFactory.generateName();
+
         Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
         Long assigneeId = assignee.getId();
 
@@ -48,7 +48,9 @@ public class AddOneTaskTest extends FillBaseTemplate {
         String details = taskFactory.generateDetails();
         int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
         LocalDateTime deadline = taskFactory.generateDeadline();
+
         //TODO: ORDER = TYPE + REFERENCE!
+
         LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
         taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
