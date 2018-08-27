@@ -40,27 +40,33 @@ public class EmployeeController {
     //unit tests fail with this enabled
     @PostConstruct
     public void init() {
-        EmployeeFactory employeeFactory = new EmployeeFactory();
-        Employee admin = employeeFactory.generateAdmin();
-        admin.setPassword(bcryptEncoder.encode(admin.getPassword()));
-        contractRepository.save(admin.getContract());
-        employeeRepository.save(admin);
-        for (int i = 0; i < 5; i++) {
-            Employee employee = employeeFactory.generateNonAdmin();
-            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
-                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
-                contractRepository.save(employee.getContract());
-                employeeRepository.save(employee);
-            }
-        }
-        for (int i = 0; i < 10; i++) {
-            Employee employee = employeeFactory.generateEmployee();
-            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
-                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
-                contractRepository.save(employee.getContract());
-                employeeRepository.save(employee);
-            }
-        }
+        Contract contract = new Contract("123", 26, 50000);
+        Employee ceo = new Employee("Szef", "Ceo", "szef.ceo@company.com", Role.ADMIN,
+                contract);
+        ceo.setPassword(bcryptEncoder.encode(ceo.getPassword()));
+        contractRepository.save(contract);
+        employeeRepository.save(ceo);
+//        EmployeeFactory employeeFactory = new EmployeeFactory();
+//        Employee admin = employeeFactory.generateAdmin();
+//        admin.setPassword(bcryptEncoder.encode(admin.getPassword()));
+//        contractRepository.save(admin.getContract());
+//        employeeRepository.save(admin);
+//        for (int i = 0; i < 5; i++) {
+//            Employee employee = employeeFactory.generateNonAdmin();
+//            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+//                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
+//                contractRepository.save(employee.getContract());
+//                employeeRepository.save(employee);
+//            }
+//        }
+//        for (int i = 0; i < 10; i++) {
+//            Employee employee = employeeFactory.generateEmployee();
+//            if (!employeeRepository.findByEmail(employee.getEmail()).isPresent()) {
+//                employee.setPassword(bcryptEncoder.encode(employee.getPassword()));
+//                contractRepository.save(employee.getContract());
+//                employeeRepository.save(employee);
+//            }
+//        }
     }
 
     @GetMapping("/employees")

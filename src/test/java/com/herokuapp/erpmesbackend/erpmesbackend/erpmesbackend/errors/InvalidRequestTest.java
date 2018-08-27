@@ -8,6 +8,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -20,23 +21,24 @@ public class InvalidRequestTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(false);
         addOneNonAdminRequest(false);
         adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
         nonAdminRequest.setRole(Role.ACCOUNTANT);
-        restTemplate.postForEntity("/employees", adminRequest, String.class);
-        restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
+        restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders), String.class);
+        restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders), String.class);
         addOneHolidayRequest(2, true);
         restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                1, String.class, 1, 2
+                new HttpEntity<>(1, requestHeaders), String.class, 1, 2
         );
     }
 
     @Test
     public void checkIfResponse400InvalidRequest() {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees",
-                adminRequest, String.class);
+                new HttpEntity<>(adminRequest, requestHeaders), String.class);
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
 
@@ -44,7 +46,7 @@ public class InvalidRequestTest extends FillBaseTemplate {
     public void checkIfResponse400InvalidApprovalRequest() {
         ResponseEntity<String> holidayResponseEntity = restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                1, String.class, 2, 3
+                new HttpEntity<>(1, requestHeaders), String.class, 2, 3
         );
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
@@ -54,15 +56,16 @@ public class InvalidRequestTest extends FillBaseTemplate {
         addOneNonAdminRequest(false);
         nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
         ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
-                nonAdminRequest, Employee.class);
+                new HttpEntity<>(nonAdminRequest, requestHeaders), Employee.class);
         long id = employeeResponseEntity.getBody().getId();
         addOneHolidayRequest(id, false);
         holidayRequest.setDuration(20);
-        restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest, Holiday.class, id);
+        restTemplate.postForEntity("/employees/{id}/holidays", new HttpEntity<>(holidayRequest, requestHeaders),
+                Holiday.class, id);
         addOneHolidayRequest(id, false);
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees/{id}/holidays",
-                holidayRequest, String.class, id);
+                new HttpEntity<>(holidayRequest, requestHeaders), String.class, id);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEntity.getBody()).contains("already used all");
@@ -73,16 +76,17 @@ public class InvalidRequestTest extends FillBaseTemplate {
         addOneNonAdminRequest(false);
         nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
         ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
-                nonAdminRequest, Employee.class);
+                new HttpEntity<>(nonAdminRequest, requestHeaders), Employee.class);
         long id = employeeResponseEntity.getBody().getId();
         addOneHolidayRequest(id, false);
         holidayRequest.setDuration(15);
-        restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest, Holiday.class, id);
+        restTemplate.postForEntity("/employees/{id}/holidays", new HttpEntity<>(holidayRequest, requestHeaders),
+                Holiday.class, id);
         addOneHolidayRequest(id, false);
         holidayRequest.setDuration(7);
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/employees/{id}/holidays",
-                holidayRequest, String.class, id);
+                new HttpEntity<>(holidayRequest, requestHeaders), String.class, id);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
         assertThat(responseEntity.getBody()).contains("have enough");
@@ -91,8 +95,8 @@ public class InvalidRequestTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseStatus400NotEnoughItems() {
         addManyItemRequests(true);
-        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/items/{id}/buy", 5,
-                String.class, 2);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/items/{id}/buy",
+                new HttpEntity<>(5, requestHeaders), String.class, 2);
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }

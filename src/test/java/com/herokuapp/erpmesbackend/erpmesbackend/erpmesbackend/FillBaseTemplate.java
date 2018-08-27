@@ -9,6 +9,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
@@ -17,23 +18,26 @@ import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Status;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public abstract class FillBaseTemplate {
 
     @Autowired
     protected TestRestTemplate restTemplate;
+
+    protected HttpHeaders requestHeaders;
 
     protected EmployeeRequest employeeRequest;
     protected EmployeeRequest adminRequest;
@@ -85,6 +89,19 @@ public abstract class FillBaseTemplate {
         suggestionRequests = new ArrayList<>();
     }
 
+    protected void setupToken() {
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/generate-token",
+                new Credentials("szef.ceo@company.com",
+                        "haslo123"), String.class);
+        String body = responseEntity.getBody();
+        String replace = body.replace("{\"token\":\"", "");
+        String replace1 = replace.replace("\"}", "");
+        requestHeaders = new HttpHeaders();
+        requestHeaders.setContentType(MediaType.APPLICATION_JSON);
+        requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+        requestHeaders.add("Authorization", "Bearer " + replace1);
+    }
+
     protected void addOneEmployeeRequest(boolean shouldPost) {
         employeeRequest = employeeFactory.generateEmployeeRequest();
         if (shouldPost) {
@@ -95,14 +112,18 @@ public abstract class FillBaseTemplate {
     protected void addOneAdminRequest(boolean shouldPost) {
         adminRequest = employeeFactory.generateAdminRequest();
         if (shouldPost) {
-            restTemplate.postForEntity("/employees", adminRequest, String.class);
+            setupToken();
+            restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders),
+                    String.class);
         }
     }
 
     protected void addOneNonAdminRequest(boolean shouldPost) {
         nonAdminRequest = employeeFactory.generateNonAdminRequest();
         if (shouldPost) {
-            restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
+            setupToken();
+            restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders),
+                    String.class);
         }
     }
 
@@ -111,8 +132,9 @@ public abstract class FillBaseTemplate {
             employeeRequests.add(employeeFactory.generateEmployeeRequest());
         }
         if (shouldPost) {
+            setupToken();
             employeeRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    request, String.class));
+                    new HttpEntity<>(request, requestHeaders), String.class));
         }
     }
 
@@ -121,8 +143,9 @@ public abstract class FillBaseTemplate {
             adminRequests.add(employeeFactory.generateAdminRequest());
         }
         if (shouldPost) {
+            setupToken();
             adminRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    request, Employee.class));
+                    new HttpEntity<>(request, requestHeaders), Employee.class));
         }
     }
 
@@ -131,16 +154,18 @@ public abstract class FillBaseTemplate {
             nonAdminRequests.add(employeeFactory.generateNonAdminRequest());
         }
         if (shouldPost) {
+            setupToken();
             nonAdminRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    request, Employee.class));
+                    new HttpEntity<>(request, requestHeaders), Employee.class));
         }
     }
 
     protected void addOneHolidayRequest(long employeeId, boolean shouldPost) {
         holidayRequest = holidayFactory.generateHolidayRequest();
         if(shouldPost) {
-            restTemplate.postForEntity("/employees/{id}/holidays", holidayRequest,
-                    Holiday.class, employeeId);
+            setupToken();
+            restTemplate.postForEntity("/employees/{id}/holidays", new HttpEntity<>(holidayRequest,
+                    requestHeaders), Holiday.class, employeeId);
         }
     }
 
@@ -156,10 +181,13 @@ public abstract class FillBaseTemplate {
         TaskRequest taskRequest = new TaskRequest(name, assigneeId, precedingTasksIds, details,
                 estimatedTimeInMinutes, deadline, null, null, scheduledTime);
 
-        if (shouldPost)
-            restTemplate.postForEntity("/tasks", taskRequest, Task.class);
+        setupToken();
+        if (shouldPost) {
+            restTemplate.postForEntity("/tasks", new HttpEntity<>(taskRequest, requestHeaders), Task.class);
+        }
 
-        Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee assignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
 
         List<Task> precedingTasks = new ArrayList<>();
         return new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
@@ -179,15 +207,17 @@ public abstract class FillBaseTemplate {
         for(int i = 0; i < 4; i++) {
             holidayRequests.add(holidayFactory.generateHolidayRequest());        }
         if(shouldPost) {
+            setupToken();
             holidayRequests.forEach(request -> restTemplate.postForEntity("/employees/{id}/holidays",
-                    request, Holiday.class, employeeId));
+                    new HttpEntity<>(request, requestHeaders), Holiday.class, employeeId));
         }
     }
 
     protected void addOneItemRequest(boolean shouldPost) {
         itemRequest = new ItemRequest("Random name", 8.00, 10.00);
         if(shouldPost) {
-            restTemplate.postForEntity("/items", itemRequest, Item.class);
+            setupToken();
+            restTemplate.postForEntity("/items", new HttpEntity<>(itemRequest, requestHeaders), Item.class);
         }
     }
 
@@ -196,7 +226,9 @@ public abstract class FillBaseTemplate {
             itemRequests.add(new ItemRequest("Random name" + i, i*2+5, i*3+5));
         }
         if(shouldPost) {
-            itemRequests.forEach(request -> restTemplate.postForEntity("/items", request, Item.class));
+            setupToken();
+            itemRequests.forEach(request -> restTemplate.postForEntity("/items", new HttpEntity<>(request,
+                    requestHeaders), Item.class));
         }
     }
 
@@ -207,7 +239,9 @@ public abstract class FillBaseTemplate {
         }
         deliveryRequest = new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3));
         if(shouldPost) {
-            restTemplate.postForEntity("/deliveries", deliveryRequest, Delivery.class);
+            setupToken();
+            restTemplate.postForEntity("/deliveries", new HttpEntity<>(deliveryRequest, requestHeaders),
+                    Delivery.class);
         }
     }
 
@@ -220,7 +254,9 @@ public abstract class FillBaseTemplate {
             deliveryRequests.add(new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3)));
         }
         if(shouldPost) {
-            deliveryRequests.forEach(request -> restTemplate.postForEntity("/deliveries", request, Delivery.class));
+            setupToken();
+            deliveryRequests.forEach(request -> restTemplate.postForEntity("/deliveries",
+                    new HttpEntity<>(request, requestHeaders), Delivery.class));
         }
     }
 
@@ -242,8 +278,10 @@ public abstract class FillBaseTemplate {
         orderRequest= new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
                 postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
 
-        if (shouldPost)
-            restTemplate.postForEntity("/orders", orderRequest, Order.class);
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/orders", new HttpEntity<>(orderRequest, requestHeaders), Order.class);
+        }
     }
 
     protected void addManyOrderRequests(boolean shouldPost) {
@@ -265,8 +303,11 @@ public abstract class FillBaseTemplate {
                     city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3)));
         }
 
-        if (shouldPost)
-            orderRequests.forEach(orderRequest -> restTemplate.postForEntity("/orders", orderRequest, Order.class));
+        if (shouldPost) {
+            setupToken();
+            orderRequests.forEach(orderRequest -> restTemplate.postForEntity("/orders",
+                    new HttpEntity<>(orderRequest, requestHeaders), Order.class));
+        }
     }
 
     protected Notification addOneNotificationRequest(boolean shouldPost) {
@@ -284,14 +325,20 @@ public abstract class FillBaseTemplate {
         NotificationRequest notificationRequest = new NotificationRequest(instruction, description, notifierId,
                 consigneeIds, type, reference);
 
-        if (shouldPost)
-            restTemplate.postForEntity("/notifications", notificationRequest, Notification.class);
+        setupToken();
+        if (shouldPost) {
+            restTemplate.postForEntity("/notifications", new HttpEntity<>(notificationRequest, requestHeaders),
+                    Notification.class);
+        }
 
-        Employee notifier = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
 
         List<Employee> consignees = new ArrayList<>();
-        consignees.add(restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody());
-        consignees.add(restTemplate.getForEntity("/employees/{id}", Employee.class, 2).getBody());
+        consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody());
+        consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 2).getBody());
 
         return new Notification(instruction, description, notifier, consignees, type, reference);
     }
@@ -316,14 +363,20 @@ public abstract class FillBaseTemplate {
 
         SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
 
-        if (shouldPost)
-            restTemplate.postForEntity("/suggestions", suggestionRequest, Suggestion.class);
+        setupToken();
+        if (shouldPost) {
+            restTemplate.postForEntity("/suggestions", new HttpEntity<>(suggestionRequest, requestHeaders),
+                    Suggestion.class);
+        }
 
-        Employee author = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee author = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
 
         List<Employee> recipients = new ArrayList<>();
-        recipients.add(restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody());
-        recipients.add(restTemplate.getForEntity("/employees/{id}", Employee.class, 2).getBody());
+        recipients.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody());
+        recipients.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 2).getBody());
 
         return new Suggestion(name, description, author, recipients);
     }

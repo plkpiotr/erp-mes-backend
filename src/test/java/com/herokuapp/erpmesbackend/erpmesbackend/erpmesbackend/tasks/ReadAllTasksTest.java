@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,13 +26,15 @@ public class ReadAllTasksTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(true);
         tasks = addTaskRequests(true);
     }
 
     @Test
     public void checkIfResponseContainsAllTasks() {
-        ResponseEntity<Task[]> forEntity = restTemplate.getForEntity("/tasks", Task[].class);
+        ResponseEntity<Task[]> forEntity = restTemplate.exchange("/tasks", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Task[].class);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         List<Task> fetchedTasks = Arrays.asList(forEntity.getBody());

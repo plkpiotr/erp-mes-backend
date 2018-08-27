@@ -10,6 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -29,20 +31,23 @@ public class AddOneTaskTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(true);
         addOneOrderRequest(true);
         addTaskRequests(true);
 
         String name = taskFactory.generateName();
 
-        Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee assignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
         Long assigneeId = assignee.getId();
 
         List<Task> precedingTasks = new ArrayList<>();
         List<Long> precedingTaskIds = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
-            Task precedingTask = restTemplate.getForEntity("/tasks/{id}", Task.class, i).getBody();
+            Task precedingTask = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Task.class, i).getBody();
             precedingTaskIds.add(precedingTask.getId());
             precedingTasks.add(precedingTask);
         }
@@ -64,7 +69,8 @@ public class AddOneTaskTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAddedTask() {
-        ResponseEntity<Task> taskResponseEntity = restTemplate.postForEntity("/tasks", taskRequest, Task.class);
+        ResponseEntity<Task> taskResponseEntity = restTemplate.postForEntity("/tasks",
+                new HttpEntity<>(taskRequest, requestHeaders),  Task.class);
         assertThat(taskResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         Task body = taskResponseEntity.getBody();

@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -19,6 +20,7 @@ public class AddNewHolidayTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(true);
         addNonAdminRequests(true);
         addOneHolidayRequest(2, false);
@@ -27,7 +29,7 @@ public class AddNewHolidayTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsAddedHoliday() {
         ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
-                "/employees/{id}/holidays", holidayRequest, Holiday.class, 2
+                "/employees/{id}/holidays", new HttpEntity<>(holidayRequest, requestHeaders), Holiday.class, 2
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);

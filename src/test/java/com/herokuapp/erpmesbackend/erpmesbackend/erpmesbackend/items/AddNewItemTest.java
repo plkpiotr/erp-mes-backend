@@ -6,6 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,12 +23,14 @@ public class AddNewItemTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneItemRequest(false);
     }
 
     @Test
     public void checkIfResponseContainsAddedItem() {
-        ResponseEntity<Item> itemResponseEntity = restTemplate.postForEntity("/items", itemRequest, Item.class);
+        ResponseEntity<Item> itemResponseEntity = restTemplate.postForEntity("/items",
+                new HttpEntity<>(itemRequest, requestHeaders), Item.class);
         assertThat(itemResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
         Item body = itemResponseEntity.getBody();
         assertTrue(body.checkIfDataEquals(itemRequest.extractItem()));

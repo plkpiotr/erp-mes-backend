@@ -8,6 +8,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -26,19 +28,22 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
 
         String name = suggestionFactory.generateName();
         String description = suggestionFactory.generateDescription();
 
-        Employee author = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee author = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
         Long authorId = author.getId();
 
         List<Employee> recipients = new ArrayList<>();
         List<Long> recipientIds = new ArrayList<>();
 
         for (int i = 1; i < 6; i++) {
-            Employee consignee = restTemplate.getForEntity("/employees/{id}", Employee.class, i).getBody();
+            Employee consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Employee.class, i).getBody();
             recipientIds.add(consignee.getId());
             recipients.add(consignee);
         }
@@ -50,7 +55,7 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsAddedSuggestion() {
         ResponseEntity<Suggestion> suggestionResponseEntity = restTemplate.postForEntity("/suggestions",
-                suggestionRequest, Suggestion.class);
+                new HttpEntity<>(suggestionRequest, requestHeaders), Suggestion.class);
         assertThat(suggestionResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         Suggestion body = suggestionResponseEntity.getBody();

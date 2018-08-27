@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,15 +26,18 @@ public class ReadOneOrderTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addManyItemRequests(true);
         addManyOrderRequests(true);
-        orders = Arrays.asList(restTemplate.getForEntity("/orders", Order[].class).getBody());
+        orders = Arrays.asList(restTemplate.exchange("/orders", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Order[].class).getBody());
     }
 
     @Test
     public void checkIfResponseContainsRequestedOrder() {
         for (int i = 0; i < orderRequests.size(); i++) {
-            ResponseEntity<Order> forEntity = restTemplate.getForEntity("/orders/{id}", Order.class, i + 1);
+            ResponseEntity<Order> forEntity = restTemplate.exchange("/orders/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Order.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertTrue(orders.stream().anyMatch(o -> o.checkIfDataEquals(forEntity.getBody())));
         }

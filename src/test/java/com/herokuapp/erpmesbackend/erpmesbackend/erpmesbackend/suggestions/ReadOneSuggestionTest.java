@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +25,7 @@ public class ReadOneSuggestionTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
         suggestions = addSuggestionRequests(true);
     }
@@ -30,8 +33,8 @@ public class ReadOneSuggestionTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsSuggestionWithGivenId() {
         for (int i = 0; i < 3; i++) {
-            ResponseEntity<Suggestion> forEntity = restTemplate.getForEntity("/suggestions/{id}",
-                    Suggestion.class, i + 1);
+            ResponseEntity<Suggestion> forEntity = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Suggestion.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
             Suggestion suggestion = forEntity.getBody();

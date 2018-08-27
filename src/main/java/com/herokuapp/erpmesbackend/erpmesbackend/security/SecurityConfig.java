@@ -8,7 +8,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -50,7 +49,24 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers("/generate-token", "/employees").permitAll()
+                .antMatchers(HttpMethod.POST, "/generate-token").permitAll()
+                .antMatchers(HttpMethod.GET, "/employees").permitAll()
+                .antMatchers(HttpMethod.POST, "/employees").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.DELETE, "/employees/{id}").hasAuthority("ADMIN")
+                .antMatchers(HttpMethod.GET, "/profiles/{id}/contract")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ACCOUNTANT")
+                .antMatchers("/reports", "/reports/{id}")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ACCOUNTANT")
+                .antMatchers("/current-report", "/current-report/recommended-recalculations")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ACCOUNTANT")
+                .antMatchers(HttpMethod.GET, "/employees/{managerId}/subordinates/holiday-requests")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
+                .antMatchers(HttpMethod.POST, "/employees/{managerId}/subordinates/{subordinateId}/holidays")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
+                .antMatchers("/deliveries", "/deliveries/{id}")
+                    .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
+                .antMatchers("/items", "/items/{id}", "/items/{id}/supply", "/items/{id}/buy")
+                    .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

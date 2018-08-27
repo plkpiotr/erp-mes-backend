@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
@@ -7,12 +8,15 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -23,17 +27,21 @@ public class ReadAllEmployeesTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
     }
 
     @Test
     public void checkIfResponseContainsAllEmployees() {
-        ResponseEntity<Employee[]> forEntity = restTemplate
-                .getForEntity("/employees", Employee[].class);
+        ResponseEntity<Employee[]> forEntity = restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee[].class);
 
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Employee> employees = Arrays.asList(forEntity.getBody());
+        List<Employee> employees = Arrays.asList(forEntity.getBody())
+                .stream()
+                .filter(employee -> !employee.getEmail().equals("szef.ceo@company.com"))
+                .collect(Collectors.toList());
         for(Employee employee : employees) {
             assertTrue(employeeRequests.stream()
                     .anyMatch(request -> request.extractUser().checkIfDataEquals(employee)));

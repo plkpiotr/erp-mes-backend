@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -22,14 +24,15 @@ public class ReadOneEmployeeTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addNonAdminRequests(true);
     }
 
     @Test
     public void checkIfResponseContainsCalledEmployee() {
         for (int i = 0; i < employeeRequests.size(); i++) {
-            ResponseEntity<Employee> forEntity = restTemplate
-                    .getForEntity("/employees/{id}", Employee.class, i + 1);
+            ResponseEntity<Employee> forEntity = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Employee.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertTrue(employeeRequests.stream().anyMatch(request -> request.extractUser()
                     .checkIfDataEquals(forEntity.getBody())));
