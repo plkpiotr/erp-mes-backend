@@ -4,7 +4,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,7 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,9 +27,7 @@ public class AddOneNotificationTest extends FillBaseTemplate {
 
     @Before
     public void init() {
-        addOneAdminRequest(true);
-        addOneEmployeeRequest(true);
-        addOneOrderRequest(true);
+        addEmployeeRequests(true);
 
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
@@ -42,7 +38,7 @@ public class AddOneNotificationTest extends FillBaseTemplate {
         List<Employee> consignees = new ArrayList<>();
         List<Long> consigneeIds = new ArrayList<>();
 
-        for (int i = 0; i < 2; i++) {
+        for (int i = 1; i < 5; i++) {
             Employee consignee = restTemplate.getForEntity("/employees/{id}", Employee.class, i).getBody();
             consigneeIds.add(consignee.getId());
             consignees.add(consignee);

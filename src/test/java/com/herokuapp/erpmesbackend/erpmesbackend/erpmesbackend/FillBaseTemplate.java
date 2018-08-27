@@ -80,6 +80,7 @@ public abstract class FillBaseTemplate {
         holidayRequests = new ArrayList<>();
         itemRequests = new ArrayList<>();
         deliveryRequests = new ArrayList<>();
+        orderRequests = new ArrayList<>();
         notificationRequests = new ArrayList<>();
         suggestionRequests = new ArrayList<>();
     }
@@ -260,8 +261,8 @@ public abstract class FillBaseTemplate {
             String city = orderFactory.generateCity();
             String postalCode = orderFactory.generatePostalCode();
 
-            orderRequest= new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
-                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
+            orderRequests.add(new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
+                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3)));
         }
 
         if (shouldPost)

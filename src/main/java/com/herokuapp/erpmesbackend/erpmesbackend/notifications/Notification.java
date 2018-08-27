@@ -67,7 +67,6 @@ public class Notification {
                 instruction.equals(notification.getInstruction()) &&
                 description.equals(notification.getDescription()) &&
                 notifier.checkIfDataEquals(notification.getNotifier()) &&
-                transferee.checkIfDataEquals(notification.getTransferee()) &&
                 compareConsignees(notification.getConsignees());
     }
 

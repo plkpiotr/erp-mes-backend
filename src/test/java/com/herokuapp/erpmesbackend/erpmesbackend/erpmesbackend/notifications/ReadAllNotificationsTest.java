@@ -24,8 +24,7 @@ public class ReadAllNotificationsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
-        addOneAdminRequest(true);
-        addOneEmployeeRequest(true);
+        addEmployeeRequests(true);
         addOneOrderRequest(true);
         notifications = addNotificationRequests(true);
     }

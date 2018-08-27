@@ -24,6 +24,7 @@ public class ReadOneOrderTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        addManyItemRequests(true);
         addManyOrderRequests(true);
         orders = Arrays.asList(restTemplate.getForEntity("/orders", Order[].class).getBody());
     }

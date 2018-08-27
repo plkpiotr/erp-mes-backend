@@ -81,7 +81,7 @@ public class Order {
 
     public boolean checkIfDataEquals(Order order) {
         return status.equals(order.getStatus()) &&
-                firstName.equals(order.getLastName()) &&
+                firstName.equals(order.getFirstName()) &&
                 lastName.equals(order.getLastName()) &&
                 email.equals(order.getEmail()) &&
                 phoneNumber.equals(order.getPhoneNumber()) &&

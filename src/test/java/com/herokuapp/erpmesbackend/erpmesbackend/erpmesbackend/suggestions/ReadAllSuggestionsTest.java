@@ -24,9 +24,7 @@ public class ReadAllSuggestionsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
-        addOneAdminRequest(true);
-        addOneEmployeeRequest(true);
-        addOneOrderRequest(true);
+        addEmployeeRequests(true);
         suggestions = addSuggestionRequests(true);
     }
 

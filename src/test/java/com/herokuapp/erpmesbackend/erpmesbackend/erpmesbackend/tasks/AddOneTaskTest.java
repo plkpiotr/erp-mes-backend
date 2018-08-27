@@ -5,6 +5,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -29,6 +30,7 @@ public class AddOneTaskTest extends FillBaseTemplate {
     @Before
     public void init() {
         addOneAdminRequest(true);
+        addOneOrderRequest(true);
         addTaskRequests(true);
 
         String name = taskFactory.generateName();
@@ -49,14 +51,15 @@ public class AddOneTaskTest extends FillBaseTemplate {
         int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
         LocalDateTime deadline = taskFactory.generateDeadline();
 
-        //TODO: ORDER = TYPE + REFERENCE!
+        Type type = Type.ORDER;
+        Long reference = 1L;
 
         LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
         taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
                 deadline, null, null, scheduledTime);
-        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
-                null, scheduledTime);
+        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
+                type, reference, scheduledTime);
     }
 
     @Test

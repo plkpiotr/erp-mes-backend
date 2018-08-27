@@ -53,8 +53,7 @@ public class Suggestion {
         return name.equals(suggestion.getName()) &&
                 description.equals(suggestion.getDescription()) &&
                 author.checkIfDataEquals(suggestion.getAuthor()) &&
-                compareRecipients(suggestion.recipients) &&
-                creationTime.isEqual(suggestion.getCreationTime());
+                compareRecipients(suggestion.recipients);
     }
 
     private boolean compareRecipients(List<Employee> recipientList) {

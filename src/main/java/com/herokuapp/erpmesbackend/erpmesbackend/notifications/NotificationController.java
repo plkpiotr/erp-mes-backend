@@ -29,13 +29,13 @@ public class NotificationController {
         this.orderRepository = orderRepository;
     }
 
-    @GetMapping("/nofications")
+    @GetMapping("/notifications")
     @ResponseStatus(HttpStatus.OK)
     public List<Notification> getAllNotifications() {
         return new ArrayList<>(notificationRepository.findAll());
     }
 
-    @GetMapping("/nofications/{id}")
+    @GetMapping("/notifications/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Notification getOneNotification(@PathVariable("id") Long id) {
         checkIfNotificationExists(id);
