@@ -17,7 +17,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private Long id;
 
     @Column(nullable = false)
     private String name;
@@ -34,8 +34,14 @@ public class Task {
     private List<Task> precedingTasks;
 
     private String details;
-    private int estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
     private LocalDateTime deadline;
+
+    @Enumerated(EnumType.STRING)
+    private Type type;
+
+    private Long reference;
+    private LocalDateTime scheduledTime;
 
     @Column(nullable = false)
     private LocalDateTime creationTime;
@@ -44,7 +50,8 @@ public class Task {
     private LocalDateTime endTime;
 
     public Task(String name, Category category, Employee assignee, List<Task> precedingTasks, String details,
-                int estimatedTimeInMinutes, LocalDateTime deadline) {
+                Integer estimatedTimeInMinutes, LocalDateTime deadline, Type type, Long reference,
+                LocalDateTime scheduledTime) {
         this.name = name;
         this.category = category;
         this.assignee = assignee;
@@ -52,27 +59,29 @@ public class Task {
         this.details = details;
         this.estimatedTimeInMinutes = estimatedTimeInMinutes;
         this.deadline = deadline;
+        this.reference = reference;
+        this.scheduledTime = scheduledTime;
+        this.type = type;
         this.creationTime = LocalDateTime.now();
         this.startTime = null;
         this.endTime = null;
     }
 
     public boolean checkIfDataEquals(Task task) {
-
         return name.equals(task.getName()) &&
                 category.equals(task.getCategory()) &&
                 assignee.checkIfDataEquals(task.getAssignee()) &&
                 comparePrecedingTasks(task.getPrecedingTasks()) &&
                 details.equals(task.getDetails()) &&
-                estimatedTimeInMinutes == task.getEstimatedTimeInMinutes() &&
+                estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes()) &&
                 deadline.isEqual(task.getDeadline());
     }
 
-    private boolean comparePrecedingTasks(List<Task> tasksList) {
-        if (tasksList.isEmpty())
+    private boolean comparePrecedingTasks(List<Task> taskList) {
+        if (taskList.isEmpty())
             return true;
         for (Task task : precedingTasks) {
-            if (tasksList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
+            if (taskList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
                 return false;
         }
         return true;

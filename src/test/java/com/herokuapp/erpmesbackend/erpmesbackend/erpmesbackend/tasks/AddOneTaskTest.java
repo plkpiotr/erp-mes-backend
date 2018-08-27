@@ -5,6 +5,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +14,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +30,11 @@ public class AddOneTaskTest extends FillBaseTemplate {
     @Before
     public void init() {
         addOneAdminRequest(true);
+        addOneOrderRequest(true);
         addTaskRequests(true);
 
         String name = taskFactory.generateName();
-        Category category = taskFactory.generateTodoCategory();
+
         Employee assignee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
         Long assigneeId = assignee.getId();
 
@@ -50,8 +51,15 @@ public class AddOneTaskTest extends FillBaseTemplate {
         int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
         LocalDateTime deadline = taskFactory.generateDeadline();
 
-        taskRequest = new TaskRequest(name, category, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes, deadline);
-        task = new Task(name, category, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline);
+        Type type = Type.ORDER;
+        Long reference = 1L;
+
+        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
+
+        taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
+                deadline, null, null, scheduledTime);
+        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
+                type, reference, scheduledTime);
     }
 
     @Test

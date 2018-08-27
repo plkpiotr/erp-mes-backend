@@ -39,8 +39,8 @@ public class Delivery {
     }
 
     private boolean compareItems(List<DeliveryItem> deliveryItemsToCompare) {
-        for(DeliveryItem item : deliveryItemsToCompare) {
-            if(deliveryItems.stream()
+        for (DeliveryItem item : deliveryItemsToCompare) {
+            if (deliveryItems.stream()
                     .noneMatch(deliveryItem -> deliveryItem.checkIfDataEquals(item))) {
                 return false;
             }

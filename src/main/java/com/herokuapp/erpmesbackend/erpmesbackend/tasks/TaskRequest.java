@@ -16,9 +16,6 @@ public class TaskRequest {
     @NonNull
     private String name;
 
-    @NonNull
-    private Category category;
-
     private Long assigneeId;
 
     @NonNull
@@ -27,8 +24,12 @@ public class TaskRequest {
     @NonNull
     private String details;
 
-    private int estimatedTimeInMinutes;
+    private Integer estimatedTimeInMinutes;
 
     @NonNull
     private LocalDateTime deadline;
+
+    private Type type;
+    private Long reference;
+    private LocalDateTime scheduledTime;
 }

@@ -29,15 +29,19 @@ public class TaskFactory {
         return generate(DETAILS);
     }
 
-    public Category generateTodoCategory() {
-        return Category.TODO;
-    }
-
     public int generateEstimatedTimeInMinutes() {
         return random.nextInt(15) + 5;
     }
 
     public LocalDateTime generateDeadline() {
-        return LocalDateTime.now();
+        return LocalDateTime.now().plusDays(2);
+    }
+
+    public Type generateType() {
+        return Type.values()[random.nextInt(Type.values().length)];
+    }
+
+    public LocalDateTime generateScheduledTime() {
+        return LocalDateTime.now().plusDays(1);
     }
 }

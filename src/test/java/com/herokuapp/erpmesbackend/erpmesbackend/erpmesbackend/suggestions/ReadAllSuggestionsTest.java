@@ -1,7 +1,7 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
+package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.suggestions;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
+import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,24 +18,24 @@ import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadTasksForOneAssigneeTest extends FillBaseTemplate {
+public class ReadAllSuggestionsTest extends FillBaseTemplate {
 
-    private List<Task> tasks;
+    private List<Suggestion> suggestions;
 
     @Before
     public void init() {
-        addOneAdminRequest(true);
-        tasks = addTaskRequests(true);
+        addEmployeeRequests(true);
+        suggestions = addSuggestionRequests(true);
     }
 
     @Test
-    public void checkIfResponseContainsAllTeams() {
-        ResponseEntity<Task[]> forEntity = restTemplate.getForEntity("/employees/1/tasks", Task[].class);
+    public void checkIfResponseContainsAllSuggestions() {
+        ResponseEntity<Suggestion[]> forEntity = restTemplate.getForEntity("/suggestions", Suggestion[].class);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Task> fetchedTasks = Arrays.asList(forEntity.getBody());
-        for (Task task : fetchedTasks) {
-            assertTrue(tasks.stream().anyMatch(t -> t.getAssignee().getId() == task.getAssignee().getId()));
+        List<Suggestion> fetchedSuggetstions = Arrays.asList(forEntity.getBody());
+        for (Suggestion sug : fetchedSuggetstions) {
+            assertTrue(suggestions.stream().anyMatch(s -> s.checkIfDataEquals(sug)));
         }
     }
 }
