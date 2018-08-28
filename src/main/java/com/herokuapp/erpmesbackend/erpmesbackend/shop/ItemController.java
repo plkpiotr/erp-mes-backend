@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -55,6 +57,34 @@ public class ItemController {
         item.sell(q);
         itemRepository.save(item);
         return item;
+    }
+
+    @PostMapping("/set-special-offer")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Item> setSpecialOffer(@RequestParam("percentOff") int percentOff,
+                                      @RequestParam(required = false, value = "query") String query) {
+        return updateItems(percentOff / 100, query);
+    }
+
+    @PostMapping("/cancel-special-offer")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Item> cancelSpecialOffer(@RequestParam(required = false, value = "query") String query) {
+        return updateItems(1, query);
+    }
+
+    List<Item> updateItems(double multiplier, String query) {
+        List<Item> items = itemRepository.findAll();
+        if (query != null && !query.equals("")) {
+            items = items.stream().filter(item -> item.getName().toLowerCase().contains(query.toLowerCase()))
+                    .collect(Collectors.toList());
+        }
+        List<Item> updatedItems = new ArrayList<>();
+        items.forEach(item -> {
+            item.setCurrentPrice(item.getOriginalPrice() * multiplier);
+            itemRepository.save(item);
+            updatedItems.add(item);
+        });
+        return updatedItems;
     }
 
     private void checkIfItemExists(long id) {

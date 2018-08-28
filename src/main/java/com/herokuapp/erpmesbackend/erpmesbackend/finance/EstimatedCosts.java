@@ -38,20 +38,6 @@ public class EstimatedCosts {
         taxes = 0.2*estimatedIncome + 0.2*salaries; //TODO: check how it's calculated irl
     }
 
-    public EstimatedCosts(double estimatedIncome, double estimatedShippingCosts,
-                          double estimatedBills, double rent, double salaries, double stockCosts,
-                          double socialFund, double unexpected) {
-        this.estimatedIncome = estimatedIncome;
-        this.estimatedShippingCosts = estimatedShippingCosts;
-        this.estimatedBills = estimatedBills;
-        this.rent = rent;
-        this.salaries = salaries;
-        this.stockCosts = stockCosts;
-        this.socialFund = socialFund;
-        this.unexpected = unexpected;
-        taxes = 0.2*estimatedIncome + 0.2*salaries;
-    }
-
     public void recalculateCosts(EstimatedCostsRequest reestimatedCosts) {
         this.estimatedIncome = reestimatedCosts.getEstimatedIncome();
         this.estimatedShippingCosts = reestimatedCosts.getEstimatedShippingCosts();
