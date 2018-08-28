@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +25,7 @@ public class ReadAllHolidaysTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(true);
         addNonAdminRequests(true);
         addManyHolidayRequests(2, true);
@@ -30,8 +33,8 @@ public class ReadAllHolidaysTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAllHolidays() {
-        ResponseEntity<Holiday[]> forEntity = restTemplate.getForEntity("/employees/{id}/holidays",
-                Holiday[].class, 2);
+        ResponseEntity<Holiday[]> forEntity = restTemplate.exchange("/employees/{id}/holidays", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Holiday[].class, 2);
 
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         List<Holiday> holidays = Arrays.asList(forEntity.getBody());

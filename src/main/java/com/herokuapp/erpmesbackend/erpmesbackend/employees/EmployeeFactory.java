@@ -79,6 +79,13 @@ public class EmployeeFactory {
                 generateNonAdminRole(), generateContractRequest());
     }
 
+    public EmployeeRequest generateCeoRequest() {
+        String firstName = generate(FIRST_NAMES);
+        String lastName = generate(LAST_NAMES);
+        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
+                Role.ADMIN, generateContractRequest());
+    }
+
     public Employee generateEmployee() {
         return generateEmployeeRequest().extractUser();
     }
@@ -89,6 +96,10 @@ public class EmployeeFactory {
 
     public Employee generateNonAdmin() {
         return generateNonAdminRequest().extractUser();
+    }
+
+    public Employee generateCeo() {
+        return generateCeoRequest().extractUser();
     }
 
 }

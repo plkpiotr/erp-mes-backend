@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class HolidayController {
 
     @Autowired
@@ -56,13 +56,16 @@ public class HolidayController {
         checkIfEmployeeExists(managerId);
         checkIfIsManager(managerId);
         List<Holiday> holidays = new ArrayList<>();
+        if (!teamRepository.findByManagerId(managerId).isPresent()) {
+            return new ArrayList<>();
+        }
         List<Employee> employees = teamRepository.findByManagerId(managerId)
                 .get().getEmployees();
         if (employees.size() == 0) {
             return new ArrayList<>();
         }
         employees.forEach(employee -> {
-            if(holidayRepository
+            if (holidayRepository
                     .findByEmployeeId(employee.getId()).isPresent()) {
                 holidays.addAll(holidayRepository
                         .findByEmployeeId(employee.getId()).get());
@@ -136,8 +139,8 @@ public class HolidayController {
                     .sum();
             int daysOffPerYear = employee.getContract().getDaysOffPerYear();
             int requestedDuration = 0;
-            for(int i = 0; i < request.getDuration(); i++) {
-                if(!request.getStartDate().plusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY) &&
+            for (int i = 0; i < request.getDuration(); i++) {
+                if (!request.getStartDate().plusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY) &&
                         !request.getStartDate().plusDays(i).getDayOfWeek().equals(DayOfWeek.SATURDAY)) {
                     requestedDuration++;
                 }

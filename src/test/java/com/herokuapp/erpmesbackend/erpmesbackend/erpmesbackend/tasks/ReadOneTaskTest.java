@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -23,6 +25,7 @@ public class ReadOneTaskTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(true);
         tasks = addTaskRequests(true);
     }
@@ -30,7 +33,8 @@ public class ReadOneTaskTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsTaskWithGivenId() {
         for (int i = 0; i < 3; i++) {
-            ResponseEntity<Task> forEntity = restTemplate.getForEntity("/tasks/{id}", Task.class, i + 1);
+            ResponseEntity<Task> forEntity = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Task.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
             Task task = forEntity.getBody();

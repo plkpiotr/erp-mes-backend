@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class ItemController {
 
     @Autowired
@@ -64,7 +64,7 @@ public class ItemController {
     }
 
     private void checkIfIsEnough(Item item, int q) {
-        if(q > item.getQuantity()) {
+        if (q > item.getQuantity()) {
             throw new InvalidRequestException("There's not enough of this item!");
         }
     }

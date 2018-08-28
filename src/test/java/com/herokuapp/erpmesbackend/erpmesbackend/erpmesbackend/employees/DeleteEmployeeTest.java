@@ -7,6 +7,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -23,6 +25,7 @@ public class DeleteEmployeeTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
         deletedEmployee = restTemplate.getForEntity("/employees/{id}", Employee.class, 1)
                 .getBody();
@@ -32,8 +35,8 @@ public class DeleteEmployeeTest extends FillBaseTemplate {
     public void checkIfResponseDoesNotContainDeletedEmployee() {
         restTemplate.delete("/employees/{id}", 1);
 
-        List<Employee> employees = Arrays.asList(restTemplate.getForEntity("/employees",
-                Employee[].class).getBody());
+        List<Employee> employees = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee[].class).getBody());
         assertFalse(employees.stream().anyMatch(employee -> employee.checkIfDataEquals(deletedEmployee)));
     }
 

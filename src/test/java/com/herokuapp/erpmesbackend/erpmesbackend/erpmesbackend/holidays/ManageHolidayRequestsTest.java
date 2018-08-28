@@ -9,6 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,12 +22,13 @@ public class ManageHolidayRequestsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addOneAdminRequest(false);
         addOneNonAdminRequest(false);
         adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
         nonAdminRequest.setRole(Role.ACCOUNTANT);
-        restTemplate.postForEntity("/employees", adminRequest, String.class);
-        restTemplate.postForEntity("/employees", nonAdminRequest, String.class);
+        restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders), String.class);
+        restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders), String.class);
         addManyHolidayRequests(2, true);
     }
 
@@ -34,7 +36,7 @@ public class ManageHolidayRequestsTest extends FillBaseTemplate {
     public void approveHoliday() {
         ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                1, Holiday.class, 1, 2
+                new HttpEntity<>(1, requestHeaders), Holiday.class, 1, 2
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
@@ -45,7 +47,7 @@ public class ManageHolidayRequestsTest extends FillBaseTemplate {
     public void declineHoliday() {
         ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=false",
-                2, Holiday.class, 1, 2
+                new HttpEntity<>(2, requestHeaders), Holiday.class, 1, 2
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);

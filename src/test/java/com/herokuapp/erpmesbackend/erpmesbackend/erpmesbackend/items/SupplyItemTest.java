@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -21,15 +23,17 @@ public class SupplyItemTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addManyItemRequests(true);
-        item = restTemplate.getForEntity("/item{id}", Item.class, 3).getBody();
+        item = restTemplate.exchange("/item{id}", HttpMethod.GET, new HttpEntity<>(null, requestHeaders),
+                Item.class, 3).getBody();
     }
 
     @Test
     public void checkIfItemQuantityIncreased() {
         int oldQuantity = item.getQuantity();
-        ResponseEntity<Item> itemResponseEntity = restTemplate.postForEntity("/items/{id}/supply", 10,
-                Item.class, 3);
+        ResponseEntity<Item> itemResponseEntity = restTemplate.postForEntity("/items/{id}/supply",
+                new HttpEntity<>(10, requestHeaders), Item.class, 3);
 
         assertThat(itemResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(itemResponseEntity.getBody().getQuantity() - oldQuantity).isEqualTo(10);

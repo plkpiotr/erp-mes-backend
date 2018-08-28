@@ -9,6 +9,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -27,19 +29,22 @@ public class AddOneNotificationTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
 
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
 
-        Employee notifier = restTemplate.getForEntity("/employees/{id}", Employee.class, 1).getBody();
+        Employee notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
         Long notifierId = notifier.getId();
 
         List<Employee> consignees = new ArrayList<>();
         List<Long> consigneeIds = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
-            Employee consignee = restTemplate.getForEntity("/employees/{id}", Employee.class, i).getBody();
+            Employee consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), Employee.class, i).getBody();
             consigneeIds.add(consignee.getId());
             consignees.add(consignee);
         }
@@ -57,7 +62,7 @@ public class AddOneNotificationTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsAddedNotification() {
         ResponseEntity<Notification> notificationResponseEntity = restTemplate.postForEntity("/notifications",
-                notificationRequest, Notification.class);
+                new HttpEntity<>(notificationRequest, requestHeaders), Notification.class);
         assertThat(notificationResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
         Notification body = notificationResponseEntity.getBody();

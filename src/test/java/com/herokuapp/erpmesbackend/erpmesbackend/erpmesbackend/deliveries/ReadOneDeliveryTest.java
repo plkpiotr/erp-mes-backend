@@ -6,9 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Arrays;
@@ -25,14 +23,17 @@ public class ReadOneDeliveryTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addManyDeliveryRequests(true);
-        deliveries = Arrays.asList(restTemplate.getForEntity("/deliveries", Delivery[].class).getBody());
+        deliveries = Arrays.asList(restTemplate.exchange("/deliveries", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Delivery[].class).getBody());
     }
 
     @Test
     public void checkIfResponseContainsRequestedDelivery() {
         for(int i = 0; i < deliveryRequests.size(); i++) {
-            ResponseEntity<Delivery> forEntity = restTemplate.getForEntity("/deliveries/{id}",
+            ResponseEntity<Delivery> forEntity = restTemplate.exchange("/deliveries/{id}",
+                    HttpMethod.GET, new HttpEntity<>(null, requestHeaders),
                     Delivery.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
             assertTrue(deliveries.stream().anyMatch(delivery -> delivery

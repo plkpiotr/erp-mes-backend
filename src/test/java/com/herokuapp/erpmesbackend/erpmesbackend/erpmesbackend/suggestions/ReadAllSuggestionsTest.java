@@ -6,6 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -24,13 +26,15 @@ public class ReadAllSuggestionsTest extends FillBaseTemplate {
 
     @Before
     public void init() {
+        setupToken();
         addEmployeeRequests(true);
         suggestions = addSuggestionRequests(true);
     }
 
     @Test
     public void checkIfResponseContainsAllSuggestions() {
-        ResponseEntity<Suggestion[]> forEntity = restTemplate.getForEntity("/suggestions", Suggestion[].class);
+        ResponseEntity<Suggestion[]> forEntity = restTemplate.exchange("/suggestions", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), Suggestion[].class);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         List<Suggestion> fetchedSuggetstions = Arrays.asList(forEntity.getBody());
