@@ -74,6 +74,14 @@ public class PlanningController {
         return orders.size();
     }
 
+    @GetMapping("/special-plans")
+    @ResponseStatus(HttpStatus.OK)
+    public List<SpecialPlan> getSpecialPlans() {
+        return specialPlanRepository.findAll();
+    }
+
+
+
     @GetMapping("/special-plan")
     @ResponseStatus(HttpStatus.OK)
     public SpecialPlan findSpecialPlan(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
