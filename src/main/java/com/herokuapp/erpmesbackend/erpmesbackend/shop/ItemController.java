@@ -61,15 +61,15 @@ public class ItemController {
 
     @PostMapping("/set-special-offer")
     @ResponseStatus(HttpStatus.OK)
-    public List<Item> setSpecialOffer(@RequestParam("percentOff") int percentOff,
+    public List<Item> setSpecialOffer(@RequestParam(value = "percentOff") Double percentOff,
                                       @RequestParam(required = false, value = "query") String query) {
-        return updateItems(percentOff / 100, query);
+        return updateItems(1 - percentOff/100, query);
     }
 
     @PostMapping("/cancel-special-offer")
     @ResponseStatus(HttpStatus.OK)
-    public List<Item> cancelSpecialOffer(@RequestParam(required = false, value = "query") String query) {
-        return updateItems(1, query);
+    public List<Item> cancelSpecialOffer() {
+        return updateItems(1, "");
     }
 
     List<Item> updateItems(double multiplier, String query) {

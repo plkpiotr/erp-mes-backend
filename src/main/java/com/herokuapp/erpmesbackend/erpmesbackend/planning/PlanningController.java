@@ -80,8 +80,6 @@ public class PlanningController {
         return specialPlanRepository.findAll();
     }
 
-
-
     @GetMapping("/special-plan")
     @ResponseStatus(HttpStatus.OK)
     public SpecialPlan findSpecialPlan(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)

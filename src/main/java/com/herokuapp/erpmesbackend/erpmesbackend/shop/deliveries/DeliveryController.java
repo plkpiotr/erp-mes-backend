@@ -69,6 +69,9 @@ public class DeliveryController {
         List<Order> orders = orderRepository.findAll().stream()
                 .filter(order -> DAYS.between(order.getSubmissionDate(), LocalDate.now()) < 30)
                 .collect(Collectors.toList());
+        if(orders == null || orders.size() == 0) {
+            return deliveryItems;
+        }
         items.forEach(item -> {
             final int[] sum = {0};
             orders.forEach(order -> {
