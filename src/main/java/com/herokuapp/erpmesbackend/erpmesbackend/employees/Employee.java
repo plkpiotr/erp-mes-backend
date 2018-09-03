@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
+import java.util.Random;
 
 @Entity
 @Getter
@@ -28,7 +29,6 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Setter
     private String password;
     private boolean isPasswordValid;
 
@@ -50,14 +50,16 @@ public class Employee {
     }
 
     private String passwordGenerator() {
-//        char[] password = new char[PASSWORD_LENGTH];
-//        Random r = new Random();
-//        for (int i = 0; i < PASSWORD_LENGTH; i++) {
-//            password[i] = (char) (r.nextInt('z' - 'a') + 'a');
-//        }
-//        return new String(password);
-        //TODO: restore
-        return "haslo123";
+        char[] password = new char[PASSWORD_LENGTH];
+        Random r = new Random();
+        for (int i = 0; i < PASSWORD_LENGTH; i++) {
+            password[i] = (char) (r.nextInt('z' - 'a') + 'a');
+        }
+        return new String(password);
+    }
+
+    public void encodePassword(String hashedPassword) {
+        this.password = hashedPassword;
     }
 
     public void changePassword(String newPassword) {

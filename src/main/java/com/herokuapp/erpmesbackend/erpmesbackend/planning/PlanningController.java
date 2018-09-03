@@ -1,8 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.planning;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -10,10 +7,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.time.LocalDate;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin("*")
@@ -26,7 +21,7 @@ public class PlanningController {
     private SpecialPlanRepository specialPlanRepository;
 
     @Autowired
-    private OrderRepository orderRepository;
+    private PlanningService planningService;
 
     @PostConstruct
     public void init() {
@@ -42,36 +37,13 @@ public class PlanningController {
     @PutMapping("/daily-plan")
     @ResponseStatus(HttpStatus.OK)
     public DailyPlan updateDailyPlan(@RequestBody DailyPlanRequest request) {
-        DailyPlan dailyPlan = dailyPlanRepository.findById(1L).get();
-        dailyPlan.setEmployeesPerDay(request.getEmployeesPerDay());
-        dailyPlan.setOrdersPerDay(request.getOrdersPerDay());
-        dailyPlan.setReturnsPerDay(request.getReturnsPerDay());
-        dailyPlan.setComplaintsResolvedPerDay(request.getComplaintsResolvedPerDay());
-        dailyPlanRepository.save(dailyPlan);
-        return dailyPlan;
+        return planningService.updateDailyPlan(request);
     }
 
     @GetMapping("/scheduled-orders")
     @ResponseStatus(HttpStatus.OK)
     public int getOrdersScheduledForDay(@RequestParam("when") String when) {
-        List<Order> orders = orderRepository.findAll();
-        LocalDate today = LocalDate.now();
-        if (when.equals("today")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today))
-                    .collect(Collectors.toList());
-        } else if (when.equals("tomorrow")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
-                    .collect(Collectors.toList());
-        } else if (when.equals("in2days")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
-                    .collect(Collectors.toList());
-        } else {
-            throw new InvalidRequestException("Invalid query parameter!");
-        }
-        return orders.size();
+        return planningService.getOrdersForDay(when).size();
     }
 
     @GetMapping("/special-plans")
@@ -83,7 +55,7 @@ public class PlanningController {
     @GetMapping("/special-plan")
     @ResponseStatus(HttpStatus.OK)
     public SpecialPlan findSpecialPlan(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-                                           @RequestParam("day") LocalDate day) {
+                                       @RequestParam("day") LocalDate day) {
         Optional<SpecialPlan> byDay = specialPlanRepository.findByDay(day);
         return byDay.isPresent() ? byDay.get() : new SpecialPlan();
     }

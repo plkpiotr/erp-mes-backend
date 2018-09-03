@@ -1,10 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItem;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,12 +19,14 @@ public class OrderController {
     private final DeliveryItemRepository deliveryItemRepository;
     private final OrderRepository orderRepository;
     private final ItemRepository itemRepository;
+    private final DeliveryService deliveryService;
 
     public OrderController(DeliveryItemRepository deliveryItemRepository, OrderRepository orderRepository,
-                           ItemRepository itemRepository) {
+                           ItemRepository itemRepository, DeliveryService deliveryService) {
         this.deliveryItemRepository = deliveryItemRepository;
         this.orderRepository = orderRepository;
         this.itemRepository = itemRepository;
+        this.deliveryService = deliveryService;
     }
 
     @GetMapping("/orders")
@@ -48,12 +50,7 @@ public class OrderController {
 
         List<DeliveryItem> deliveryItems = new ArrayList<>();
         orderRequest.getDeliveryItemRequests().forEach(deliveryItemRequest -> {
-            if (itemRepository.findById(deliveryItemRequest.getItemId()).isPresent()) {
-                Item item = itemRepository.findById(deliveryItemRequest.getItemId()).get();
-                DeliveryItem deliveryItem = new DeliveryItem(item, deliveryItemRequest.getQuantity());
-                deliveryItemRepository.save(deliveryItem);
-                deliveryItems.add(deliveryItem);
-            }
+            deliveryService.addDeliveryItem(deliveryItemRequest, deliveryItems);
         });
         Order order = new Order(firstName, lastName, email, phoneNumber, street,
                 houseNumber, city, postalCode, deliveryItems, scheduledFor);

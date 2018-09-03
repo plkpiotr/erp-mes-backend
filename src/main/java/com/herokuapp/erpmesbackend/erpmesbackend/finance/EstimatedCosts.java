@@ -1,7 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -35,7 +34,7 @@ public class EstimatedCosts {
         stockCosts = 30000.00;
         socialFund = 2000.00;
         unexpected = 5000.00;
-        taxes = 0.2*estimatedIncome + 0.2*salaries; //TODO: check how it's calculated irl
+        taxes = 0.18 * (estimatedIncome + salaries);
     }
 
     public void recalculateCosts(EstimatedCostsRequest reestimatedCosts) {
@@ -47,6 +46,6 @@ public class EstimatedCosts {
         this.stockCosts = reestimatedCosts.getStockCosts();
         this.socialFund = reestimatedCosts.getSocialFund();
         this.unexpected = reestimatedCosts.getUnexpected();
-        taxes = 0.2*estimatedIncome + 0.2*salaries;
+        taxes = 0.18 * (estimatedIncome + salaries);
     }
 }

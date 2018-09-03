@@ -1,9 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.EntitiesConflictException;
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -31,5 +28,10 @@ public class RestErrorHandler {
     @ExceptionHandler(value = EntitiesConflictException.class)
     public ResponseEntity<String> handleTeamConflictException(EntitiesConflictException ex, WebRequest request) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(value = ForbiddenException.class)
+    public ResponseEntity<String> handleForbiddenException(ForbiddenException ex, WebRequest request) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 }
