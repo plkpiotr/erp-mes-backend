@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Resolution;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class OrderRequest {
+public class ShopServiceRequest {
 
     @NonNull
     private String firstName;
@@ -43,4 +43,6 @@ public class OrderRequest {
 
     @NonNull
     private LocalDate scheduledFor;
+
+    private Resolution RequestedResolution;
 }

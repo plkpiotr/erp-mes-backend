@@ -19,7 +19,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemReq
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
@@ -49,7 +49,7 @@ public abstract class FillBaseTemplate {
     protected HolidayRequest holidayRequest;
     protected ItemRequest itemRequest;
     protected DeliveryRequest deliveryRequest;
-    protected OrderRequest orderRequest;
+    protected ShopServiceRequest orderRequest;
     protected NotificationRequest notificationRequest;
     protected SuggestionRequest suggestionRequest;
     protected SpecialPlanRequest specialPlanRequest;
@@ -61,7 +61,7 @@ public abstract class FillBaseTemplate {
     protected List<HolidayRequest> holidayRequests;
     protected List<ItemRequest> itemRequests;
     protected List<DeliveryRequest> deliveryRequests;
-    protected List<OrderRequest> orderRequests;
+    protected List<ShopServiceRequest> orderRequests;
     protected List<NotificationRequest> notificationRequests;
     protected List<SuggestionRequest> suggestionRequests;
 
@@ -278,7 +278,7 @@ public abstract class FillBaseTemplate {
         String city = orderFactory.generateCity();
         String postalCode = orderFactory.generatePostalCode();
 
-        orderRequest= new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
+        orderRequest= new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
                 postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
 
         if (shouldPost) {
@@ -302,7 +302,7 @@ public abstract class FillBaseTemplate {
             String city = orderFactory.generateCity();
             String postalCode = orderFactory.generatePostalCode();
 
-            orderRequests.add(new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
+            orderRequests.add(new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
                     city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3)));
         }
 

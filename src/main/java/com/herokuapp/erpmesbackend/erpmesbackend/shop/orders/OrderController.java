@@ -1,32 +1,20 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItem;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin("*")
 public class OrderController {
 
-    private final DeliveryItemRepository deliveryItemRepository;
     private final OrderRepository orderRepository;
-    private final ItemRepository itemRepository;
-    private final DeliveryService deliveryService;
+    private final ShopService shopService;
 
-    public OrderController(DeliveryItemRepository deliveryItemRepository, OrderRepository orderRepository,
-                           ItemRepository itemRepository, DeliveryService deliveryService) {
-        this.deliveryItemRepository = deliveryItemRepository;
+    public OrderController(OrderRepository orderRepository, ShopService shopService) {
         this.orderRepository = orderRepository;
-        this.itemRepository = itemRepository;
-        this.deliveryService = deliveryService;
+        this.shopService = shopService;
     }
 
     @GetMapping("/orders")
@@ -37,48 +25,21 @@ public class OrderController {
 
     @PostMapping("/orders")
     @ResponseStatus(HttpStatus.CREATED)
-    public Order addOneOrder(@RequestBody OrderRequest orderRequest) {
-        String firstName = orderRequest.getFirstName();
-        String lastName = orderRequest.getLastName();
-        String email = orderRequest.getEmail();
-        String phoneNumber = orderRequest.getPhoneNumber();
-        String street = orderRequest.getStreet();
-        String houseNumber = orderRequest.getHouseNumber();
-        String city = orderRequest.getCity();
-        String postalCode = orderRequest.getPostalCode();
-        LocalDate scheduledFor = orderRequest.getScheduledFor();
-
-        List<DeliveryItem> deliveryItems = new ArrayList<>();
-        orderRequest.getDeliveryItemRequests().forEach(deliveryItemRequest -> {
-            deliveryService.addDeliveryItem(deliveryItemRequest, deliveryItems);
-        });
-        Order order = new Order(firstName, lastName, email, phoneNumber, street,
-                houseNumber, city, postalCode, deliveryItems, scheduledFor);
-        orderRepository.save(order);
-        return order;
+    public Order addOneOrder(@RequestBody ShopServiceRequest orderRequest) {
+        return shopService.addNewOrder(orderRequest);
     }
 
     @GetMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Order getOneOrder(@PathVariable("id") Long id) {
-        checkIfOrderExists(id);
+        shopService.checkIfOrderExists(id);
         return orderRepository.findById(id).get();
     }
 
     @PatchMapping("/orders/{id}")
     public HttpStatus updateStatusOrder(@PathVariable("id") Long id, @RequestBody Status status) {
-        checkIfOrderExists(id);
-        Order order = orderRepository.findById(id).get();
-
-        order.setStatus(status);
-
-        orderRepository.save(order);
+        shopService.checkIfOrderExists(id);
+        shopService.updateOrderStatus(id, status);
         return HttpStatus.NO_CONTENT;
-    }
-
-    private void checkIfOrderExists(Long id) {
-        if (!deliveryItemRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Such order doesn't exist!");
-        }
     }
 }
