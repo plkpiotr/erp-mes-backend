@@ -278,8 +278,8 @@ public abstract class FillBaseTemplate {
         String city = orderFactory.generateCity();
         String postalCode = orderFactory.generatePostalCode();
 
-        orderRequest= new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
-                postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
+        orderRequest = new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
+                postalCode, deliveryItemRequests, LocalDate.now().plusDays(3), null);
 
         if (shouldPost) {
             setupToken();
@@ -303,7 +303,7 @@ public abstract class FillBaseTemplate {
             String postalCode = orderFactory.generatePostalCode();
 
             orderRequests.add(new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
-                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3)));
+                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3), null));
         }
 
         if (shouldPost) {
