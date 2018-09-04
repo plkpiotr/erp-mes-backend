@@ -1,6 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.returns;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.*;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopService;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -37,10 +38,10 @@ public class ReturnController {
         return returnRepository.findById(id).get();
     }
 
-    @PatchMapping("/returns/{id}")
-    public HttpStatus updateStatusReturn(@PathVariable("id") Long id, @RequestBody ReturnStatus status) {
+    @PutMapping("/returns/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Return updateStatusReturn(@PathVariable("id") Long id, @RequestBody ReturnStatus status) {
         shopService.checkIfReturnExists(id);
-        shopService.updateReturnStatus(id, status);
-        return HttpStatus.NO_CONTENT;
+        return shopService.updateReturnStatus(id, status);
     }
 }

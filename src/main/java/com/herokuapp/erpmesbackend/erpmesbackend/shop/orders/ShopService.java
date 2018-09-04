@@ -49,28 +49,32 @@ public class ShopService {
         }
     }
 
-    public void updateOrderStatus(long id, Status status) {
+    public Order updateOrderStatus(long id, Status status) {
         Order order = orderRepository.findById(id).get();
         order.setStatus(status);
         orderRepository.save(order);
+        return order;
     }
 
-    public void updateReturnStatus(long id, ReturnStatus status) {
+    public Return updateReturnStatus(long id, ReturnStatus status) {
         Return r = returnRepository.findById(id).get();
         r.updateStatus(status);
         returnRepository.save(r);
+        return r;
     }
 
-    public void updateComplaintStatus(long id, ComplaintStatus status) {
+    public Complaint updateComplaintStatus(long id, ComplaintStatus status) {
         Complaint complaint = complaintRepository.findById(id).get();
         complaint.updateStatus(status);
         complaintRepository.save(complaint);
+        return complaint;
     }
 
-    public void updateComplaintResolution(long id, Resolution resolution) {
+    public Complaint updateComplaintResolution(long id, Resolution resolution) {
         Complaint complaint = complaintRepository.findById(id).get();
         complaint.updateResolution(resolution);
         complaintRepository.save(complaint);
+        return complaint;
     }
 
     public Order addNewOrder(ShopServiceRequest request) {

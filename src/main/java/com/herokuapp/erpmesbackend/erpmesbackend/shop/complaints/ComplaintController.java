@@ -2,9 +2,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopService;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.returns.Return;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.returns.ReturnRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.returns.ReturnStatus;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,17 +38,17 @@ public class ComplaintController {
         return complaintRepository.findById(id).get();
     }
 
-    @PatchMapping("/complaints/{id}")
-    public HttpStatus updateStatusComplaint(@PathVariable("id") Long id, @RequestBody ComplaintStatus status) {
+    @PutMapping("/complaints/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Complaint updateStatusComplaint(@PathVariable("id") Long id, @RequestBody ComplaintStatus status) {
         shopService.checkIfComplaintExists(id);
-        shopService.updateComplaintStatus(id, status);
-        return HttpStatus.NO_CONTENT;
+        return shopService.updateComplaintStatus(id, status);
     }
 
-    @PatchMapping("/complaints/{id}/resolution")
-    public HttpStatus updateComplaintResolution(@PathVariable("id") Long id, @RequestBody Resolution resolution) {
+    @PutMapping("/complaints/{id}/resolution")
+    @ResponseStatus(HttpStatus.OK)
+    public Complaint updateComplaintResolution(@PathVariable("id") Long id, @RequestBody Resolution resolution) {
         shopService.checkIfComplaintExists(id);
-        shopService.updateComplaintResolution(id, resolution);
-        return HttpStatus.NO_CONTENT;
+        return shopService.updateComplaintResolution(id, resolution);
     }
 }

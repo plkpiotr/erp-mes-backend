@@ -36,10 +36,10 @@ public class OrderController {
         return orderRepository.findById(id).get();
     }
 
-    @PatchMapping("/orders/{id}")
-    public HttpStatus updateStatusOrder(@PathVariable("id") Long id, @RequestBody Status status) {
+    @PutMapping("/orders/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Order updateStatusOrder(@PathVariable("id") Long id, @RequestBody Status status) {
         shopService.checkIfOrderExists(id);
-        shopService.updateOrderStatus(id, status);
-        return HttpStatus.NO_CONTENT;
+        return shopService.updateOrderStatus(id, status);
     }
 }
