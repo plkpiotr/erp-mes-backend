@@ -57,6 +57,8 @@ public class Order {
     private List<DeliveryItem> deliveryItems;
 
     private LocalDate scheduledFor;
+    private LocalDate submissionDate;
+    private LocalDate closingDate;
     private Double value;
 
     public Order(String firstName, String lastName, String email, String phoneNumber, String street,
@@ -77,6 +79,7 @@ public class Order {
             .map(deliveryItem -> deliveryItem.getItem().getCurrentPrice() * deliveryItem.getQuantity())
             .mapToDouble(Double::doubleValue)
             .sum();
+        this.submissionDate = LocalDate.now();
     }
 
     public boolean checkIfDataEquals(Order order) {
@@ -91,7 +94,8 @@ public class Order {
                 postalCode.equals(order.getPostalCode()) &&
                 compareDeliveryItems(order.getDeliveryItems()) &&
                 scheduledFor.isEqual(order.getScheduledFor()) &&
-                value.equals(order.getValue());
+                value.equals(order.getValue()) &&
+                submissionDate.equals(order.getSubmissionDate());
     }
 
     private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {

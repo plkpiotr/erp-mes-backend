@@ -9,6 +9,8 @@ import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.planning.SpecialPlan;
+import com.herokuapp.erpmesbackend.erpmesbackend.planning.SpecialPlanRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
@@ -50,6 +52,7 @@ public abstract class FillBaseTemplate {
     protected OrderRequest orderRequest;
     protected NotificationRequest notificationRequest;
     protected SuggestionRequest suggestionRequest;
+    protected SpecialPlanRequest specialPlanRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
@@ -388,5 +391,15 @@ public abstract class FillBaseTemplate {
             suggestions.add(addOneSuggestionRequest(shouldPost));
         }
         return suggestions;
+    }
+
+    protected void addSpecialPlanRequest(boolean shouldPost) {
+        specialPlanRequest = new SpecialPlanRequest("Special plan", LocalDate.now().plusDays(3),
+                20, 50, 10, 10);
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/special-plan", new HttpEntity<>(specialPlanRequest, requestHeaders),
+                    SpecialPlan.class);
+        }
     }
 }

@@ -13,7 +13,6 @@ import javax.validation.constraints.Pattern;
 public class ContractRequest {
 
     @NotNull
-    @Pattern(regexp = "[0-9]{26}")
     private String accountNumber;
 
     @NotNull

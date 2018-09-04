@@ -21,6 +21,10 @@ public class EmployeeDTO {
         this.role = employee.getRole();
     }
 
+    public boolean isManager() {
+        return role.name().contains("ADMIN");
+    }
+
     public boolean checkIfDataEquals(EmployeeDTO employeeDTO) {
         return firstName.equals(employeeDTO.getFirstName()) &&
                 lastName.equals(employeeDTO.getLastName()) &&
