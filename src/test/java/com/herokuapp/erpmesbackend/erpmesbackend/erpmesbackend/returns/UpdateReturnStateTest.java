@@ -33,7 +33,7 @@ public class UpdateReturnStateTest extends FillBaseTemplate {
         assertThat(exchange.getBody().getStatus()).isEqualTo(ReturnStatus.IN_PROGRESS);
 
         ResponseEntity<Return> updateStatusResponse = restTemplate.exchange("/returns/{id}",
-                HttpMethod.PUT, new HttpEntity<>(ReturnStatus.ACCEPTED, requestHeaders), Return.class,
+                HttpMethod.PUT, new HttpEntity<>(ReturnStatus.ACCEPTED.name(), requestHeaders), Return.class,
                 1);
         assertThat(updateStatusResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateStatusResponse.getBody().getStatus()).isEqualTo(ReturnStatus.ACCEPTED);

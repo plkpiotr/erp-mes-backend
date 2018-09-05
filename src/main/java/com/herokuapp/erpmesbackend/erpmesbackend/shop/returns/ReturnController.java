@@ -40,8 +40,8 @@ public class ReturnController {
 
     @PutMapping("/returns/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Return updateStatusReturn(@PathVariable("id") Long id, @RequestBody ReturnStatus status) {
+    public Return updateStatusReturn(@PathVariable("id") Long id, @RequestBody String status) {
         shopService.checkIfReturnExists(id);
-        return shopService.updateReturnStatus(id, status);
+        return shopService.updateReturnStatus(id, ReturnStatus.valueOf(status));
     }
 }

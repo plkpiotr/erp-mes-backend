@@ -38,8 +38,8 @@ public class OrderController {
 
     @PutMapping("/orders/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Order updateStatusOrder(@PathVariable("id") Long id, @RequestBody Status status) {
+    public Order updateStatusOrder(@PathVariable("id") Long id, @RequestBody String status) {
         shopService.checkIfOrderExists(id);
-        return shopService.updateOrderStatus(id, status);
+        return shopService.updateOrderStatus(id, Status.valueOf(status));
     }
 }

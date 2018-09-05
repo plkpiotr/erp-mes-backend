@@ -40,15 +40,15 @@ public class ComplaintController {
 
     @PutMapping("/complaints/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Complaint updateStatusComplaint(@PathVariable("id") Long id, @RequestBody ComplaintStatus status) {
+    public Complaint updateStatusComplaint(@PathVariable("id") Long id, @RequestBody String status) {
         shopService.checkIfComplaintExists(id);
-        return shopService.updateComplaintStatus(id, status);
+        return shopService.updateComplaintStatus(id, ComplaintStatus.valueOf(status));
     }
 
     @PutMapping("/complaints/{id}/resolution")
     @ResponseStatus(HttpStatus.OK)
-    public Complaint updateComplaintResolution(@PathVariable("id") Long id, @RequestBody Resolution resolution) {
+    public Complaint updateComplaintResolution(@PathVariable("id") Long id, @RequestBody String resolution) {
         shopService.checkIfComplaintExists(id);
-        return shopService.updateComplaintResolution(id, resolution);
+        return shopService.updateComplaintResolution(id, Resolution.valueOf(resolution));
     }
 }

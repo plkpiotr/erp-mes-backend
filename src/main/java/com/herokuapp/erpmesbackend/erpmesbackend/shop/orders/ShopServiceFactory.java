@@ -1,5 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Resolution;
+
 import java.util.Random;
 
 public class ShopServiceFactory {
@@ -62,5 +64,9 @@ public class ShopServiceFactory {
 
     public String generatePostalCode() {
         return generate(POSTAL_CODES);
+    }
+
+    public Resolution generateResolution() {
+        return Resolution.values()[random.nextInt(Resolution.values().length)];
     }
 }

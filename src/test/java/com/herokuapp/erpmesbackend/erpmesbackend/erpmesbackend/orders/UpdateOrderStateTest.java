@@ -33,7 +33,7 @@ public class UpdateOrderStateTest extends FillBaseTemplate {
         assertThat(exchange.getBody().getStatus()).isEqualTo(Status.WAITING_FOR_PAYMENT);
 
         ResponseEntity<Order> updateStatusResponse = restTemplate.exchange("/orders/{id}",
-                HttpMethod.PUT, new HttpEntity<>(Status.IN_PROGRESS, requestHeaders), Order.class,
+                HttpMethod.PUT, new HttpEntity<>(Status.IN_PROGRESS.name(), requestHeaders), Order.class,
                 1);
         assertThat(updateStatusResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateStatusResponse.getBody().getStatus()).isEqualTo(Status.IN_PROGRESS);

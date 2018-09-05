@@ -33,8 +33,8 @@ public class UpdateComplaintStatusTest extends FillBaseTemplate {
         assertThat(exchange.getBody().getStatus()).isEqualTo(ComplaintStatus.IN_PROGRESS);
 
         ResponseEntity<Complaint> updateStatusResponse = restTemplate.exchange("/complaints/{id}",
-                HttpMethod.PUT, new HttpEntity<>(ComplaintStatus.DECLINED, requestHeaders), Complaint.class,
-                1);
+                HttpMethod.PUT, new HttpEntity<>(ComplaintStatus.DECLINED.name(), requestHeaders),
+                Complaint.class, 1);
         assertThat(updateStatusResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateStatusResponse.getBody().getStatus()).isEqualTo(ComplaintStatus.DECLINED);
     }

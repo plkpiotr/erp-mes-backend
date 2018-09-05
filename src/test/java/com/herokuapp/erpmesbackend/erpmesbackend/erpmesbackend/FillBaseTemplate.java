@@ -465,7 +465,7 @@ public abstract class FillBaseTemplate {
                 shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
                 shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
                 shopServiceFactory.generatePostalCode(), deliveryItemRequests,
-                LocalDate.now().plusDays(3), Resolution.UNRESOLVED);
+                LocalDate.now().plusDays(3), shopServiceFactory.generateResolution());
 
         if (shouldPost) {
             setupToken();
@@ -485,7 +485,7 @@ public abstract class FillBaseTemplate {
                     shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
                     shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
                     shopServiceFactory.generatePostalCode(), deliveryItemRequests,
-                    LocalDate.now().plusDays(3), Resolution.UNRESOLVED));
+                    LocalDate.now().plusDays(3), shopServiceFactory.generateResolution()));
         }
 
         if (shouldPost) {

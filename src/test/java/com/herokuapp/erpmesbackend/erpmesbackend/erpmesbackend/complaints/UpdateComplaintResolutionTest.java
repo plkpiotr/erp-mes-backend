@@ -34,8 +34,8 @@ public class UpdateComplaintResolutionTest extends FillBaseTemplate {
         assertThat(exchange.getBody().getResolution()).isEqualTo(Resolution.UNRESOLVED);
 
         ResponseEntity<Complaint> updateStatusResponse = restTemplate.exchange("/complaints/{id}/resolution",
-                HttpMethod.PUT, new HttpEntity<>(Resolution.MONEY_RETURN, requestHeaders), Complaint.class,
-                1);
+                HttpMethod.PUT, new HttpEntity<>(Resolution.MONEY_RETURN.name(), requestHeaders),
+                Complaint.class, 1);
         assertThat(updateStatusResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(updateStatusResponse.getBody().getResolution()).isEqualTo(Resolution.MONEY_RETURN);
     }
