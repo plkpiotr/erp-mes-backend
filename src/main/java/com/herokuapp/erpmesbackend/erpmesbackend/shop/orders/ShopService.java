@@ -104,13 +104,15 @@ public class ShopService {
     public Complaint addNewComplaint(ShopServiceRequest request) {
         Resolution requestedResolution = request.getRequestedResolution() == null ?
                 Resolution.UNRESOLVED : request.getRequestedResolution();
+        String fault = request.getFault() == null ?
+                "Delivered faulty" : request.getFault();
         List<DeliveryItem> deliveryItems = new ArrayList<>();
         request.getDeliveryItemRequests().forEach(deliveryItemRequest -> {
             deliveryService.addDeliveryItem(deliveryItemRequest, deliveryItems);
         });
         Complaint complaint = new Complaint(requestedResolution, request.getFirstName(), request.getLastName(),
                 request.getEmail(), request.getPhoneNumber(), request.getStreet(), request.getHouseNumber(),
-                request.getCity(), request.getPostalCode(), deliveryItems, request.getScheduledFor());
+                request.getCity(), request.getPostalCode(), deliveryItems, request.getScheduledFor(), fault);
         complaintRepository.save(complaint);
         return complaint;
     }

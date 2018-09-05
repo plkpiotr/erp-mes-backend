@@ -44,10 +44,11 @@ public class Complaint {
 
     private LocalDate scheduledFor;
     private Double value;
+    private String fault;
 
     public Complaint(Resolution requestedResolution, String firstName, String lastName, String email, String phoneNumber, String street,
                      String houseNumber, String city, String postalCode, List<DeliveryItem> deliveryItems,
-                     LocalDate scheduledFor) {
+                     LocalDate scheduledFor, String fault) {
         this.status = ComplaintStatus.IN_PROGRESS;
         this.resolution = Resolution.UNRESOLVED;
         this.requestedResolution = requestedResolution;
@@ -65,6 +66,7 @@ public class Complaint {
                 .map(deliveryItem -> deliveryItem.getItem().getCurrentPrice() * deliveryItem.getQuantity())
                 .mapToDouble(Double::doubleValue)
                 .sum();
+        this.fault = fault;
     }
 
     public void updateStatus(ComplaintStatus status) {
@@ -89,7 +91,8 @@ public class Complaint {
                 postalCode.equals(complaint.getPostalCode()) &&
                 compareDeliveryItems(complaint.getDeliveryItems()) &&
                 scheduledFor.isEqual(complaint.getScheduledFor()) &&
-                value.equals(complaint.getValue());
+                value.equals(complaint.getValue()) &&
+                fault.equals(complaint.getFault());
     }
 
     private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {

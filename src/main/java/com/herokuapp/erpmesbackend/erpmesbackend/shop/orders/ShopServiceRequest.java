@@ -45,4 +45,5 @@ public class ShopServiceRequest {
     private LocalDate scheduledFor;
 
     private Resolution RequestedResolution;
+    private String fault;
 }
