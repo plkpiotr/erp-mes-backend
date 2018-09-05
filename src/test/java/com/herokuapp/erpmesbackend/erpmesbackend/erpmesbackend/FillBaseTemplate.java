@@ -14,12 +14,15 @@ import com.herokuapp.erpmesbackend.erpmesbackend.planning.SpecialPlanRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Complaint;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Resolution;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.returns.Return;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
@@ -49,10 +52,12 @@ public abstract class FillBaseTemplate {
     protected HolidayRequest holidayRequest;
     protected ItemRequest itemRequest;
     protected DeliveryRequest deliveryRequest;
-    protected OrderRequest orderRequest;
+    protected ShopServiceRequest orderRequest;
     protected NotificationRequest notificationRequest;
     protected SuggestionRequest suggestionRequest;
     protected SpecialPlanRequest specialPlanRequest;
+    protected ShopServiceRequest returnRequest;
+    protected ShopServiceRequest complaintRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
@@ -61,16 +66,18 @@ public abstract class FillBaseTemplate {
     protected List<HolidayRequest> holidayRequests;
     protected List<ItemRequest> itemRequests;
     protected List<DeliveryRequest> deliveryRequests;
-    protected List<OrderRequest> orderRequests;
+    protected List<ShopServiceRequest> orderRequests;
     protected List<NotificationRequest> notificationRequests;
     protected List<SuggestionRequest> suggestionRequests;
+    protected List<ShopServiceRequest> returnRequests;
+    protected List<ShopServiceRequest> complaintRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
     protected HolidayFactory holidayFactory;
     protected NotificationFactory notificationFactory;
     protected SuggestionFactory suggestionFactory;
-    protected OrderFactory orderFactory;
+    protected ShopServiceFactory shopServiceFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
@@ -78,7 +85,7 @@ public abstract class FillBaseTemplate {
         holidayFactory = new HolidayFactory();
         notificationFactory = new NotificationFactory();
         suggestionFactory = new SuggestionFactory();
-        orderFactory = new OrderFactory();
+        shopServiceFactory = new ShopServiceFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
@@ -90,6 +97,8 @@ public abstract class FillBaseTemplate {
         orderRequests = new ArrayList<>();
         notificationRequests = new ArrayList<>();
         suggestionRequests = new ArrayList<>();
+        returnRequests = new ArrayList<>();
+        complaintRequests = new ArrayList<>();
     }
 
     protected void setupToken() {
@@ -165,7 +174,7 @@ public abstract class FillBaseTemplate {
 
     protected void addOneHolidayRequest(long employeeId, boolean shouldPost) {
         holidayRequest = holidayFactory.generateHolidayRequest();
-        if(shouldPost) {
+        if (shouldPost) {
             setupToken();
             restTemplate.postForEntity("/employees/{id}/holidays", new HttpEntity<>(holidayRequest,
                     requestHeaders), Holiday.class, employeeId);
@@ -207,9 +216,10 @@ public abstract class FillBaseTemplate {
     }
 
     protected void addManyHolidayRequests(long employeeId, boolean shouldPost) {
-        for(int i = 0; i < 4; i++) {
-            holidayRequests.add(holidayFactory.generateHolidayRequest());        }
-        if(shouldPost) {
+        for (int i = 0; i < 4; i++) {
+            holidayRequests.add(holidayFactory.generateHolidayRequest());
+        }
+        if (shouldPost) {
             setupToken();
             holidayRequests.forEach(request -> restTemplate.postForEntity("/employees/{id}/holidays",
                     new HttpEntity<>(request, requestHeaders), Holiday.class, employeeId));
@@ -218,17 +228,17 @@ public abstract class FillBaseTemplate {
 
     protected void addOneItemRequest(boolean shouldPost) {
         itemRequest = new ItemRequest("Random name", 8.00, 10.00);
-        if(shouldPost) {
+        if (shouldPost) {
             setupToken();
             restTemplate.postForEntity("/items", new HttpEntity<>(itemRequest, requestHeaders), Item.class);
         }
     }
 
     protected void addManyItemRequests(boolean shouldPost) {
-        for(int i = 0; i < 10; i++) {
-            itemRequests.add(new ItemRequest("Random name" + i, i*2+5, i*3+5));
+        for (int i = 0; i < 10; i++) {
+            itemRequests.add(new ItemRequest("Random name" + i, i * 2 + 5, i * 3 + 5));
         }
-        if(shouldPost) {
+        if (shouldPost) {
             setupToken();
             itemRequests.forEach(request -> restTemplate.postForEntity("/items", new HttpEntity<>(request,
                     requestHeaders), Item.class));
@@ -237,11 +247,11 @@ public abstract class FillBaseTemplate {
 
     protected void addOneDeliveryRequest(boolean shouldPost) {
         List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
-        for(int i = 0; i < 3; i++) {
-            deliveryItemRequests.add(new DeliveryItemRequest(i+1, i+10));
+        for (int i = 0; i < 3; i++) {
+            deliveryItemRequests.add(new DeliveryItemRequest(i + 1, i + 10));
         }
         deliveryRequest = new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3));
-        if(shouldPost) {
+        if (shouldPost) {
             setupToken();
             restTemplate.postForEntity("/deliveries", new HttpEntity<>(deliveryRequest, requestHeaders),
                     Delivery.class);
@@ -249,14 +259,14 @@ public abstract class FillBaseTemplate {
     }
 
     protected void addManyDeliveryRequests(boolean shouldPost) {
-        for(int i = 0; i < 3; i++) {
+        for (int i = 0; i < 3; i++) {
             List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
-            for(int j = 0; j < 3; j++) {
-                deliveryItemRequests.add(new DeliveryItemRequest(i+j+1, j+10));
+            for (int j = 0; j < 3; j++) {
+                deliveryItemRequests.add(new DeliveryItemRequest(i + j + 1, j + 10));
             }
             deliveryRequests.add(new DeliveryRequest(deliveryItemRequests, LocalDate.now().plusDays(3)));
         }
-        if(shouldPost) {
+        if (shouldPost) {
             setupToken();
             deliveryRequests.forEach(request -> restTemplate.postForEntity("/deliveries",
                     new HttpEntity<>(request, requestHeaders), Delivery.class));
@@ -269,17 +279,17 @@ public abstract class FillBaseTemplate {
         for (int i = 0; i < 3; i++)
             deliveryItemRequests.add(new DeliveryItemRequest(i + 1, i + 10));
 
-        String firstName = orderFactory.generateFirstName();
-        String lastName = orderFactory.generateLastName();
-        String email = orderFactory.generateEmail();
-        String phoneNumber = orderFactory.generatePhoneNumber();
-        String street = orderFactory.generateStreet();
-        String houseNumber = orderFactory.generateHouseNumber();
-        String city = orderFactory.generateCity();
-        String postalCode = orderFactory.generatePostalCode();
+        String firstName = shopServiceFactory.generateFirstName();
+        String lastName = shopServiceFactory.generateLastName();
+        String email = shopServiceFactory.generateEmail();
+        String phoneNumber = shopServiceFactory.generatePhoneNumber();
+        String street = shopServiceFactory.generateStreet();
+        String houseNumber = shopServiceFactory.generateHouseNumber();
+        String city = shopServiceFactory.generateCity();
+        String postalCode = shopServiceFactory.generatePostalCode();
 
-        orderRequest= new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
-                postalCode, deliveryItemRequests, LocalDate.now().plusDays(3));
+        orderRequest = new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber, city,
+                postalCode, deliveryItemRequests, LocalDate.now().plusDays(3), null);
 
         if (shouldPost) {
             setupToken();
@@ -293,17 +303,17 @@ public abstract class FillBaseTemplate {
             for (int j = 0; j < 3; j++)
                 deliveryItemRequests.add(new DeliveryItemRequest(i + j + 1, j + 10));
 
-            String firstName = orderFactory.generateFirstName();
-            String lastName = orderFactory.generateLastName();
-            String email = orderFactory.generateEmail();
-            String phoneNumber = orderFactory.generatePhoneNumber();
-            String street = orderFactory.generateStreet();
-            String houseNumber = orderFactory.generateHouseNumber();
-            String city = orderFactory.generateCity();
-            String postalCode = orderFactory.generatePostalCode();
+            String firstName = shopServiceFactory.generateFirstName();
+            String lastName = shopServiceFactory.generateLastName();
+            String email = shopServiceFactory.generateEmail();
+            String phoneNumber = shopServiceFactory.generatePhoneNumber();
+            String street = shopServiceFactory.generateStreet();
+            String houseNumber = shopServiceFactory.generateHouseNumber();
+            String city = shopServiceFactory.generateCity();
+            String postalCode = shopServiceFactory.generatePostalCode();
 
-            orderRequests.add(new OrderRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
-                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3)));
+            orderRequests.add(new ShopServiceRequest(firstName, lastName, email, phoneNumber, street, houseNumber,
+                    city, postalCode, deliveryItemRequests, LocalDate.now().plusDays(3), null));
         }
 
         if (shouldPost) {
@@ -400,6 +410,88 @@ public abstract class FillBaseTemplate {
             setupToken();
             restTemplate.postForEntity("/special-plan", new HttpEntity<>(specialPlanRequest, requestHeaders),
                     SpecialPlan.class);
+        }
+    }
+
+    protected void addOneReturnRequest(boolean shouldPost) {
+        List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++)
+            deliveryItemRequests.add(new DeliveryItemRequest(i + 1, i + 10));
+
+        returnRequest = new ShopServiceRequest(shopServiceFactory.generateFirstName(),
+                shopServiceFactory.generateLastName(), shopServiceFactory.generateEmail(),
+                shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
+                shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
+                shopServiceFactory.generatePostalCode(), deliveryItemRequests,
+                LocalDate.now().plusDays(3), null);
+
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/returns", new HttpEntity<>(returnRequest, requestHeaders),
+                    Return.class);
+        }
+    }
+
+    protected void addManyReturnRequests(boolean shouldPost) {
+        for (int i = 0; i < 3; i++) {
+            List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+            for (int j = 0; j < 3; j++)
+                deliveryItemRequests.add(new DeliveryItemRequest(i + j + 1, j + 10));
+
+            returnRequests.add(new ShopServiceRequest(shopServiceFactory.generateFirstName(),
+                    shopServiceFactory.generateLastName(), shopServiceFactory.generateEmail(),
+                    shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
+                    shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
+                    shopServiceFactory.generatePostalCode(), deliveryItemRequests,
+                    LocalDate.now().plusDays(3), null));
+        }
+
+        if (shouldPost) {
+            setupToken();
+            returnRequests.forEach(request -> restTemplate.postForEntity("/returns",
+                    new HttpEntity<>(request, requestHeaders), Return.class));
+        }
+    }
+
+    protected void addOneComplaintRequest(boolean shouldPost) {
+        List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+
+        for (int i = 0; i < 3; i++)
+            deliveryItemRequests.add(new DeliveryItemRequest(i + 1, i + 10));
+
+        complaintRequest = new ShopServiceRequest(shopServiceFactory.generateFirstName(),
+                shopServiceFactory.generateLastName(), shopServiceFactory.generateEmail(),
+                shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
+                shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
+                shopServiceFactory.generatePostalCode(), deliveryItemRequests,
+                LocalDate.now().plusDays(3), Resolution.UNRESOLVED);
+
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/complaints", new HttpEntity<>(complaintRequest, requestHeaders),
+                    Complaint.class);
+        }
+    }
+
+    protected void addManyComplaintRequests(boolean shouldPost) {
+        for (int i = 0; i < 3; i++) {
+            List<DeliveryItemRequest> deliveryItemRequests = new ArrayList<>();
+            for (int j = 0; j < 3; j++)
+                deliveryItemRequests.add(new DeliveryItemRequest(i + j + 1, j + 10));
+
+            complaintRequests.add(new ShopServiceRequest(shopServiceFactory.generateFirstName(),
+                    shopServiceFactory.generateLastName(), shopServiceFactory.generateEmail(),
+                    shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
+                    shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
+                    shopServiceFactory.generatePostalCode(), deliveryItemRequests,
+                    LocalDate.now().plusDays(3), Resolution.UNRESOLVED));
+        }
+
+        if (shouldPost) {
+            setupToken();
+            complaintRequests.forEach(request -> restTemplate.postForEntity("/complaints",
+                    new HttpEntity<>(request, requestHeaders), Complaint.class));
         }
     }
 }

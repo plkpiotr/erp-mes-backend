@@ -2,7 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
 import java.util.Random;
 
-public class OrderFactory {
+public class ShopServiceFactory {
 
     private final String[] FIRST_NAMES = {"Piotr", "Jan", "Beniamin", "Anna", "Maria"};
 
@@ -24,7 +24,7 @@ public class OrderFactory {
 
     private final Random random;
 
-    public OrderFactory() {
+    public ShopServiceFactory() {
         random = new Random();
     }
 
