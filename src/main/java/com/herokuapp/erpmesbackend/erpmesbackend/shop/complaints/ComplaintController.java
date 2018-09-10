@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.email.EmailService;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopService;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
 import org.springframework.http.HttpStatus;
@@ -13,10 +14,13 @@ public class ComplaintController {
 
     private final ComplaintRepository complaintRepository;
     private final ShopService shopService;
+    private final EmailService emailService;
 
-    public ComplaintController(ComplaintRepository complaintRepository, ShopService shopService) {
+    public ComplaintController(ComplaintRepository complaintRepository, ShopService shopService,
+                               EmailService emailService) {
         this.complaintRepository = complaintRepository;
         this.shopService = shopService;
+        this.emailService = emailService;
     }
 
     @GetMapping("/complaints")
@@ -28,7 +32,9 @@ public class ComplaintController {
     @PostMapping("/complaints")
     @ResponseStatus(HttpStatus.CREATED)
     public Complaint addOneComplaint(@RequestBody ShopServiceRequest request) {
-        return shopService.addNewComplaint(request);
+        Complaint complaint = shopService.addNewComplaint(request);
+        emailService.sensNewComplaintRegisteredMessage(complaint.getId());
+        return complaint;
     }
 
     @GetMapping("/complaints/{id}")
@@ -42,6 +48,7 @@ public class ComplaintController {
     @ResponseStatus(HttpStatus.OK)
     public Complaint updateStatusComplaint(@PathVariable("id") Long id, @RequestBody String status) {
         shopService.checkIfComplaintExists(id);
+        emailService.sendComplaintStatusChangeMessage(id, status);
         return shopService.updateComplaintStatus(id, ComplaintStatus.valueOf(status));
     }
 
@@ -49,6 +56,7 @@ public class ComplaintController {
     @ResponseStatus(HttpStatus.OK)
     public Complaint updateComplaintResolution(@PathVariable("id") Long id, @RequestBody String resolution) {
         shopService.checkIfComplaintExists(id);
+        emailService.sendComplaintResolutionChangeMessage(id, resolution);
         return shopService.updateComplaintResolution(id, Resolution.valueOf(resolution));
     }
 }

@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
