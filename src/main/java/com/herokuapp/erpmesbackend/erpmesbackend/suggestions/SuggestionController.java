@@ -64,32 +64,6 @@ public class SuggestionController {
         return suggestion;
     }
 
-    @PutMapping("/suggestions/{id}")
-    public HttpStatus updateDetailsSuggestion(@PathVariable("id") Long id,
-                                              @RequestBody SuggestionRequest suggestionRequest) {
-        checkIfSuggestionExists(id);
-        Suggestion suggestion = suggestionRepository.findById(id).get();
-
-        suggestion.setName(suggestionRequest.getName());
-        suggestion.setDescription(suggestionRequest.getDescription());
-
-        Employee author = new Employee();
-        if (suggestionRequest.getAuthorId() != null) {
-            checkIfAuthorExists(suggestionRequest.getAuthorId());
-            author = employeeRepository.findById(suggestionRequest.getAuthorId()).get();
-        }
-        else author = null;
-        suggestion.setAuthor(author);
-
-        List<Employee> recipients = new ArrayList<>();
-        suggestionRequest.getRecipientIds().forEach(this::checkIfRecipientExists);
-        suggestionRequest.getRecipientIds().forEach(index -> recipients.add(employeeRepository.findById(index).get()));
-        suggestion.setRecipients(recipients);
-
-        suggestionRepository.save(suggestion);
-        return HttpStatus.NO_CONTENT;
-    }
-
     @PatchMapping("suggestions/{id}")
     public HttpStatus updateStateNotification(@PathVariable("id") Long id, @RequestBody Phase phase) {
         checkIfSuggestionExists(id);

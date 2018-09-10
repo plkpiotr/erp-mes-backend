@@ -41,7 +41,7 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
         List<Employee> recipients = new ArrayList<>();
         List<Long> recipientIds = new ArrayList<>();
 
-        for (int i = 1; i < 6; i++) {
+        for (int i = 2; i < 6; i++) {
             Employee consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), Employee.class, i).getBody();
             recipientIds.add(consignee.getId());

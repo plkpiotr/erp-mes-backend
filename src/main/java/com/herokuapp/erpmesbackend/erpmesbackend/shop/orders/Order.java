@@ -37,6 +37,7 @@ public class Order {
     @Email
     private String email;
 
+    @Column(nullable = false)
     @Pattern(regexp = "[0-9]{9}")
     private String phoneNumber;
 
@@ -53,12 +54,16 @@ public class Order {
     @Pattern(regexp = "[0-9]{2}-?[0-9]{3}")
     private String postalCode;
 
+    @Column(nullable = false)
     @OneToMany
     private List<DeliveryItem> deliveryItems;
 
+    @Column(nullable = false)
     private LocalDate scheduledFor;
     private LocalDate submissionDate;
     private LocalDate closingDate;
+
+    @Column(nullable = false)
     private Double value;
 
     public Order(String firstName, String lastName, String email, String phoneNumber, String street,
