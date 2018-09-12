@@ -465,7 +465,7 @@ public abstract class FillBaseTemplate {
                 shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
                 shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
                 shopServiceFactory.generatePostalCode(), deliveryItemRequests,
-                LocalDate.now().plusDays(3), shopServiceFactory.generateResolution(), "Random faault");
+                LocalDate.now().plusDays(3), shopServiceFactory.generateResolution(), "Random fault");
 
         if (shouldPost) {
             setupToken();

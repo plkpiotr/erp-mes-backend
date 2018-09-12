@@ -3,7 +3,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +44,8 @@ public class NotificationController {
     @GetMapping("/employees/{id}/notifications")
     @ResponseStatus(HttpStatus.OK)
     public List<Notification> getNotificationsByConsignee(@PathVariable("id") Long id) {
-        return notificationRepository.findByConsigneesContaining(id).isPresent() ?
-                notificationRepository.findByConsigneesContaining(id).get() : new ArrayList<>();
+        return notificationRepository.findByConsigneesId(id).isPresent() ?
+                notificationRepository.findByConsigneesId(id).get() : new ArrayList<>();
     }
 
     @PostMapping("/notifications")

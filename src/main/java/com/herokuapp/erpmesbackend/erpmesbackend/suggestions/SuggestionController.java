@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class SuggestionController {
 
     private final SuggestionRepository suggestionRepository;
@@ -39,8 +39,8 @@ public class SuggestionController {
     @GetMapping("/employees/{id}/suggestions")
     @ResponseStatus(HttpStatus.OK)
     public List<Suggestion> getSuggestionsByRecipient(@PathVariable("id") Long id) {
-        return suggestionRepository.findByRecipientsContaining(id).isPresent() ?
-                suggestionRepository.findByRecipientsContaining(id).get() : new ArrayList<>();
+        return suggestionRepository.findByRecipientsId(id).isPresent() ?
+                suggestionRepository.findByRecipientsId(id).get() : new ArrayList<>();
     }
 
     @PostMapping("/suggestions")

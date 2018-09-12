@@ -33,8 +33,7 @@ public class Suggestion {
     private Employee author;
 
     @Column(nullable = false)
-    @OneToMany
-    @JoinColumn(name = "recipients_id")
+    @ManyToMany
     private List<Employee> recipients;
 
     @Column(nullable = false)

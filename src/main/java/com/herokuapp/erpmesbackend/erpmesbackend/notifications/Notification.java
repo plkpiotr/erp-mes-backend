@@ -1,7 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,8 +36,7 @@ public class Notification {
     private Employee transferee;
 
     @Column(nullable = false)
-    @OneToMany
-    @JoinColumn(name = "consignees_id")
+    @ManyToMany
     private List<Employee> consignees;
 
     @Column(nullable = false)
