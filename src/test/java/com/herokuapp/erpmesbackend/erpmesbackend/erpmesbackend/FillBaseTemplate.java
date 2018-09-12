@@ -1,5 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntity;
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntityRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
@@ -17,7 +20,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Complaint;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Resolution;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.Delivery;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryRequest;
@@ -60,6 +62,7 @@ public abstract class FillBaseTemplate {
     protected SpecialPlanRequest specialPlanRequest;
     protected ShopServiceRequest returnRequest;
     protected ShopServiceRequest complaintRequest;
+    protected EmailEntityRequest emailEntityRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
@@ -73,6 +76,7 @@ public abstract class FillBaseTemplate {
     protected List<SuggestionRequest> suggestionRequests;
     protected List<ShopServiceRequest> returnRequests;
     protected List<ShopServiceRequest> complaintRequests;
+    protected List<EmailEntityRequest> emailEntityRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
@@ -80,6 +84,7 @@ public abstract class FillBaseTemplate {
     protected NotificationFactory notificationFactory;
     protected SuggestionFactory suggestionFactory;
     protected ShopServiceFactory shopServiceFactory;
+    protected EmailFactory emailFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
@@ -88,6 +93,7 @@ public abstract class FillBaseTemplate {
         notificationFactory = new NotificationFactory();
         suggestionFactory = new SuggestionFactory();
         shopServiceFactory = new ShopServiceFactory();
+        emailFactory = new EmailFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
@@ -101,6 +107,7 @@ public abstract class FillBaseTemplate {
         suggestionRequests = new ArrayList<>();
         returnRequests = new ArrayList<>();
         complaintRequests = new ArrayList<>();
+        emailEntityRequests = new ArrayList<>();
     }
 
     protected void setupToken() {
@@ -495,6 +502,24 @@ public abstract class FillBaseTemplate {
             setupToken();
             complaintRequests.forEach(request -> restTemplate.postForEntity("/complaints",
                     new HttpEntity<>(request, requestHeaders), Complaint.class));
+        }
+    }
+
+    protected void addOneEmailEntityRequest(boolean shouldPost) {
+        emailEntityRequest = emailFactory.generateRequestWithAddress();
+        if (shouldPost) {
+            restTemplate.postForEntity("/emails", new HttpEntity<>(emailEntityRequest, requestHeaders),
+                    EmailEntity.class);
+        }
+    }
+
+    protected void addManyEmailEntityRequests(boolean shouldPost) {
+        for (int i = 0; i < 3; i++) {
+            emailEntityRequests.add(emailFactory.generateRequestWithAddress());
+        }
+        if (shouldPost) {
+            emailEntityRequests.forEach(request -> restTemplate.postForEntity("/emails",
+                    new HttpEntity<>(request, requestHeaders), EmailEntity.class));
         }
     }
 }
