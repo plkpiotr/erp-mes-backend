@@ -1,4 +1,4 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.email;
+package com.herokuapp.erpmesbackend.erpmesbackend.emails;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

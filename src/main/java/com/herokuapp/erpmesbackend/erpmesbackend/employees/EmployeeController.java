@@ -2,6 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.InboxService;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.ForbiddenException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRepository;
@@ -76,6 +77,8 @@ public class EmployeeController {
                 employeeRepository.findByEmail(username).get().getRole() != Role.ADMIN) {
             throw new ForbiddenException();
         }
+        InboxService inboxService = new InboxService();
+        inboxService.readMail();
         return new UserDTO(employeeRepository.findById(id).get());
     }
 

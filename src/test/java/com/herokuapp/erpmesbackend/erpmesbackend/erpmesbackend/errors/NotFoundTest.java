@@ -88,4 +88,12 @@ public class NotFoundTest extends FillBaseTemplate {
                 new HttpEntity<>(null, requestHeaders), String.class, 255);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
+
+    @Test
+    public void checkIfResponseStatus404EmailNotFound() {
+        setupToken();
+        ResponseEntity<String> forEntity = restTemplate.exchange("/emails/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), String.class, 255);
+        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
 }

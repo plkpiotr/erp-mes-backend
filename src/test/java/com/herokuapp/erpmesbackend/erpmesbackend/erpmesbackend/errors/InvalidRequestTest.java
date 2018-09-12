@@ -100,4 +100,14 @@ public class InvalidRequestTest extends FillBaseTemplate {
 
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
     }
+
+    @Test
+    public void checkIfResponseStatus400CannotReplyToYourself() {
+        addManyEmailEntityRequests(true);
+        addOneEmailEntityRequest(false);
+        ResponseEntity<String> responseEntity = restTemplate.postForEntity("/emails/{id}",
+                new HttpEntity<>(emailEntityRequest, requestHeaders), String.class, 1);
+
+        assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+    }
 }

@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.orders;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.email.EmailService;
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 

@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.returns;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.email.EmailService;
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailService;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopService;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
 import org.springframework.http.HttpStatus;

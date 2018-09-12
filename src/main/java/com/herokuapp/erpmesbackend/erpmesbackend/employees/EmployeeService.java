@@ -32,7 +32,7 @@ public class EmployeeService {
 
     public void checkIfCanBeAdded(EmployeeRequest request) {
         if (employeeRepository.findByEmail(request.getEmail()).isPresent()) {
-            throw new InvalidRequestException("This username (email) is already taken!");
+            throw new InvalidRequestException("This username (emails) is already taken!");
         }
         if (request.getRole().name().contains("ADMIN") &&
                 employeeRepository.findByRole(request.getRole()).isPresent()) {
