@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 

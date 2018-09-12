@@ -3,7 +3,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;

@@ -98,8 +98,10 @@ public class TaskController {
         task.setAssignee(employeeRepository.findById(taskRequest.getAssigneeId()).get());
 
         List<Task> precedingTasks = new ArrayList<>();
-        if (taskRequest.getPrecedingTaskIds() != null)
+        if (taskRequest.getPrecedingTaskIds() != null) {
+            taskRequest.getPrecedingTaskIds().forEach(this::checkIfTaskExists);
             taskRequest.getPrecedingTaskIds().forEach(index -> precedingTasks.add(taskRepository.findById(index).get()));
+        }
         task.setPrecedingTasks(precedingTasks);
 
         task.setDetails(taskRequest.getDetails());

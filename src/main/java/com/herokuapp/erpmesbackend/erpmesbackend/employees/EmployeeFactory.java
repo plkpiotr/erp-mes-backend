@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.employees;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRequest;
 
 import java.util.Arrays;
