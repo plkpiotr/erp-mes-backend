@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
@@ -31,11 +32,10 @@ public class ReadOneEmployeeTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseContainsCalledEmployee() {
         for (int i = 0; i < employeeRequests.size(); i++) {
-            ResponseEntity<Employee> forEntity = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Employee.class, i + 1);
+            ResponseEntity<EmployeeDTO> forEntity = restTemplate.exchange("/employees/{id}",
+                    HttpMethod.GET, new HttpEntity<>(null, requestHeaders),
+                    EmployeeDTO.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertTrue(employeeRequests.stream().anyMatch(request -> request.extractUser()
-                    .checkIfDataEquals(forEntity.getBody())));
         }
     }
 }

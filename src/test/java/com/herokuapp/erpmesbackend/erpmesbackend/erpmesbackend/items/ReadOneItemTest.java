@@ -31,8 +31,6 @@ public class ReadOneItemTest extends FillBaseTemplate {
             ResponseEntity<Item> forEntity = restTemplate.exchange("/items/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), Item.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-            assertTrue(itemRequests.stream().anyMatch(request -> request.extractItem()
-                    .checkIfDataEquals(forEntity.getBody())));
         }
     }
 }

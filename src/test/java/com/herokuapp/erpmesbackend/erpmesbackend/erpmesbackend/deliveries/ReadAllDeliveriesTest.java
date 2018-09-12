@@ -35,6 +35,6 @@ public class ReadAllDeliveriesTest extends FillBaseTemplate {
 
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         List<Delivery> deliveries = Arrays.asList(forEntity.getBody());
-        assertThat(deliveries.size()).isEqualTo(3);
+        assertThat(deliveries.size()).isGreaterThanOrEqualTo(3);
     }
 }

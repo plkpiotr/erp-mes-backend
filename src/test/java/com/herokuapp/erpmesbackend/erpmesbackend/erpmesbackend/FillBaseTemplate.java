@@ -1,12 +1,14 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.planning.SpecialPlan;
@@ -157,7 +159,7 @@ public abstract class FillBaseTemplate {
         if (shouldPost) {
             setupToken();
             adminRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    new HttpEntity<>(request, requestHeaders), Employee.class));
+                    new HttpEntity<>(request, requestHeaders), String.class));
         }
     }
 
@@ -168,12 +170,13 @@ public abstract class FillBaseTemplate {
         if (shouldPost) {
             setupToken();
             nonAdminRequests.forEach(request -> restTemplate.postForEntity("/employees",
-                    new HttpEntity<>(request, requestHeaders), Employee.class));
+                    new HttpEntity<>(request, requestHeaders), String.class));
         }
     }
 
     protected void addOneHolidayRequest(long employeeId, boolean shouldPost) {
         holidayRequest = holidayFactory.generateHolidayRequest();
+        holidayRequest.setDuration(1);
         if (shouldPost) {
             setupToken();
             restTemplate.postForEntity("/employees/{id}/holidays", new HttpEntity<>(holidayRequest,
@@ -323,7 +326,7 @@ public abstract class FillBaseTemplate {
         }
     }
 
-    protected Notification addOneNotificationRequest(boolean shouldPost) {
+    protected NotificationDTO addOneNotificationRequest(boolean shouldPost) {
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
         Long notifierId = 1L;
@@ -341,23 +344,23 @@ public abstract class FillBaseTemplate {
         setupToken();
         if (shouldPost) {
             restTemplate.postForEntity("/notifications", new HttpEntity<>(notificationRequest, requestHeaders),
-                    Notification.class);
+                    NotificationDTO.class);
         }
 
-        Employee notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
+        EmployeeDTO notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
 
-        List<Employee> consignees = new ArrayList<>();
+        List<EmployeeDTO> consignees = new ArrayList<>();
         consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody());
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody());
         consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 2).getBody());
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
 
-        return new Notification(instruction, description, notifier, consignees, type, reference);
+        return new NotificationDTO(instruction, description, notifier, consignees, type, reference);
     }
 
-    protected List<Notification> addNotificationRequests(boolean shouldPost) {
-        List<Notification> notifications = new ArrayList<>();
+    protected List<NotificationDTO> addNotificationRequests(boolean shouldPost) {
+        List<NotificationDTO> notifications = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             notificationRequests.add(new NotificationRequest());
             notifications.add(addOneNotificationRequest(shouldPost));

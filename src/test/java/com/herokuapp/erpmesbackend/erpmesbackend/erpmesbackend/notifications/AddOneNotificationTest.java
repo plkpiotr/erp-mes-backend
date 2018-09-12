@@ -1,8 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.notifications;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.junit.Before;
@@ -25,26 +25,26 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AddOneNotificationTest extends FillBaseTemplate {
 
-    private Notification notification;
+    private NotificationDTO notification;
 
     @Before
     public void init() {
         setupToken();
-        addEmployeeRequests(true);
+        addNonAdminRequests(true);
 
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
 
-        Employee notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
+        EmployeeDTO notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
         Long notifierId = notifier.getId();
 
-        List<Employee> consignees = new ArrayList<>();
+        List<EmployeeDTO> consignees = new ArrayList<>();
         List<Long> consigneeIds = new ArrayList<>();
 
         for (int i = 1; i < 5; i++) {
-            Employee consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Employee.class, i).getBody();
+            EmployeeDTO consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, i).getBody();
             consigneeIds.add(consignee.getId());
             consignees.add(consignee);
         }
@@ -55,17 +55,18 @@ public class AddOneNotificationTest extends FillBaseTemplate {
         notificationRequest = new NotificationRequest(instruction, description, notifierId,
                 consigneeIds, type, reference);
 
-        notification = new Notification(instruction, description, notifier, consignees, type, reference);
+        notification = new NotificationDTO(instruction, description, notifier, consignees,
+                type, reference);
 
     }
 
     @Test
     public void checkIfResponseContainsAddedNotification() {
-        ResponseEntity<Notification> notificationResponseEntity = restTemplate.postForEntity("/notifications",
-                new HttpEntity<>(notificationRequest, requestHeaders), Notification.class);
+        ResponseEntity<NotificationDTO> notificationResponseEntity = restTemplate.postForEntity("/notifications",
+                new HttpEntity<>(notificationRequest, requestHeaders), NotificationDTO.class);
         assertThat(notificationResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Notification body = notificationResponseEntity.getBody();
+        NotificationDTO body = notificationResponseEntity.getBody();
         assertTrue(body.checkIfDataEquals(notification));
     }
 }

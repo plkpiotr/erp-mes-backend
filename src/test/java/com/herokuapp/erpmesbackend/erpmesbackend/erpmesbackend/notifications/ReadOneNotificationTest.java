@@ -2,6 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
+import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,7 +22,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReadOneNotificationTest extends FillBaseTemplate {
 
-    private List<Notification> notifications;
+    private List<NotificationDTO> notifications;
 
     @Before
     public void init() {
@@ -33,12 +34,14 @@ public class ReadOneNotificationTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsNotificationWithGivenId() {
-        for (int i = 0; i < 3; i++) {
-            ResponseEntity<Notification> forEntity = restTemplate.exchange("/notifications/{id}",
-                    HttpMethod.GET, new HttpEntity<>(null, requestHeaders), Notification.class, i + 1);
+        int length = restTemplate.exchange("/notifications", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), NotificationDTO[].class).getBody().length;
+        for (int i = length; i > length-3; i--) {
+            ResponseEntity<NotificationDTO> forEntity = restTemplate.exchange("/notifications/{id}",
+                    HttpMethod.GET, new HttpEntity<>(null, requestHeaders), NotificationDTO.class, i);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-            Notification notification = forEntity.getBody();
+            NotificationDTO notification = forEntity.getBody();
             assertTrue(notifications.stream().anyMatch(n -> n.checkIfDataEquals(notification)));
         }
     }

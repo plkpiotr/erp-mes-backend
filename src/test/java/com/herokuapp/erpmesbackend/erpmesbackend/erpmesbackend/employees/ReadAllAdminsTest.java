@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
@@ -30,19 +31,19 @@ public class ReadAllAdminsTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAllManagers() {
-        long adminCount = employeeRequests.stream()
+        long adminCount = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
+                .stream()
                 .filter(request -> request.getRole().name().contains("ADMIN"))
-                .map(request -> request.getRole())
-                .distinct()
                 .count();
 
-        ResponseEntity<Employee[]> forEntity = restTemplate.exchange("/employees?privilege=admin",
-                HttpMethod.GET, new HttpEntity<>(null, requestHeaders), Employee[].class);
+        ResponseEntity<EmployeeDTO[]> forEntity = restTemplate.exchange("/employees?privilege=admin",
+                HttpMethod.GET, new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class);
 
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Employee> employees = Arrays.asList(forEntity.getBody());
-        assertThat(employees.size()).isEqualTo(adminCount+1);
+        List<EmployeeDTO> employees = Arrays.asList(forEntity.getBody());
+        assertThat(employees.size()).isEqualTo(adminCount);
     }
 
     @After

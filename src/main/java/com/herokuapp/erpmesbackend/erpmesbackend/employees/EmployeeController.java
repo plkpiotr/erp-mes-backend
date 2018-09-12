@@ -4,6 +4,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.contracts.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.contracts.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.ForbiddenException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
+import com.herokuapp.erpmesbackend.erpmesbackend.teams.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -25,6 +26,9 @@ public class EmployeeController {
     private ContractRepository contractRepository;
 
     @Autowired
+    private TeamRepository teamRepository;
+
+    @Autowired
     private BCryptPasswordEncoder bcryptEncoder;
 
     @Autowired
@@ -42,23 +46,23 @@ public class EmployeeController {
 
     @GetMapping("/employees")
     @ResponseStatus(HttpStatus.OK)
-    public List<Employee> getAllEmployees(@RequestParam(value = "privilege", required = false) String privilege) {
+    public List<EmployeeDTO> getAllEmployees(@RequestParam(value = "privilege", required = false) String privilege) {
         List<Employee> employees = employeeRepository.findAll();
         List<EmployeeDTO> employeeDTOS = employeeService.mapToDtos(employees);
         if (privilege != null) {
-            employeeService.filterByPrivilege(employeeDTOS, privilege);
+            employeeDTOS = employeeService.filterByPrivilege(employeeDTOS, privilege);
         }
-        return employees;
+        return employeeDTOS;
     }
 
     @PostMapping("/employees")
     @ResponseStatus(HttpStatus.CREATED)
-    public Employee addNewEmployee(@RequestBody EmployeeRequest request) {
+    public EmployeeDTO addNewEmployee(@RequestBody EmployeeRequest request) {
         Employee employee = request.extractUser();
         employee.encodePassword(bcryptEncoder.encode(employee.getPassword()));
         employeeService.checkIfCanBeAdded(request);
         employeeService.saveEmployee(employee);
-        return employee;
+        return new EmployeeDTO(employee);
     }
 
     @GetMapping("/employees/{id}")
@@ -68,7 +72,8 @@ public class EmployeeController {
         Object principal = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        if (employeeRepository.findByEmail(username).get().getId() != id) {
+        if (employeeRepository.findByEmail(username).get().getId() != id &&
+                employeeRepository.findByEmail(username).get().getRole() != Role.ADMIN) {
             throw new ForbiddenException();
         }
         return new UserDTO(employeeRepository.findById(id).get());

@@ -1,8 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,7 +18,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,25 +31,23 @@ public class ReadAllEmployeesTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAllEmployees() {
-        ResponseEntity<Employee[]> forEntity = restTemplate.exchange("/employees", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee[].class);
+        ResponseEntity<EmployeeDTO[]> forEntity = restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class);
 
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-        List<Employee> employees = Arrays.asList(forEntity.getBody())
-                .stream()
-                .filter(employee -> !employee.getEmail().equals("szef.ceo@company.com"))
-                .collect(Collectors.toList());
-        for(Employee employee : employees) {
-            assertTrue(employeeRequests.stream()
-                    .anyMatch(request -> request.extractUser().checkIfDataEquals(employee)));
-        }
+        List<EmployeeDTO> employees = Arrays.asList(forEntity.getBody());
+        assertThat(employees.size()).isGreaterThanOrEqualTo(employeeRequests.stream()
+                .map(employee -> employee.getRole())
+                .distinct()
+                .collect(Collectors.toList())
+                .size());
     }
 
     @After
     public void clean() {
-        for(int i = 0; i < 10; i++) {
-            restTemplate.delete("/employees/{id}", i+1);
+        for (int i = 0; i < 10; i++) {
+            restTemplate.delete("/employees/{id}", i + 1);
         }
     }
 }

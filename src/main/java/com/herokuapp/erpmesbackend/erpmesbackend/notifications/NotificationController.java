@@ -31,27 +31,35 @@ public class NotificationController {
 
     @GetMapping("/notifications")
     @ResponseStatus(HttpStatus.OK)
-    public List<Notification> getAllNotifications() {
-        return new ArrayList<>(notificationRepository.findAll());
+    public List<NotificationDTO> getAllNotifications() {
+        List<Notification> notifications = notificationRepository.findAll();
+        List<NotificationDTO> notificationDTOS = new ArrayList<>();
+        notifications.forEach(notification -> notificationDTOS.add(new NotificationDTO(notification)));
+        return notificationDTOS;
     }
 
     @GetMapping("/notifications/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Notification getOneNotification(@PathVariable("id") Long id) {
+    public NotificationDTO getOneNotification(@PathVariable("id") Long id) {
         checkIfNotificationExists(id);
-        return notificationRepository.findById(id).get();
+        return new NotificationDTO(notificationRepository.findById(id).get());
     }
 
     @GetMapping("/employees/{id}/notifications")
     @ResponseStatus(HttpStatus.OK)
-    public List<Notification> getNotificationsByConsignee(@PathVariable("id") Long id) {
-        return notificationRepository.findByConsigneesContaining(id).isPresent() ?
-                notificationRepository.findByConsigneesContaining(id).get() : new ArrayList<>();
+    public List<NotificationDTO> getNotificationsByConsignee(@PathVariable("id") Long id) {
+        if (!notificationRepository.findByConsigneesContaining(id).isPresent()) {
+            return new ArrayList<>();
+        }
+        List<Notification> notifications = notificationRepository.findByConsigneesContaining(id).get();
+        List<NotificationDTO> notificationDTOS = new ArrayList<>();
+        notifications.forEach(notification -> notificationDTOS.add(new NotificationDTO(notification)));
+        return notificationDTOS;
     }
 
     @PostMapping("/notifications")
     @ResponseStatus(HttpStatus.CREATED)
-    public Notification addOneNotification(@RequestBody NotificationRequest notificationRequest) {
+    public NotificationDTO addOneNotification(@RequestBody NotificationRequest notificationRequest) {
         String instruction = notificationRequest.getInstruction();
         String description = notificationRequest.getDescription();
 
@@ -71,7 +79,7 @@ public class NotificationController {
         Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
 
         notificationRepository.save(notification);
-        return notification;
+        return new NotificationDTO(notification);
     }
 
     @PutMapping("notifications/{id}")
