@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.Before;
@@ -24,12 +25,13 @@ public class AddOneEmployeeTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAddedEmployee() {
-        ResponseEntity<Employee> employeeResponseEntity = restTemplate
-                .postForEntity("/employees", new HttpEntity<>(employeeRequest, requestHeaders), Employee.class);
+        ResponseEntity<EmployeeDTO> employeeResponseEntity = restTemplate
+                .postForEntity("/employees", new HttpEntity<>(employeeRequest, requestHeaders),
+                        EmployeeDTO.class);
 
         assertThat(employeeResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Employee body = employeeResponseEntity.getBody();
-        assertTrue(body.checkIfDataEquals(employeeRequest.extractUser()));
+        EmployeeDTO body = employeeResponseEntity.getBody();
+        assertTrue(body.checkIfDataEquals(new EmployeeDTO(employeeRequest.extractUser())));
     }
 }

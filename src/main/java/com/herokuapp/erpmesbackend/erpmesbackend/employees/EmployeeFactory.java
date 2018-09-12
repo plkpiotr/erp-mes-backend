@@ -28,6 +28,10 @@ public class EmployeeFactory {
         return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@domain.com";
     }
 
+    public String generateRandomEmail() {
+        return generateEmail(generate(FIRST_NAMES), generate(LAST_NAMES));
+    }
+
     public Role generateRole() {
         return Role.values()[r.nextInt(Role.values().length)];
     }

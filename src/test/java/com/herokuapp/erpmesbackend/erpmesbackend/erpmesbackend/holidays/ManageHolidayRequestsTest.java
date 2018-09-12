@@ -1,18 +1,21 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.ApprovalState;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -20,24 +23,34 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ManageHolidayRequestsTest extends FillBaseTemplate {
 
+    private EmployeeDTO employee;
+    private Holiday holiday;
+
     @Before
     public void init() {
         setupToken();
-        addOneAdminRequest(false);
-        addOneNonAdminRequest(false);
-        adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
-        nonAdminRequest.setRole(Role.ACCOUNTANT);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders), String.class);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders), String.class);
-        addManyHolidayRequests(2, true);
+        addAdminRequests(true);
+        employee = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
+                .stream()
+                .filter(e -> e.getRole().name().contains("ADMIN_"))
+                .findFirst()
+                .get();
+
+        addOneHolidayRequest(employee.getId(), false);
+        holidayRequest.setHolidayType(HolidayType.VACATION);
+        holidayRequest.setDuration(1);
+        holiday = restTemplate.postForEntity(
+                "/employees/{id}/holidays", new HttpEntity<>(holidayRequest, requestHeaders),
+                Holiday.class, employee.getId()).getBody();
     }
 
     @Test
     public void approveHoliday() {
         ResponseEntity<Holiday> holidayResponseEntity = restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                new HttpEntity<>(1, requestHeaders), Holiday.class, 1, 2
-        );
+                new HttpEntity<>(holiday.getId(), requestHeaders), Holiday.class,
+                1, employee.getId());
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(holidayResponseEntity.getBody().getApprovalState()).isEqualTo(ApprovalState.APPROVED);

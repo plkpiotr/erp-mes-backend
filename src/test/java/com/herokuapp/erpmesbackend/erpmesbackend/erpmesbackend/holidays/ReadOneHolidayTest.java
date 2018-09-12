@@ -37,7 +37,8 @@ public class ReadOneHolidayTest extends FillBaseTemplate {
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Holiday holiday = Arrays.asList(holidayResponseEntity.getBody()).get(0);
+        Holiday holiday = Arrays.asList(holidayResponseEntity.getBody()).get(holidayResponseEntity
+                .getBody().length-1);
         assertTrue(holiday.getStartDate().equals(holidayRequest.getStartDate()));
         assertTrue(holiday.getDuration() == holidayRequest.getDuration());
         assertTrue(holiday.getHolidayType().equals(holidayRequest.getHolidayType()));

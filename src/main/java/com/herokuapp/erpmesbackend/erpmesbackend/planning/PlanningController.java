@@ -56,8 +56,8 @@ public class PlanningController {
     @ResponseStatus(HttpStatus.OK)
     public SpecialPlan findSpecialPlan(@DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
                                        @RequestParam("day") LocalDate day) {
-        Optional<SpecialPlan> byDay = specialPlanRepository.findByDay(day);
-        return byDay.isPresent() ? byDay.get() : new SpecialPlan();
+        Optional<List<SpecialPlan>> byDay = specialPlanRepository.findByDay(day);
+        return byDay.isPresent() ? byDay.get().get(byDay.get().size()-1) : new SpecialPlan();
     }
 
     @PostMapping("/special-plan")

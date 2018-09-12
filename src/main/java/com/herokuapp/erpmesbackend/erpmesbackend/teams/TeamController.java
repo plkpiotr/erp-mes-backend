@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.teams;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,9 +18,14 @@ public class TeamController {
     @Autowired
     private TeamRepository teamRepository;
 
+    @Autowired
+    private EmployeeRepository employeeRepository;
+
     @PostConstruct
     public void setupTeams() {
-        teamRepository.save(new Team(Role.ADMIN));
+        Team team = new Team(Role.ADMIN);
+        team.addEmployee(employeeRepository.findById(1L).get());
+        teamRepository.save(team);
         teamRepository.save(new Team(Role.ACCOUNTANT));
         teamRepository.save(new Team(Role.ANALYST));
         teamRepository.save(new Team(Role.WAREHOUSE));

@@ -14,6 +14,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Month;
 import java.util.stream.Collectors;
 
@@ -41,7 +43,7 @@ public class SaveMonthlyReportTest extends FillBaseTemplate {
         setupToken();
         ResponseEntity<CurrentReport> forEntity = restTemplate.exchange("/current-report", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), CurrentReport.class);
-        assertThat(forEntity.getBody().getStartDate().getMonth()).isEqualTo(Month.AUGUST);
+        assertThat(forEntity.getBody().getStartDate().getMonth()).isEqualTo(LocalDate.now().getMonth());
         assertThat(forEntity.getBody().getExpenses()
                 .stream()
                 .filter(expense -> expense.getExpenseType().equals(ExpenseType.SALARIES))

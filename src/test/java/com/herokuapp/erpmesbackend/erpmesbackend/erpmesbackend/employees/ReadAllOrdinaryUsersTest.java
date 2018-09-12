@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.After;
@@ -31,7 +32,9 @@ public class ReadAllOrdinaryUsersTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAllManagers() {
-        long userCount = employeeRequests.stream()
+        long userCount = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
+                .stream()
                 .filter(request -> !request.getRole().name().contains("ADMIN"))
                 .count();
 

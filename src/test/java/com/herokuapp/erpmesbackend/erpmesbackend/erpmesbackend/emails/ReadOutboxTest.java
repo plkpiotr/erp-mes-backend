@@ -1,7 +1,7 @@
-package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.items;
+package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.emails;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntity;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,24 +13,23 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-public class ReadOneItemTest extends FillBaseTemplate {
+public class ReadOutboxTest extends FillBaseTemplate {
 
     @Before
     public void init() {
         setupToken();
-        addManyItemRequests(true);
+        addManyEmailEntityRequests(true);
     }
 
     @Test
-    public void assertResponseContainsRequestedItem() {
-        for(int i = 0; i < itemRequests.size(); i++) {
-            ResponseEntity<Item> forEntity = restTemplate.exchange("/items/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Item.class, i + 1);
-            assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        }
+    public void assertResponseContainsAllSentMail() {
+        ResponseEntity<EmailEntity[]> exchange = restTemplate.exchange("/emails/outbox", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmailEntity[].class);
+
+        assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(exchange.getBody().length).isGreaterThanOrEqualTo(3);
     }
 }

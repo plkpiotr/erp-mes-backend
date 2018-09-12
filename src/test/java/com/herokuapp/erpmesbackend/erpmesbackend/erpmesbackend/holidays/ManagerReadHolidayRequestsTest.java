@@ -1,8 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,27 +24,33 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ManagerReadHolidayRequestsTest extends FillBaseTemplate {
 
+    private EmployeeDTO employee;
     @Before
     public void init() {
         setupToken();
-        addOneAdminRequest(false);
-        addOneNonAdminRequest(false);
-        adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
-        nonAdminRequest.setRole(Role.ACCOUNTANT);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders), String.class);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders), String.class);
-        addOneHolidayRequest(3, true);
+        addAdminRequests(true);
+        employee = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
+                .stream()
+                .filter(e -> e.getRole().name().contains("ADMIN_"))
+                .findFirst()
+                .get();
+        addOneHolidayRequest(employee.getId(), false);
+        holidayRequest.setHolidayType(HolidayType.VACATION);
+        restTemplate.postForEntity("/employees/{id}/holidays",
+                new HttpEntity<>(holidayRequest, requestHeaders), Holiday.class, employee.getId());
     }
 
     @Test
     public void checkIfResponseContainsHoliday() {
         ResponseEntity<Holiday[]> holidayResponseEntity = restTemplate.exchange(
                 "/employees/{managerId}/subordinates/holiday-requests", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Holiday[].class, 2
+                new HttpEntity<>(null, requestHeaders), Holiday[].class, 1
         );
 
         assertThat(holidayResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Holiday holiday = Arrays.asList(holidayResponseEntity.getBody()).get(0);
+        Holiday[] body = holidayResponseEntity.getBody();
+        Holiday holiday = Arrays.asList(body).get(body.length-1);
         assertTrue(holiday.getStartDate().equals(holidayRequest.getStartDate()) &&
                 holiday.getDuration() == holidayRequest.getDuration() &&
                 holiday.getHolidayType().equals(holidayRequest.getHolidayType()));

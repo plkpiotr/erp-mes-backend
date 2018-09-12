@@ -1,7 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +14,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -41,16 +45,23 @@ public class NotFoundTest extends FillBaseTemplate {
     @Test
     public void checkIfResponseStatus404HolidayNotFound() {
         setupToken();
-        addOneAdminRequest(false);
-        addOneNonAdminRequest(false);
-        adminRequest.setRole(Role.ADMIN_ACCOUNTANT);
-        nonAdminRequest.setRole(Role.ACCOUNTANT);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(adminRequest, requestHeaders), String.class);
-        restTemplate.postForEntity("/employees", new HttpEntity<>(nonAdminRequest, requestHeaders), String.class);
+        addAdminRequests(true);
+        EmployeeDTO employee = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
+                .stream()
+                .filter(e -> e.getRole().name().contains("ADMIN_"))
+                .findFirst()
+                .get();
+        addOneHolidayRequest(employee.getId(), false);
+        holidayRequest.setHolidayType(HolidayType.VACATION);
+        Holiday holiday = restTemplate.postForEntity(
+                "/employees/{id}/holidays", new HttpEntity<>(holidayRequest, requestHeaders),
+                Holiday.class, employee.getId()).getBody();
 
         ResponseEntity<String> responseEntity = restTemplate.postForEntity(
                 "/employees/{managerId}/subordinates/{subordinateId}/holidays?approve=true",
-                new HttpEntity<>(1, requestHeaders), String.class, 2, 3);
+                new HttpEntity<>(holiday.getId()+1, requestHeaders), String.class, 1,
+                employee.getId());
         assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
@@ -74,6 +85,14 @@ public class NotFoundTest extends FillBaseTemplate {
     public void checkIfResponseStatus404DeliveryNotFound() {
         setupToken();
         ResponseEntity<String> forEntity = restTemplate.exchange("/deliveries/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), String.class, 255);
+        assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+    }
+
+    @Test
+    public void checkIfResponseStatus404EmailNotFound() {
+        setupToken();
+        ResponseEntity<String> forEntity = restTemplate.exchange("/emails/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), String.class, 255);
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
