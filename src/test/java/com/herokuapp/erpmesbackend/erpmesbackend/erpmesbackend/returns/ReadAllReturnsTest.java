@@ -35,7 +35,7 @@ public class ReadAllReturnsTest extends FillBaseTemplate {
         assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
         List<Return> returns = Arrays.asList(forEntity.getBody());
-        assertThat(returns.size()).isEqualTo(3);
+        assertThat(returns.size()).isGreaterThanOrEqualTo(3);
     }
 
 }

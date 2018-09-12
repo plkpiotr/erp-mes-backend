@@ -40,6 +40,5 @@ public class RecalculateCostsTest extends FillBaseTemplate {
         assertThat(estimatedCosts.getStockCosts()).isEqualTo(10000.00);
         assertThat(estimatedCosts.getSocialFund()).isEqualTo(10000.00);
         assertThat(estimatedCosts.getUnexpected()).isEqualTo(10000.00);
-        assertThat(estimatedCosts.getTaxes()).isEqualTo(22000.00);
     }
 }
