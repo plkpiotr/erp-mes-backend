@@ -2,7 +2,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.chat;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.ForbiddenException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -14,11 +13,14 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("http://localhost:4200")
 public class MessageController {
 
+    private final MessageRepository messageRepository;
     private final ChannelRepository channelRepository;
     private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public MessageController(ChannelRepository channelRepository, MessageRepository messageRepository, EmployeeRepository employeeRepository) {
+    public MessageController(MessageRepository messageRepository, ChannelRepository channelRepository,
+                             EmployeeRepository employeeRepository) {
+        this.messageRepository = messageRepository;
         this.channelRepository = channelRepository;
         this.employeeRepository = employeeRepository;
     }
@@ -30,25 +32,20 @@ public class MessageController {
 
         String content = messageRequest.getContent();
 
-        checkIfEmployeeIsLoggedIn();
+        checkIfChannelExists(id);
+        Channel channel = channelRepository.findById(id).get();
+
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(messageRequest.getAuthorUsername()).get();
+        Employee author = employeeRepository.findByEmail(username).get();
 
-        // TODO: Change on the basis of dependency with channel/id
-        return new Message();
+        Message message = new Message(content, author, channel);
+        messageRepository.save(message);
+        return message;
     }
 
     private void checkIfChannelExists(Long id) {
         if (!channelRepository.findById(id).isPresent())
             throw new NotFoundException("Such channel doesn't exist!");
-    }
-
-    // TODO: Check in project at work
-    private void checkIfEmployeeIsLoggedIn() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails) principal).getUsername();
-        if (!employeeRepository.findByEmail(username).isPresent())
-            throw new ForbiddenException("You are logged out!");
     }
 }

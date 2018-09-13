@@ -23,9 +23,7 @@ public class Channel {
     private String name;
 
     @Column(nullable = false)
-    // TODO: Check cascade in documentation
-    @OneToMany // (fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "messages_id")
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Message> messages;
 
     @Column(nullable = false)

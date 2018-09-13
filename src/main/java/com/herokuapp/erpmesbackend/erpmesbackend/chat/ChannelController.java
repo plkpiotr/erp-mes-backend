@@ -106,11 +106,10 @@ public class ChannelController {
             throw new InvalidRequestException("List of participants can't be empty!");
     }
 
-    // TODO: Check in project at work
     private void checkIfEmployeeHasAccess(Long id) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         if (!channelRepository.findByParticipantsEmail(username).isPresent())
-            throw new ForbiddenException("You don't have access to this resource or you are logged out!");
+            throw new ForbiddenException("You don't have access to this resource!");
     }
 }

@@ -12,7 +12,4 @@ public class MessageRequest {
 
     @NonNull
     private String content;
-
-    @NonNull
-    private String authorUsername;
 }
