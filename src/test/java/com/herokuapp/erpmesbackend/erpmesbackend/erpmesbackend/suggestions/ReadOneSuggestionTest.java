@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.suggestions;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
+import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -21,24 +21,24 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class ReadOneSuggestionTest extends FillBaseTemplate {
 
-    private List<Suggestion> suggestions;
+    private List<SuggestionDTO> suggestionDTOs;
 
     @Before
     public void init() {
         setupToken();
         addEmployeeRequests(true);
-        suggestions = addSuggestionRequests(true);
+        suggestionDTOs = addSuggestionRequests(true);
     }
 
     @Test
     public void checkIfResponseContainsSuggestionWithGivenId() {
         for (int i = 0; i < 3; i++) {
-            ResponseEntity<Suggestion> forEntity = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Suggestion.class, i + 1);
+            ResponseEntity<SuggestionDTO> forEntity = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), SuggestionDTO.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
 
-            Suggestion suggestion = forEntity.getBody();
-            assertTrue(suggestions.stream().anyMatch(s -> s.checkIfDataEquals(suggestion)));
+            SuggestionDTO suggestionDTO = forEntity.getBody();
+            assertTrue(suggestionDTOs.stream().anyMatch(s -> s.checkIfDataEquals(suggestionDTO)));
         }
     }
 }

@@ -50,8 +50,9 @@ public class Suggestion {
 
     public boolean checkIfDataEquals(Suggestion suggestion) {
         return name.equals(suggestion.getName()) &&
+                phase.equals(suggestion.getPhase()) &&
                 description.equals(suggestion.getDescription()) &&
-                author.checkIfDataEquals(suggestion.getAuthor()) &&
+                // author.checkIfDataEquals(suggestion.getAuthor()) &&
                 compareRecipients(suggestion.recipients);
     }
 

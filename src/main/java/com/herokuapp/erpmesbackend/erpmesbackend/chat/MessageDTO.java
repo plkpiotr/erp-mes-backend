@@ -32,7 +32,6 @@ public class MessageDTO {
     public boolean checkIfDataEquals(MessageDTO messageDTO) {
         return content.equals(messageDTO.getContent()) &&
                 authorDTO.checkIfDataEquals(messageDTO.getAuthorDTO()) &&
-                creationTime.equals(messageDTO.getCreationTime()) &&
                 channelDTO.checkIfDataEquals(messageDTO.getChannelDTO());
     }
 }

@@ -25,27 +25,34 @@ public class SuggestionController {
 
     @GetMapping("/suggestions")
     @ResponseStatus(HttpStatus.OK)
-    public List<Suggestion> getAllSuggestions() {
-        return new ArrayList<>(suggestionRepository.findAll());
+    public List<SuggestionDTO> getAllSuggestions() {
+        List<Suggestion> suggestions = suggestionRepository.findAll();
+        List<SuggestionDTO> suggestionDTOs = new ArrayList<>();
+        suggestions.forEach(suggestion -> suggestionDTOs.add(new SuggestionDTO(suggestion)));
+        return suggestionDTOs;
     }
 
     @GetMapping("/suggestions/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Suggestion getOneSuggestion(@PathVariable("id") Long id) {
+    public SuggestionDTO getOneSuggestion(@PathVariable("id") Long id) {
         checkIfSuggestionExists(id);
-        return suggestionRepository.findById(id).get();
+        return new SuggestionDTO(suggestionRepository.findById(id).get());
     }
 
     @GetMapping("/employees/{id}/suggestions")
     @ResponseStatus(HttpStatus.OK)
-    public List<Suggestion> getSuggestionsByRecipient(@PathVariable("id") Long id) {
-        return suggestionRepository.findByRecipientsId(id).isPresent() ?
-                suggestionRepository.findByRecipientsId(id).get() : new ArrayList<>();
+    public List<SuggestionDTO> getSuggestionsByRecipient(@PathVariable("id") Long id) {
+        if (!suggestionRepository.findByRecipientsId(id).isPresent())
+            return new ArrayList<>();
+        List<Suggestion> suggestions = suggestionRepository.findByRecipientsId(id).get();
+        List<SuggestionDTO> suggestionDTOs = new ArrayList<>();
+        suggestions.forEach(suggestion -> suggestionDTOs.add(new SuggestionDTO(suggestion)));
+        return suggestionDTOs;
     }
 
     @PostMapping("/suggestions")
     @ResponseStatus(HttpStatus.CREATED)
-    public Suggestion addOneSuggestion(@RequestBody SuggestionRequest suggestionRequest) {
+    public SuggestionDTO addOneSuggestion(@RequestBody SuggestionRequest suggestionRequest) {
         String name = suggestionRequest.getName();
         String details = suggestionRequest.getDescription();
 
@@ -61,7 +68,7 @@ public class SuggestionController {
 
         Suggestion suggestion = new Suggestion(name, details, author, recipients);
         suggestionRepository.save(suggestion);
-        return suggestion;
+        return new SuggestionDTO(suggestion);
     }
 
     @PatchMapping("suggestions/{id}")
