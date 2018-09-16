@@ -29,30 +29,40 @@ public class ChannelController {
 
     @GetMapping("/channels")
     @ResponseStatus(HttpStatus.OK)
-    public List<Channel> getAllChannels() {
-        return new ArrayList<>(channelRepository.findAll());
+    public List<ChannelDTO> getAllChannels() {
+        List<Channel> channels = channelRepository.findAll();
+        List<ChannelDTO> channelDTOs = new ArrayList<>();
+        channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));
+        return channelDTOs;
     }
 
     @GetMapping("/channels/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Channel getOneChannel(@PathVariable("id") Long id) {
+    public ChannelDTO getOneChannel(@PathVariable("id") Long id) {
         checkIfChannelExists(id);
         checkIfEmployeeHasAccess(id);
-        return channelRepository.findById(id).get();
+        return new ChannelDTO(channelRepository.findById(id).get());
     }
 
     @GetMapping("/employees/{id}/channels")
     @ResponseStatus(HttpStatus.OK)
-    public List<Channel> getChannelsByParticipant(@PathVariable("id") Long id) {
+    public List<ChannelDTO> getChannelsByParticipant(@PathVariable("id") Long id) {
         checkIfParticipantExists(id);
+
+        if (!channelRepository.findByParticipantsId(id).isPresent())
+            return new ArrayList<>();
+
         checkIfEmployeeHasAccess(id);
-        return channelRepository.findByParticipantsId(id).isPresent() ?
-                channelRepository.findByParticipantsId(id).get() : new ArrayList<>();
+        List<Channel> channels = channelRepository.findByParticipantsId(id).get();
+        List<ChannelDTO> channelDTOs = new ArrayList<>();
+        channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));
+
+        return channelDTOs;
     }
 
     @PostMapping("/channels")
     @ResponseStatus(HttpStatus.CREATED)
-    public Channel addOneChannel(@RequestBody ChannelRequest channelRequest) {
+    public ChannelDTO addOneChannel(@RequestBody ChannelRequest channelRequest) {
         String name = channelRequest.getName();
 
         checkIfParticipantListIsEmpty(channelRequest.getParticipantIds());
@@ -62,7 +72,7 @@ public class ChannelController {
 
         Channel channel = new Channel(name, participants);
         channelRepository.save(channel);
-        return channel;
+        return new ChannelDTO(channel);
     }
 
     @PutMapping("/channels/{id}")

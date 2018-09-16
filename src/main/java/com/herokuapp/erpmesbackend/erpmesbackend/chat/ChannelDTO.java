@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.chat;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,20 +20,19 @@ public class ChannelDTO {
         this.id = channel.getId();
         this.name = channel.getName();
         this.messageDTOs = new ArrayList<>();
-        channel.getMessages().forEach(message -> this.messageDTOs.add(new MessageDTO(message)));
+        if (channel.getMessages() != null) // TODO: check out later in Angular
+            channel.getMessages().forEach(message -> this.messageDTOs.add(new MessageDTO(message)));
         this.participantDTOs = new ArrayList<>();
         channel.getParticipants().forEach(participant -> this.participantDTOs.add(new EmployeeDTO(participant)));
     }
 
-    public ChannelDTO(String name, List<MessageDTO> messageDTOs, List<EmployeeDTO> participantDTOs) {
+    public ChannelDTO(String name, List<EmployeeDTO> participantDTOs) {
         this.name = name;
-        this.messageDTOs = messageDTOs;
         this.participantDTOs = participantDTOs;
     }
 
     public boolean checkIfDataEquals(ChannelDTO channelDTO) {
         return name.equals(channelDTO.getName()) &&
-                compareMessageDTOs(channelDTO.getMessageDTOs()) &&
                 compareParticipantDTOs(channelDTO.getParticipantDTOs());
     }
 

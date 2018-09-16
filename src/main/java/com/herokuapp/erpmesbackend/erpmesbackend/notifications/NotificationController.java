@@ -47,6 +47,7 @@ public class NotificationController {
     @GetMapping("/employees/{id}/notifications")
     @ResponseStatus(HttpStatus.OK)
     public List<NotificationDTO> getNotificationsByConsignee(@PathVariable("id") Long id) {
+        checkIfConsigneeExists(id);
         if (!notificationRepository.findByConsigneesId(id).isPresent()) {
             return new ArrayList<>();
         }
@@ -60,7 +61,10 @@ public class NotificationController {
     @ResponseStatus(HttpStatus.CREATED)
     public NotificationDTO addOneNotification(@RequestBody NotificationRequest notificationRequest) {
         String instruction = notificationRequest.getInstruction();
-        String description = notificationRequest.getDescription();
+
+        String description = null;
+        if (notificationRequest.getDescription() != null)
+            description = notificationRequest.getDescription();
 
         Employee notifier = null;
         if (notificationRequest.getNotifierId() != null) {
@@ -72,8 +76,13 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Type type = notificationRequest.getType();
-        Long reference = notificationRequest.getReference();
+        Type type = null;
+        if (notificationRequest.getType() != null)
+            type = notificationRequest.getType();
+
+        Long reference = null;
+        if (notificationRequest.getReference() != null)
+            reference = notificationRequest.getReference();
 
         Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
 

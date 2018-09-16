@@ -38,18 +38,7 @@ public class Channel {
 
     public boolean checkIfDataEquals(Channel channel) {
         return name.equals(channel.getName()) &&
-                compareMessages(channel.getMessages()) &&
                 compareParticipants(channel.getParticipants());
-    }
-
-    private boolean compareMessages(List<Message> messageList) {
-        if (messageList.isEmpty())
-            return true;
-        for (Message message: messages) {
-            if (messageList.stream().noneMatch(t -> t.checkIfDataEquals(message)))
-                return false;
-        }
-        return true;
     }
 
     private boolean compareParticipants(List<Employee> participantList) {

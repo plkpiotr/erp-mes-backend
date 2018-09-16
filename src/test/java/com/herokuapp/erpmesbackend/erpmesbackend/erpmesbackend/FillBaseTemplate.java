@@ -425,7 +425,7 @@ public abstract class FillBaseTemplate {
         return suggestions;
     }
 
-    protected Channel addOneChannelRequest(boolean shouldPost) {
+    protected ChannelDTO addOneChannelRequest(boolean shouldPost) {
         String name = channelFactory.generateName();
         List<Long> participantsIds = new ArrayList<>();
         participantsIds.add(1L);
@@ -435,25 +435,26 @@ public abstract class FillBaseTemplate {
 
         if (shouldPost) {
             setupToken();
-            restTemplate.postForEntity("/channels", new HttpEntity<>(channelRequest, requestHeaders), Channel.class);
+            restTemplate.postForEntity("/channels", new HttpEntity<>(channelRequest, requestHeaders),
+                    ChannelDTO.class);
         }
 
-        List<Employee> participants = new ArrayList<>();
-        participants.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody());
-        participants.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 2).getBody());
+        List<EmployeeDTO> recipientDTOs = new ArrayList<>();
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody());
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
 
-        return new Channel(name, participants);
+        return new ChannelDTO(name, recipientDTOs);
     }
 
-    protected List<Channel> addChannelRequests(boolean shouldPost) {
-        List<Channel> channels = new ArrayList<>();
+    protected List<ChannelDTO> addChannelRequests(boolean shouldPost) {
+        List<ChannelDTO> channelDTOs = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             channelRequests.add(new ChannelRequest());
-            channels.add(addOneChannelRequest(shouldPost));
+            channelDTOs.add(addOneChannelRequest(shouldPost));
         }
-        return channels;
+        return channelDTOs;
     }
 
     protected void addSpecialPlanRequest(boolean shouldPost) {

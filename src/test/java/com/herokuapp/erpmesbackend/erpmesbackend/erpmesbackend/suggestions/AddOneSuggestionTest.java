@@ -44,10 +44,10 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
         List<Long> recipientIds = new ArrayList<>();
 
         for (int i = 2; i < 6; i++) {
-            EmployeeDTO consignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+            EmployeeDTO recipientDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, i).getBody();
-            recipientIds.add(consignee.getId());
-            recipientDTOs.add(consignee);
+            recipientIds.add(recipientDTO.getId());
+            recipientDTOs.add(recipientDTO);
         }
 
         suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
@@ -56,11 +56,11 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAddedSuggestion() {
-        ResponseEntity<SuggestionDTO> suggestionResponseEntity = restTemplate.postForEntity("/suggestions",
+        ResponseEntity<SuggestionDTO> suggestionDTOResponseEntity = restTemplate.postForEntity("/suggestions",
                 new HttpEntity<>(suggestionRequest, requestHeaders), SuggestionDTO.class);
-        assertThat(suggestionResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        assertThat(suggestionDTOResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        SuggestionDTO body = suggestionResponseEntity.getBody();
+        SuggestionDTO body = suggestionDTOResponseEntity.getBody();
         assertTrue(body.checkIfDataEquals(suggestionDTO));
     }
 }

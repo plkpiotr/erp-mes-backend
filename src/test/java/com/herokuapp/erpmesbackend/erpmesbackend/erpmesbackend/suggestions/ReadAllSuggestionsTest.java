@@ -1,7 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.suggestions;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionDTO;
 import org.junit.Before;
 import org.junit.Test;
@@ -28,7 +27,7 @@ public class ReadAllSuggestionsTest extends FillBaseTemplate {
     @Before
     public void init() {
         setupToken();
-        addEmployeeRequests(true);
+        addNonAdminRequests(true);
         suggestionDTOs = addSuggestionRequests(true);
     }
 

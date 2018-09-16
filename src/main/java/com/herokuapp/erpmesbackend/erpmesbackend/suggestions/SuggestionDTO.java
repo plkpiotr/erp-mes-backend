@@ -41,12 +41,10 @@ public class SuggestionDTO {
     }
 
     public boolean checkIfDataEquals(SuggestionDTO suggestionDTO) {
-        return phase.equals(suggestionDTO.getPhase()) &&
-                name.equals(suggestionDTO.getName()) &&
+        return name.equals(suggestionDTO.getName()) &&
                 description.equals(suggestionDTO.getDescription()) &&
                 // authorDTO.equals(suggestionDTO.getAuthorDTO()) &&
-                compareRecipientDTOs(suggestionDTO.getRecipientDTOs()) &&
-                creationTime.equals(suggestionDTO.getCreationTime());
+                compareRecipientDTOs(suggestionDTO.getRecipientDTOs());
     }
 
     private boolean compareRecipientDTOs(List<EmployeeDTO> recipientDTOList) {
