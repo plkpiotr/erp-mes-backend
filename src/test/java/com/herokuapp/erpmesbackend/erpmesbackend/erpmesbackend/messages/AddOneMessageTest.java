@@ -35,16 +35,15 @@ public class AddOneMessageTest extends FillBaseTemplate {
         EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
 
-        ChannelDTO channelDTO = restTemplate.exchange("/channels/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), ChannelDTO.class, 1).getBody();
+        Long channelId = 1L;
 
         messageRequest = new MessageRequest(content);
-        messageDTO = new MessageDTO(content, authorDTO, channelDTO);
+        messageDTO = new MessageDTO(content, authorDTO, channelId);
     }
 
     @Test
     public void checkIfResponseContainsAddedMessage() {
-        ResponseEntity<MessageDTO> messageDTOResponseEntity = restTemplate.postForEntity("/messages",
+        ResponseEntity<MessageDTO> messageDTOResponseEntity = restTemplate.postForEntity("/messages/1",
                 new HttpEntity<>(messageRequest, requestHeaders), MessageDTO.class);
         assertThat(messageDTOResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 

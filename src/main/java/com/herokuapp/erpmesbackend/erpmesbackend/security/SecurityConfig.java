@@ -88,8 +88,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
                 .antMatchers("/notifications", "/notifications/{id}", "/employees/{id}/notifications")
                     .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
-                .antMatchers("/channels", "/channels/{id}", "/channels/{id}/messages",
-                        "/employees/{id}/channels", "/messages").permitAll()
+                .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")
+                    .permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

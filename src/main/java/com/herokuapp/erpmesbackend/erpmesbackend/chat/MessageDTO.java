@@ -13,26 +13,26 @@ public class MessageDTO {
     private long id;
     private String content;
     private EmployeeDTO authorDTO;
-    private ChannelDTO channelDTO;
+    private Long channelId;
     private LocalDateTime creationTime;
 
     public MessageDTO(Message message) {
         this.id = message.getId();
         this.content = message.getContent();
         this.authorDTO = new EmployeeDTO(message.getAuthor());
-        this.channelDTO = new ChannelDTO(message.getChannel());
+        this.channelId = message.getChannelId();
         this.creationTime = message.getCreationTime();
     }
 
-    public MessageDTO(String content, EmployeeDTO authorDTO, ChannelDTO channelDTO) {
+    public MessageDTO(String content, EmployeeDTO authorDTO, Long channelId) {
         this.content = content;
         this.authorDTO = authorDTO;
-        this.channelDTO = channelDTO;
+        this.channelId = channelId;
     }
 
     public boolean checkIfDataEquals(MessageDTO messageDTO) {
         return content.equals(messageDTO.getContent()) &&
                 authorDTO.checkIfDataEquals(messageDTO.getAuthorDTO()) &&
-                channelDTO.checkIfDataEquals(messageDTO.getChannelDTO());
+                channelId.equals(messageDTO.getChannelId());
     }
 }

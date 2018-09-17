@@ -466,17 +466,15 @@ public abstract class FillBaseTemplate {
 
         addOneChannelRequest(true);
         Long channelId = 1L;
-        ChannelDTO channelDTO = restTemplate.exchange("/channels/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), ChannelDTO.class, 1).getBody();
 
         if (shouldPost) {
             setupToken();
-            restTemplate.postForEntity("/messages", new HttpEntity<>(messageRequest, requestHeaders),
+            restTemplate.postForEntity("/messages/1", new HttpEntity<>(messageRequest, requestHeaders),
                     MessageDTO.class);
         }
 
         MessageRequest messageRequest = new MessageRequest(content);
-        return new MessageDTO(content, authorDTO, channelDTO);
+        return new MessageDTO(content, authorDTO, channelId);
     }
 
     protected List<MessageDTO> addMessageRequests(boolean shouldPost) {

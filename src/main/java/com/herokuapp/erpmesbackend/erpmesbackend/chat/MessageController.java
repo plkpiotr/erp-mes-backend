@@ -9,8 +9,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class MessageController {
 
     private final MessageRepository messageRepository;
@@ -25,19 +28,30 @@ public class MessageController {
         this.employeeRepository = employeeRepository;
     }
 
-    @PostMapping("/messages")
+    @GetMapping("/messages/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public List<MessageDTO> getMessagesByChannel(@PathVariable ("id") Long id) {
+        checkIfChannelExists(id);
+        if (!messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).isPresent())
+            return new ArrayList<>();
+        List<Message> messages = messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).get();
+        List<MessageDTO> messageDTOs = new ArrayList<>();
+        messages.forEach(message -> messageDTOs.add(new MessageDTO(message)));
+        return messageDTOs;
+    }
+
+    @PostMapping("/messages/{id}")
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageDTO addOneMessage(@RequestBody MessageRequest messageRequest) {
-//        checkIfChannelExists(1L);
+    public MessageDTO addOneMessage(@RequestBody MessageRequest messageRequest, @PathVariable ("id") Long id) {
+        checkIfChannelExists(id);
 
         String content = messageRequest.getContent();
-        Channel channel = channelRepository.findById(1L).get();
 
 //        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 //        String username = ((UserDetails) principal).getUsername();
         Employee author = employeeRepository.findById(1L).get();
 
-        Message message = new Message(content, author, channel);
+        Message message = new Message(content, author, id);
         messageRepository.save(message);
         return new MessageDTO(message);
     }

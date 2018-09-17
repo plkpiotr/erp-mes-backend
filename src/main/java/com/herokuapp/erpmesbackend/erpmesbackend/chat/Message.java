@@ -27,20 +27,19 @@ public class Message {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
-    @ManyToOne
-    @JoinColumn(name = "channel_id")
-    private Channel channel;
+    @Column(nullable = false)
+    private Long channelId;
 
-    public Message(String content, Employee author, Channel channel) {
+    public Message(String content, Employee author, Long channelId) {
         this.content = content;
         this.author = author;
         this.creationTime = LocalDateTime.now();
-        this.channel = channel;
+        this.channelId = channelId;
     }
 
     public boolean checkIfDataEquals(Message message) {
         return content.equals(message.getContent()) &&
                 author.checkIfDataEquals(message.getAuthor()) &&
-                channel.checkIfDataEquals(message.getChannel());
+                channelId.equals(message.getChannelId());
     }
 }

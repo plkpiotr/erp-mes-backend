@@ -23,16 +23,11 @@ public class Channel {
     private String name;
 
     @Column(nullable = false)
-    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Message> messages;
-
-    @Column(nullable = false)
     @ManyToMany
     private List<Employee> participants;
 
     public Channel(String name, List<Employee> participants) {
         this.name = name;
-        this.messages = new ArrayList<>();
         this.participants = participants;
     }
 
