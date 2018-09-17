@@ -5,8 +5,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ public class MessageController {
 
     @GetMapping("/messages/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<MessageDTO> getMessagesByChannel(@PathVariable ("id") Long id) {
+    public List<MessageDTO> getMessagesByChannelId(@PathVariable ("id") Long id) {
         checkIfChannelExists(id);
         if (!messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).isPresent())
             return new ArrayList<>();
@@ -47,8 +45,9 @@ public class MessageController {
 
         String content = messageRequest.getContent();
 
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-//        String username = ((UserDetails) principal).getUsername();
+        // Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        // String username = ((UserDetails) principal).getUsername();
+        // TODO: http://bit.ly/2MDblSR
         Employee author = employeeRepository.findById(1L).get();
 
         Message message = new Message(content, author, id);

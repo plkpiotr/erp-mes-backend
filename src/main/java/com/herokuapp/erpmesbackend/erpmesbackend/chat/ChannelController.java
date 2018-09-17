@@ -40,7 +40,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     public ChannelDTO getOneChannel(@PathVariable("id") Long id) {
         checkIfChannelExists(id);
-        // checkIfEmployeeHasAccess(id); TODO: check out in Angular
+        // TODO: http://bit.ly/2MDblSR
         return new ChannelDTO(channelRepository.findById(id).get());
     }
 
@@ -52,7 +52,7 @@ public class ChannelController {
         if (!channelRepository.findByParticipantsId(id).isPresent())
             return new ArrayList<>();
 
-        // checkIfEmployeeHasAccess(id); TODO: check out in Angular
+        // TODO: http://bit.ly/2MDblSR
         List<Channel> channels = channelRepository.findByParticipantsId(id).get();
         List<ChannelDTO> channelDTOs = new ArrayList<>();
         channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));
@@ -116,6 +116,7 @@ public class ChannelController {
             throw new InvalidRequestException("List of participants can't be empty!");
     }
 
+    // TODO: http://bit.ly/2MDblSR
     private void checkIfEmployeeHasAccess(Long id) {
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
