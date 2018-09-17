@@ -25,23 +25,21 @@ public class MessageController {
         this.employeeRepository = employeeRepository;
     }
 
-    @PostMapping("/channels/{id}/messages")
+    @PostMapping("/messages")
     @ResponseStatus(HttpStatus.CREATED)
-    public Message addOneMessage(@PathVariable("id") Long id, @RequestBody MessageRequest messageRequest) {
-        checkIfChannelExists(id);
+    public MessageDTO addOneMessage(@RequestBody MessageRequest messageRequest) {
+//        checkIfChannelExists(1L);
 
         String content = messageRequest.getContent();
+        Channel channel = channelRepository.findById(1L).get();
 
-        checkIfChannelExists(id);
-        Channel channel = channelRepository.findById(id).get();
-
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(username).get();
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        String username = ((UserDetails) principal).getUsername();
+        Employee author = employeeRepository.findById(1L).get();
 
         Message message = new Message(content, author, channel);
         messageRepository.save(message);
-        return message;
+        return new MessageDTO(message);
     }
 
     private void checkIfChannelExists(Long id) {

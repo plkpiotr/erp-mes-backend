@@ -41,7 +41,6 @@ public class Message {
     public boolean checkIfDataEquals(Message message) {
         return content.equals(message.getContent()) &&
                 author.checkIfDataEquals(message.getAuthor()) &&
-                creationTime.equals(message.getCreationTime()) &&
                 channel.checkIfDataEquals(message.getChannel());
     }
 }

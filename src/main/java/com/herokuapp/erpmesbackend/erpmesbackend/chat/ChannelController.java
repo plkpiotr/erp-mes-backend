@@ -40,7 +40,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     public ChannelDTO getOneChannel(@PathVariable("id") Long id) {
         checkIfChannelExists(id);
-        checkIfEmployeeHasAccess(id);
+        // checkIfEmployeeHasAccess(id); TODO: check out in Angular
         return new ChannelDTO(channelRepository.findById(id).get());
     }
 
@@ -52,7 +52,7 @@ public class ChannelController {
         if (!channelRepository.findByParticipantsId(id).isPresent())
             return new ArrayList<>();
 
-        checkIfEmployeeHasAccess(id);
+        // checkIfEmployeeHasAccess(id); TODO: check out in Angular
         List<Channel> channels = channelRepository.findByParticipantsId(id).get();
         List<ChannelDTO> channelDTOs = new ArrayList<>();
         channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));

@@ -457,6 +457,37 @@ public abstract class FillBaseTemplate {
         return channelDTOs;
     }
 
+    protected MessageDTO addOneMessageRequest(boolean shouldPost) {
+        String content = messageFactory.generateContent();
+
+        Long authorId = 1L;
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+
+        addOneChannelRequest(true);
+        Long channelId = 1L;
+        ChannelDTO channelDTO = restTemplate.exchange("/channels/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), ChannelDTO.class, 1).getBody();
+
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/messages", new HttpEntity<>(messageRequest, requestHeaders),
+                    MessageDTO.class);
+        }
+
+        MessageRequest messageRequest = new MessageRequest(content);
+        return new MessageDTO(content, authorDTO, channelDTO);
+    }
+
+    protected List<MessageDTO> addMessageRequests(boolean shouldPost) {
+        List<MessageDTO> messageDTOs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            messageRequests.add(new MessageRequest());
+            messageDTOs.add(addOneMessageRequest(shouldPost));
+        }
+        return messageDTOs;
+    }
+
     protected void addSpecialPlanRequest(boolean shouldPost) {
         specialPlanRequest = new SpecialPlanRequest("Special plan", LocalDate.now().plusDays(3),
                 20, 50, 10, 10);

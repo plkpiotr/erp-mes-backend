@@ -37,7 +37,7 @@ public class AddOneChannelTest extends FillBaseTemplate {
         List<EmployeeDTO> participantDTOs = new ArrayList<>();
         List<Long> participantIds = new ArrayList<>();
 
-        for (int i = 1; i < 5; i++) {
+        for (int i = 1; i < 3; i++) {
             EmployeeDTO participantDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, i).getBody();
             participantIds.add(participantDTO.getId());
