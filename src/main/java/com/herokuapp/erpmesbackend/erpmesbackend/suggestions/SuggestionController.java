@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class SuggestionController {
 
     private final SuggestionRepository suggestionRepository;
@@ -25,27 +25,34 @@ public class SuggestionController {
 
     @GetMapping("/suggestions")
     @ResponseStatus(HttpStatus.OK)
-    public List<Suggestion> getAllSuggestions() {
-        return new ArrayList<>(suggestionRepository.findAll());
+    public List<SuggestionDTO> getAllSuggestions() {
+        List<Suggestion> suggestions = suggestionRepository.findAll();
+        List<SuggestionDTO> suggestionDTOs = new ArrayList<>();
+        suggestions.forEach(suggestion -> suggestionDTOs.add(new SuggestionDTO(suggestion)));
+        return suggestionDTOs;
     }
 
     @GetMapping("/suggestions/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Suggestion getOneSuggestion(@PathVariable("id") Long id) {
+    public SuggestionDTO getOneSuggestion(@PathVariable("id") Long id) {
         checkIfSuggestionExists(id);
-        return suggestionRepository.findById(id).get();
+        return new SuggestionDTO(suggestionRepository.findById(id).get());
     }
 
     @GetMapping("/employees/{id}/suggestions")
     @ResponseStatus(HttpStatus.OK)
-    public List<Suggestion> getSuggestionsByRecipient(@PathVariable("id") Long id) {
-        return suggestionRepository.findByRecipientsContaining(id).isPresent() ?
-                suggestionRepository.findByRecipientsContaining(id).get() : new ArrayList<>();
+    public List<SuggestionDTO> getSuggestionsByRecipient(@PathVariable("id") Long id) {
+        if (!suggestionRepository.findByRecipientsId(id).isPresent())
+            return new ArrayList<>();
+        List<Suggestion> suggestions = suggestionRepository.findByRecipientsId(id).get();
+        List<SuggestionDTO> suggestionDTOs = new ArrayList<>();
+        suggestions.forEach(suggestion -> suggestionDTOs.add(new SuggestionDTO(suggestion)));
+        return suggestionDTOs;
     }
 
     @PostMapping("/suggestions")
     @ResponseStatus(HttpStatus.CREATED)
-    public Suggestion addOneSuggestion(@RequestBody SuggestionRequest suggestionRequest) {
+    public SuggestionDTO addOneSuggestion(@RequestBody SuggestionRequest suggestionRequest) {
         String name = suggestionRequest.getName();
         String details = suggestionRequest.getDescription();
 
@@ -61,33 +68,7 @@ public class SuggestionController {
 
         Suggestion suggestion = new Suggestion(name, details, author, recipients);
         suggestionRepository.save(suggestion);
-        return suggestion;
-    }
-
-    @PutMapping("/suggestions/{id}")
-    public HttpStatus updateDetailsSuggestion(@PathVariable("id") Long id,
-                                              @RequestBody SuggestionRequest suggestionRequest) {
-        checkIfSuggestionExists(id);
-        Suggestion suggestion = suggestionRepository.findById(id).get();
-
-        suggestion.setName(suggestionRequest.getName());
-        suggestion.setDescription(suggestionRequest.getDescription());
-
-        Employee author = new Employee();
-        if (suggestionRequest.getAuthorId() != null) {
-            checkIfAuthorExists(suggestionRequest.getAuthorId());
-            author = employeeRepository.findById(suggestionRequest.getAuthorId()).get();
-        }
-        else author = null;
-        suggestion.setAuthor(author);
-
-        List<Employee> recipients = new ArrayList<>();
-        suggestionRequest.getRecipientIds().forEach(this::checkIfRecipientExists);
-        suggestionRequest.getRecipientIds().forEach(index -> recipients.add(employeeRepository.findById(index).get()));
-        suggestion.setRecipients(recipients);
-
-        suggestionRepository.save(suggestion);
-        return HttpStatus.NO_CONTENT;
+        return new SuggestionDTO(suggestion);
     }
 
     @PatchMapping("suggestions/{id}")

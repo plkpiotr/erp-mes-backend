@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.chat.*;
 import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntity;
 import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntityRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailFactory;
@@ -28,6 +29,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.ShopServiceRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.returns.Return;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
+import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.*;
@@ -63,6 +65,8 @@ public abstract class FillBaseTemplate {
     protected ShopServiceRequest returnRequest;
     protected ShopServiceRequest complaintRequest;
     protected EmailEntityRequest emailEntityRequest;
+    protected ChannelRequest channelRequest;
+    protected MessageRequest messageRequest;
 
     protected List<EmployeeRequest> employeeRequests;
     protected List<EmployeeRequest> adminRequests;
@@ -77,6 +81,8 @@ public abstract class FillBaseTemplate {
     protected List<ShopServiceRequest> returnRequests;
     protected List<ShopServiceRequest> complaintRequests;
     protected List<EmailEntityRequest> emailEntityRequests;
+    protected List<ChannelRequest> channelRequests;
+    protected List<MessageRequest> messageRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
@@ -85,6 +91,8 @@ public abstract class FillBaseTemplate {
     protected SuggestionFactory suggestionFactory;
     protected ShopServiceFactory shopServiceFactory;
     protected EmailFactory emailFactory;
+    protected ChannelFactory channelFactory;
+    protected MessageFactory messageFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
@@ -94,6 +102,8 @@ public abstract class FillBaseTemplate {
         suggestionFactory = new SuggestionFactory();
         shopServiceFactory = new ShopServiceFactory();
         emailFactory = new EmailFactory();
+        channelFactory = new ChannelFactory();
+        messageFactory = new MessageFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
@@ -108,6 +118,8 @@ public abstract class FillBaseTemplate {
         returnRequests = new ArrayList<>();
         complaintRequests = new ArrayList<>();
         emailEntityRequests = new ArrayList<>();
+        channelRequests = new ArrayList<>();
+        messageRequests = new ArrayList<>();
     }
 
     protected void setupToken() {
@@ -348,8 +360,8 @@ public abstract class FillBaseTemplate {
         NotificationRequest notificationRequest = new NotificationRequest(instruction, description, notifierId,
                 consigneeIds, type, reference);
 
-        setupToken();
         if (shouldPost) {
+            setupToken();
             restTemplate.postForEntity("/notifications", new HttpEntity<>(notificationRequest, requestHeaders),
                     NotificationDTO.class);
         }
@@ -375,7 +387,7 @@ public abstract class FillBaseTemplate {
         return notifications;
     }
 
-    protected Suggestion addOneSuggestionRequest(boolean shouldPost) {
+    protected SuggestionDTO addOneSuggestionRequest(boolean shouldPost) {
         String name = suggestionFactory.generateName();
         String description = suggestionFactory.generateDescription();
         Long authorId = 1L;
@@ -386,31 +398,92 @@ public abstract class FillBaseTemplate {
 
         SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
 
-        setupToken();
         if (shouldPost) {
+            setupToken();
             restTemplate.postForEntity("/suggestions", new HttpEntity<>(suggestionRequest, requestHeaders),
-                    Suggestion.class);
+                    SuggestionDTO.class);
         }
 
-        Employee author = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
 
-        List<Employee> recipients = new ArrayList<>();
-        recipients.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody());
-        recipients.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 2).getBody());
+        List<EmployeeDTO> recipientDTOs = new ArrayList<>();
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody());
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
 
-        return new Suggestion(name, description, author, recipients);
+        return new SuggestionDTO(name, description, authorDTO, recipientDTOs);
     }
 
-    protected List<Suggestion> addSuggestionRequests(boolean shouldPost) {
-        List<Suggestion> suggestions = new ArrayList<>();
+    protected List<SuggestionDTO> addSuggestionRequests(boolean shouldPost) {
+        List<SuggestionDTO> suggestions = new ArrayList<>();
         for (int i = 0; i < 3; i++) {
             suggestionRequests.add(new SuggestionRequest());
             suggestions.add(addOneSuggestionRequest(shouldPost));
         }
         return suggestions;
+    }
+
+    protected ChannelDTO addOneChannelRequest(boolean shouldPost) {
+        String name = channelFactory.generateName();
+        List<Long> participantsIds = new ArrayList<>();
+        participantsIds.add(1L);
+        participantsIds.add(2L);
+
+        ChannelRequest channelRequest = new ChannelRequest(name, participantsIds);
+
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/channels", new HttpEntity<>(channelRequest, requestHeaders),
+                    ChannelDTO.class);
+        }
+
+        List<EmployeeDTO> recipientDTOs = new ArrayList<>();
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody());
+        recipientDTOs.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
+
+        return new ChannelDTO(name, recipientDTOs);
+    }
+
+    protected List<ChannelDTO> addChannelRequests(boolean shouldPost) {
+        List<ChannelDTO> channelDTOs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            channelRequests.add(new ChannelRequest());
+            channelDTOs.add(addOneChannelRequest(shouldPost));
+        }
+        return channelDTOs;
+    }
+
+    protected MessageDTO addOneMessageRequest(boolean shouldPost) {
+        String content = messageFactory.generateContent();
+
+        Long authorId = 1L;
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+
+        addOneChannelRequest(true);
+        Long channelId = 1L;
+
+        if (shouldPost) {
+            setupToken();
+            restTemplate.postForEntity("/messages/1", new HttpEntity<>(messageRequest, requestHeaders),
+                    MessageDTO.class);
+        }
+
+        MessageRequest messageRequest = new MessageRequest(content);
+        return new MessageDTO(content, authorDTO, channelId);
+    }
+
+    protected List<MessageDTO> addMessageRequests(boolean shouldPost) {
+        List<MessageDTO> messageDTOs = new ArrayList<>();
+        for (int i = 0; i < 3; i++) {
+            messageRequests.add(new MessageRequest());
+            messageDTOs.add(addOneMessageRequest(shouldPost));
+        }
+        return messageDTOs;
     }
 
     protected void addSpecialPlanRequest(boolean shouldPost) {
@@ -475,7 +548,7 @@ public abstract class FillBaseTemplate {
                 shopServiceFactory.generatePhoneNumber(), shopServiceFactory.generateStreet(),
                 shopServiceFactory.generateHouseNumber(), shopServiceFactory.generateCity(),
                 shopServiceFactory.generatePostalCode(), deliveryItemRequests,
-                LocalDate.now().plusDays(3), shopServiceFactory.generateResolution(), "Random faault");
+                LocalDate.now().plusDays(3), shopServiceFactory.generateResolution(), "Random fault");
 
         if (shouldPost) {
             setupToken();

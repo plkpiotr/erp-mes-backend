@@ -1,6 +1,5 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.finance;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;

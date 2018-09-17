@@ -59,7 +59,7 @@ public class EmailService {
         sendMessage(order.getEmail(), subject, Arrays.asList(details));
     }
 
-    public void sensNewReturnRegisteredMessage(long id) {
+    public void sendNewReturnRegisteredMessage(long id) {
         Return r = returnRepository.findById(id).get();
         String subject = "New return registered.";
         String details = "Hello, " + r.getFirstName() + "! \n\n We have successfully registered " +

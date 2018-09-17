@@ -33,7 +33,7 @@ public class ReturnController {
     @ResponseStatus(HttpStatus.CREATED)
     public Return addOnReturn(@RequestBody ShopServiceRequest request) {
         Return r = shopService.addNewReturn(request);
-        emailService.sensNewReturnRegisteredMessage(r.getId());
+        emailService.sendNewReturnRegisteredMessage(r.getId());
         return r;
     }
 

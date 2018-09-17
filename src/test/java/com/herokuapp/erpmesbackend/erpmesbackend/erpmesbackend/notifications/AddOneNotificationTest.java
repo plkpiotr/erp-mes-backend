@@ -52,11 +52,8 @@ public class AddOneNotificationTest extends FillBaseTemplate {
         Type type = Type.ORDER;
         Long reference = 1L;
 
-        notificationRequest = new NotificationRequest(instruction, description, notifierId,
-                consigneeIds, type, reference);
-
-        notification = new NotificationDTO(instruction, description, notifier, consignees,
-                type, reference);
+        notificationRequest = new NotificationRequest(instruction, description, notifierId, consigneeIds, type, reference);
+        notification = new NotificationDTO(instruction, description, notifier, consignees, type, reference);
 
     }
 

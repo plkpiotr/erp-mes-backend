@@ -33,8 +33,7 @@ public class Suggestion {
     private Employee author;
 
     @Column(nullable = false)
-    @OneToMany
-    @JoinColumn(name = "recipients_id")
+    @ManyToMany
     private List<Employee> recipients;
 
     @Column(nullable = false)
@@ -51,8 +50,9 @@ public class Suggestion {
 
     public boolean checkIfDataEquals(Suggestion suggestion) {
         return name.equals(suggestion.getName()) &&
+                phase.equals(suggestion.getPhase()) &&
                 description.equals(suggestion.getDescription()) &&
-                author.checkIfDataEquals(suggestion.getAuthor()) &&
+                // author.checkIfDataEquals(suggestion.getAuthor()) &&
                 compareRecipients(suggestion.recipients);
     }
 

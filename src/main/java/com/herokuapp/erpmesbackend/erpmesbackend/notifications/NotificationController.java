@@ -3,7 +3,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.notifications;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.OrderRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
-@CrossOrigin("http://localhost:4200")
+@CrossOrigin(origins = "*")
 public class NotificationController {
 
     private final NotificationRepository notificationRepository;
@@ -48,10 +47,11 @@ public class NotificationController {
     @GetMapping("/employees/{id}/notifications")
     @ResponseStatus(HttpStatus.OK)
     public List<NotificationDTO> getNotificationsByConsignee(@PathVariable("id") Long id) {
-        if (!notificationRepository.findByConsigneesContaining(id).isPresent()) {
+        checkIfConsigneeExists(id);
+        if (!notificationRepository.findByConsigneesId(id).isPresent()) {
             return new ArrayList<>();
         }
-        List<Notification> notifications = notificationRepository.findByConsigneesContaining(id).get();
+        List<Notification> notifications = notificationRepository.findByConsigneesId(id).get();
         List<NotificationDTO> notificationDTOS = new ArrayList<>();
         notifications.forEach(notification -> notificationDTOS.add(new NotificationDTO(notification)));
         return notificationDTOS;
@@ -61,7 +61,10 @@ public class NotificationController {
     @ResponseStatus(HttpStatus.CREATED)
     public NotificationDTO addOneNotification(@RequestBody NotificationRequest notificationRequest) {
         String instruction = notificationRequest.getInstruction();
-        String description = notificationRequest.getDescription();
+
+        String description = null;
+        if (notificationRequest.getDescription() != null)
+            description = notificationRequest.getDescription();
 
         Employee notifier = null;
         if (notificationRequest.getNotifierId() != null) {
@@ -73,8 +76,13 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Type type = notificationRequest.getType();
-        Long reference = notificationRequest.getReference();
+        Type type = null;
+        if (notificationRequest.getType() != null)
+            type = notificationRequest.getType();
+
+        Long reference = null;
+        if (notificationRequest.getReference() != null)
+            reference = notificationRequest.getReference();
 
         Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
 
