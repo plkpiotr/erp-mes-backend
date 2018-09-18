@@ -1,8 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -25,6 +24,7 @@ public class AddOneEmployeeTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseContainsAddedEmployee() {
+        employeeRequest.setEmail("jsfkhighnfkv@sd.ds");
         ResponseEntity<EmployeeDTO> employeeResponseEntity = restTemplate
                 .postForEntity("/employees", new HttpEntity<>(employeeRequest, requestHeaders),
                         EmployeeDTO.class);

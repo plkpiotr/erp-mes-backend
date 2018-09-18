@@ -1,9 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayType;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.HolidayType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;

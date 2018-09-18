@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -34,8 +34,8 @@ public class DeleteTaskTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseDoesNotContainDeletedTask() {
-        restTemplate.exchange("/tasks/{id}", HttpMethod.DELETE, new HttpEntity<>(null, requestHeaders),
-                HttpStatus.class, 1);
+        restTemplate.delete("/tasks/{id}", 1);
+
         List<Task> fetchedTasks = Arrays.asList(restTemplate.exchange("/tasks", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), Task[].class).getBody());
         assertFalse(fetchedTasks.stream().anyMatch(task -> task.checkIfDataEquals(deletedTask)));

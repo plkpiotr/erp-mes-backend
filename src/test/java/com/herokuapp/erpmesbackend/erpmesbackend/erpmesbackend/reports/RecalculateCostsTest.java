@@ -1,14 +1,12 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.reports;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.CurrentReport;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.EstimatedCosts;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.EstimatedCostsRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.CurrentReport;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.EstimatedCosts;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.EstimatedCostsRequest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;

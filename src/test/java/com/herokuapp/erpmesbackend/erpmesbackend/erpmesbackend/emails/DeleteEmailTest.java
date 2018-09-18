@@ -1,6 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.emails;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.emails.EmailEntity;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import org.junit.Before;
 import org.junit.Test;

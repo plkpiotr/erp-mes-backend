@@ -1,11 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.suggestions;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.Suggestion;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

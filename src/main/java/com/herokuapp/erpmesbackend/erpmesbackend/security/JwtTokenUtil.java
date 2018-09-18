@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.security;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

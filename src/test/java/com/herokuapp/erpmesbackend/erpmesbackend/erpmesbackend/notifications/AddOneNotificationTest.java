@@ -1,10 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.notifications;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

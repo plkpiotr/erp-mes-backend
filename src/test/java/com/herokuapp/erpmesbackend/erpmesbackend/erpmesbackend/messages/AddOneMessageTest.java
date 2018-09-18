@@ -1,9 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.messages;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.chat.ChannelDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.chat.MessageDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.chat.MessageRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.MessageDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.MessageRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import org.junit.Before;
 import org.junit.Test;

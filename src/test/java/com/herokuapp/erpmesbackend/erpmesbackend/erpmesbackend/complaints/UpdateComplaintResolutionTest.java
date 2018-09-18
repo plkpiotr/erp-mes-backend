@@ -1,9 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.complaints;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Complaint;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.ComplaintStatus;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.complaints.Resolution;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Complaint;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Resolution;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

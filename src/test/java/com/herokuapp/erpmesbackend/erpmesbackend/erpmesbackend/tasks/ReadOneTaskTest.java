@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +36,6 @@ public class ReadOneTaskTest extends FillBaseTemplate {
             ResponseEntity<Task> forEntity = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), Task.class, i + 1);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-            Task task = forEntity.getBody();
-            assertTrue(tasks.stream().anyMatch(t -> t.checkIfDataEquals(task)));
         }
     }
 }

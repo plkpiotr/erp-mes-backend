@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.planning;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.planning.DailyPlan;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.DailyPlan;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

@@ -1,10 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.ApprovalState;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.HolidayType;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.ApprovalState;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.HolidayType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

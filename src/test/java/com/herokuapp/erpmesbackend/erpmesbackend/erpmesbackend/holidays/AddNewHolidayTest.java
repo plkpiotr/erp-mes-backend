@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.holidays;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
