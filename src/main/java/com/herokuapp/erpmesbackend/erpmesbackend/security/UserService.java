@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.security;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,8 +16,12 @@ import java.util.List;
 @Service("userService")
 public class UserService implements UserDetailsService {
 
+    private final EmployeeRepository employeeRepository;
+
     @Autowired
-    private EmployeeRepository employeeRepository;
+    public UserService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     public UserDetails loadUserByUsername(String username) throws NotFoundException {
         if(!employeeRepository.findByEmail(username).isPresent()){

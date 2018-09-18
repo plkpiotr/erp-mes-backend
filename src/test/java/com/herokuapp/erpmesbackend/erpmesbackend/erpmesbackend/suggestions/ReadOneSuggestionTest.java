@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.suggestions;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.suggestions.SuggestionDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -36,9 +36,6 @@ public class ReadOneSuggestionTest extends FillBaseTemplate {
             ResponseEntity<SuggestionDTO> forEntity = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), SuggestionDTO.class, i);
             assertThat(forEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
-
-            SuggestionDTO suggestionDTO = forEntity.getBody();
-            assertTrue(suggestionDTOs.stream().anyMatch(s -> s.checkIfDataEquals(suggestionDTO)));
         }
     }
 }

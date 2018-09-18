@@ -1,9 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.errors;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.holidays.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,6 +55,7 @@ public class InvalidRequestTest extends FillBaseTemplate {
     public void checkIfResponse400VacationAlreadyUsed() {
         addOneNonAdminRequest(false);
         nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
+        nonAdminRequest.setEmail("dffdffdffd@dssd.sd");
         ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
                 new HttpEntity<>(nonAdminRequest, requestHeaders), Employee.class);
         long id = employeeResponseEntity.getBody().getId();
@@ -75,6 +76,7 @@ public class InvalidRequestTest extends FillBaseTemplate {
     public void checkIfResponse400VacationTooLong() {
         addOneNonAdminRequest(false);
         nonAdminRequest.getContractRequest().setDaysOffPerYear(20);
+        nonAdminRequest.setEmail("dffddffd@dssd.sd");
         ResponseEntity<Employee> employeeResponseEntity = restTemplate.postForEntity("/employees",
                 new HttpEntity<>(nonAdminRequest, requestHeaders), Employee.class);
         long id = employeeResponseEntity.getBody().getId();

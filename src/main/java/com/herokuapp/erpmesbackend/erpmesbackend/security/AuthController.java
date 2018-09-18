@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.security;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,14 +18,17 @@ import org.springframework.web.bind.annotation.RestController;
 @CrossOrigin(origins = "*")
 public class AuthController {
 
-    @Autowired
-    private AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final JwtTokenUtil jwtTokenUtil;
+    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    private JwtTokenUtil jwtTokenUtil;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    public AuthController(AuthenticationManager authenticationManager, JwtTokenUtil jwtTokenUtil,
+                          EmployeeRepository employeeRepository) {
+        this.authenticationManager = authenticationManager;
+        this.jwtTokenUtil = jwtTokenUtil;
+        this.employeeRepository = employeeRepository;
+    }
 
     @PostMapping("/generate-token")
     public JwtToken login(@RequestBody Credentials credentials) throws AuthenticationException {

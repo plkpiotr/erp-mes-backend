@@ -1,9 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.reports;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.CurrentReport;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.ExpenseRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.finance.ExpenseType;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.CurrentReport;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.ExpenseRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.ExpenseType;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;

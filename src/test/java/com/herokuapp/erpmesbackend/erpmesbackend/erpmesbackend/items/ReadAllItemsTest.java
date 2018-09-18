@@ -1,8 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.items;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.Item;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.ItemRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Item;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.ItemRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

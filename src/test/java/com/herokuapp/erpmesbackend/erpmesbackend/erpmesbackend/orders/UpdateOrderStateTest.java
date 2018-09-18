@@ -1,8 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.orders;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Order;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.orders.Status;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Order;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Status;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

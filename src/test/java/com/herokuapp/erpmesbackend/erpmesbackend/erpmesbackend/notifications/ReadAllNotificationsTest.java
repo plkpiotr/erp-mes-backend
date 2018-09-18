@@ -1,8 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -13,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;

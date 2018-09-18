@@ -1,8 +1,8 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.employees;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

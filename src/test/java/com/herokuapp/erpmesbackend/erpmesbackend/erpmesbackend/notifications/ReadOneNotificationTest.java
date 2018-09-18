@@ -1,8 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.notifications;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.Notification;
-import com.herokuapp.erpmesbackend.erpmesbackend.notifications.NotificationDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

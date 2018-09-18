@@ -1,11 +1,11 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.tasks;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.employees.Employee;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Category;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Task;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.TaskRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.tasks.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

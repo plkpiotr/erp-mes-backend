@@ -1,7 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.deliveries;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.deliveries.DeliveryItemRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.DeliveryItemRequest;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
