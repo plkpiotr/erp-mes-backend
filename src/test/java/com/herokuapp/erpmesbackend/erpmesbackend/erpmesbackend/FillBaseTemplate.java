@@ -4,6 +4,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.ChannelDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.MessageDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.*;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.*;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.factory.TaskFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
@@ -121,6 +122,43 @@ public abstract class FillBaseTemplate {
         messageRequests = new ArrayList<>();
     }
 
+    protected void init() {
+        setupToken();
+        if (emptyResponse("/employees/3")) {
+            addEmployeeRequests(true);
+        }
+        if (emptyResponse("/items/2")) {
+            addManyItemRequests(true);
+        }
+        if (emptyResponse("/complaints/2")) {
+            addManyComplaintRequests(true);
+        }
+        if (emptyResponse("/deliveries/2")) {
+            addManyDeliveryRequests(true);
+        }
+        if (emptyResponse("/orders/2")) {
+            addManyOrderRequests(true);
+        }
+        if (emptyResponse("/returns/2")) {
+            addManyReturnRequests(true);
+        }
+        if (emptyResponse("/tasks/2")) {
+            addTaskRequests(true);
+        }
+        if (emptyResponse("/channels/2")) {
+            addChannelRequests(true);
+        }
+        if (emptyResponse("/notifications/2")) {
+            addNotificationRequests(true);
+        }
+        if (emptyResponse("/suggestions/2")) {
+            addSuggestionRequests(true);
+        }
+        if (outboxEmpty()) {
+            addManyEmailEntityRequests(true);
+        }
+    }
+
     protected void setupToken() {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/generate-token",
                 new Credentials("szef.ceo@company.com",
@@ -132,6 +170,16 @@ public abstract class FillBaseTemplate {
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
         requestHeaders.add("Authorization", "Bearer " + replace1);
+    }
+
+    private boolean emptyResponse(String url) {
+        return restTemplate.exchange(url, HttpMethod.GET, new HttpEntity<>(null, requestHeaders), String.class)
+                .getStatusCode().equals(HttpStatus.NOT_FOUND);
+    }
+
+    private boolean outboxEmpty() {
+        return restTemplate.exchange("/emails/outbox", HttpMethod.GET, new HttpEntity<>(null, requestHeaders),
+                EmailEntity[].class).getBody().length <= 2;
     }
 
     protected void addOneEmployeeRequest(boolean shouldPost) {

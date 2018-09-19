@@ -44,8 +44,7 @@ public class NotFoundTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseStatus404HolidayNotFound() {
-        setupToken();
-        addAdminRequests(true);
+        super.init();
         EmployeeDTO employee = Arrays.asList(restTemplate.exchange("/employees", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO[].class).getBody())
                 .stream()

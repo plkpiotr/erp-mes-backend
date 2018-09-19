@@ -105,7 +105,7 @@ public class InvalidRequestTest extends FillBaseTemplate {
 
     @Test
     public void checkIfResponseStatus400CannotReplyToYourself() {
-        addManyEmailEntityRequests(true);
+        super.init();
         addOneEmailEntityRequest(false);
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/emails/{id}",
                 new HttpEntity<>(emailEntityRequest, requestHeaders), String.class, 1);
