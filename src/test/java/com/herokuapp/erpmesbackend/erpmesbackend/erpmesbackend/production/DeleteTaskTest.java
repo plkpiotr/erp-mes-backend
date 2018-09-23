@@ -1,6 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.production;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -21,13 +22,13 @@ import static org.junit.Assert.assertFalse;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class DeleteTaskTest extends FillBaseTemplate {
 
-    private Task deletedTask;
+    private TaskDTO deletedTask;
 
     @Before
     public void init() {
         super.init();
         deletedTask = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Task.class, 1).getBody();
+                new HttpEntity<>(null, requestHeaders), TaskDTO.class, 1).getBody();
     }
 
     @Test
@@ -35,8 +36,8 @@ public class DeleteTaskTest extends FillBaseTemplate {
     public void checkIfResponseDoesNotContainDeletedTask() {
         restTemplate.delete("/tasks/{id}", 1);
 
-        List<Task> fetchedTasks = Arrays.asList(restTemplate.exchange("/tasks", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Task[].class).getBody());
+        List<TaskDTO> fetchedTasks = Arrays.asList(restTemplate.exchange("/tasks", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), TaskDTO[].class).getBody());
         assertFalse(fetchedTasks.stream().anyMatch(task -> task.checkIfDataEquals(deletedTask)));
     }
 }

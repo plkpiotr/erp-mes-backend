@@ -245,30 +245,30 @@ public abstract class FillBaseTemplate {
 
     protected TaskDTO addOneTaskRequest(boolean shouldPost) {
         String name = taskFactory.generateName();
-        Long assigneeId = 1L;
         List<Long> precedingTasksIds = new ArrayList<>();
+        Long assigneeId = 2L;
+        Integer estimatedTime = taskFactory.generateEstimatedTime();
+        LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
-        Integer estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
-        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
-        TaskRequest taskRequest = new TaskRequest(name, assigneeId, precedingTasksIds, details,
-                estimatedTimeInMinutes, null, null, null, scheduledTime);
+        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        setupToken();
+        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
+                null, null, details, null, null);
+
         if (shouldPost) {
+            setupToken();
             restTemplate.postForEntity("/tasks", new HttpEntity<>(taskRequest, requestHeaders), TaskDTO.class);
         }
 
-        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
-
         List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
-        return new TaskDTO(name, assigneeDTO, precedingTaskDTOs, details, estimatedTimeInMinutes, null, null);
+        return new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
     }
 
     protected List<TaskDTO> addTaskRequests(boolean shouldPost) {
         List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 1; i <= 7; i++) {
             taskRequests.add(new TaskRequest());
             taskDTOs.add(addOneTaskRequest(shouldPost));
         }

@@ -17,62 +17,73 @@ public class TaskDTO {
     private long id;
     private String name;
     private Category category;
+    private List<Long> precedingTaskIds;
     private EmployeeDTO assigneeDTO;
-    private List<TaskDTO> precedingTaskDTOs;
-    private String details;
-    private Integer estimatedTimeInMinutes;
-    private LocalDateTime deadline;
-    private Type type;
-    private Long reference;
-    private LocalDateTime scheduledTime;
     private LocalDateTime creationTime;
+    private Integer estimatedTime;
+    private LocalDateTime deadline;
+    private LocalDateTime scheduledTime;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+    private String details;
+    private Type type;
+    private Long reference;
 
     public TaskDTO(Task task) {
         this.id = task.getId();
         this.name = task.getName();
         this.category = task.getCategory();
+        this.precedingTaskIds = task.getPrecedingTaskIds();
+        this.estimatedTime = task.getEstimatedTime();
+        this.creationTime = task.getCreationTime();
+        this.deadline = task.getDeadline();
+
         if (task.getAssignee() != null) {
             this.assigneeDTO = new EmployeeDTO(task.getAssignee());
         }
-        if (task.getPrecedingTasks() != null && !task.getPrecedingTasks().isEmpty()) {
-            task.getPrecedingTasks().forEach(precedingTask -> this.precedingTaskDTOs.add(new TaskDTO(precedingTask)));
+
+        if (task.getScheduledTime() != null) {
+            this.scheduledTime = task.getScheduledTime();
         }
-        this.details = task.getDetails();
-        this.estimatedTimeInMinutes = task.getEstimatedTimeInMinutes();
-        this.deadline = task.getDeadline();
-        this.type = task.getType();
-        this.reference = task.getReference();
-        this.scheduledTime = task.getScheduledTime();
-        this.creationTime = task.getCreationTime();
-        this.startTime = task.getStartTime();
-        this.endTime = task.getEndTime();
+
+        if (task.getStartTime() != null) {
+            this.startTime = task.getStartTime();
+        }
+
+        if (task.getEndTime() != null) {
+            this.endTime = task.getEndTime();
+        }
+
+        if (task.getDetails() != null) {
+            this.details = task.getDetails();
+        }
+
+        if (task.getType() != null) {
+            this.type = task.getType();
+        }
+
+        if (task.getReference() != null) {
+            this.reference = task.getReference();
+        }
     }
 
-    public TaskDTO(String name, EmployeeDTO assigneeDTO, List<TaskDTO> precedingTaskDTOs, String details,
-                   Integer estimatedTimeInMinutes, Type type, Long reference) {
+    public TaskDTO(String name, List<Long> precedingTaskIds, EmployeeDTO assigneeDTO, Integer estimatedTime) {
         this.name = name;
+        this.precedingTaskIds = precedingTaskIds;
         this.assigneeDTO = assigneeDTO;
-        this.details = details;
-        this.precedingTaskDTOs = precedingTaskDTOs;
-        this.estimatedTimeInMinutes = estimatedTimeInMinutes;
-        this.type = type;
-        this.reference = reference;
+        this.estimatedTime = estimatedTime;
     }
 
     public boolean checkIfDataEquals(TaskDTO task) {
         return name.equals(task.getName()) &&
-                comparePrecedingTaskDTOs(task.getPrecedingTaskDTOs()) &&
-                details.equals(task.getDetails()) &&
-                estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes());
+                comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
+                assigneeDTO.equals(task.assigneeDTO) &&
+                estimatedTime.equals(task.estimatedTime);
     }
 
-    private boolean comparePrecedingTaskDTOs(List<TaskDTO> taskDTOList) {
-        if (taskDTOList.isEmpty())
-            return true;
-        for (TaskDTO precedingTaskDTO : precedingTaskDTOs) {
-            if (taskDTOList.stream().noneMatch(t -> t.checkIfDataEquals(precedingTaskDTO)))
+    private boolean comparePrecedingTaskIds(List<Long> precedingTaskIdList) {
+        for (Long precedingTaskId : precedingTaskIds) {
+            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId)))
                 return false;
         }
         return true;

@@ -7,6 +7,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,64 +25,58 @@ public class Task {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Category category;
+    private Category category = Category.TODO;
+
+    @Column(nullable = false)
+    @ElementCollection
+    private List<Long> precedingTaskIds = new ArrayList<>();
 
     @OneToOne
     private Employee assignee;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "preceding_tasks_id")
-    private List<Task> precedingTasks;
+    @Column(nullable = false)
+    private LocalDateTime creationTime;
 
-    private String details;
-    private Integer estimatedTimeInMinutes;
+    @Column(nullable = false)
+    private Integer estimatedTime;
+
+    @Column(nullable = false)
     private LocalDateTime deadline;
+
+    private LocalDateTime scheduledTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private String details;
 
     @Enumerated(EnumType.STRING)
     private Type type;
 
     private Long reference;
-    private LocalDateTime scheduledTime;
 
-    @Column(nullable = false)
-    private LocalDateTime creationTime;
-
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
-
-    public Task(String name, Category category, Employee assignee, List<Task> precedingTasks, String details,
-                Integer estimatedTimeInMinutes, LocalDateTime deadline, Type type, Long reference,
-                LocalDateTime scheduledTime) {
+    public Task(String name, List<Long> precedingTaskIds, Employee assignee, LocalDateTime scheduledTime,
+                Integer estimatedTime, LocalDateTime deadline, String details, Type type, Long reference) {
         this.name = name;
-        this.category = category;
+        this.precedingTaskIds = precedingTaskIds;
         this.assignee = assignee;
-        this.precedingTasks = precedingTasks;
-        this.details = details;
-        this.estimatedTimeInMinutes = estimatedTimeInMinutes;
-        this.deadline = deadline;
-        this.reference = reference;
-        this.scheduledTime = scheduledTime;
-        this.type = type;
         this.creationTime = LocalDateTime.now();
-        this.startTime = null;
-        this.endTime = null;
+        this.scheduledTime = scheduledTime;
+        this.estimatedTime = estimatedTime;
+        this.deadline = deadline;
+        this.details = details;
+        this.type = type;
+        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(Task task) {
         return name.equals(task.getName()) &&
-                category.equals(task.getCategory()) &&
-                // assignee.checkIfDataEquals(task.getAssignee()) &&
-                comparePrecedingTasks(task.getPrecedingTasks()) &&
-                details.equals(task.getDetails()) &&
-                // estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes()) &&
-                deadline.isEqual(task.getDeadline());
+                comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
+                estimatedTime.equals(task.getEstimatedTime());
+
     }
 
-    private boolean comparePrecedingTasks(List<Task> taskList) {
-        if (taskList.isEmpty())
-            return true;
-        for (Task task : precedingTasks) {
-            if (taskList.stream().noneMatch(t -> t.checkIfDataEquals(task)))
+    private boolean comparePrecedingTaskIds(List<Long> precedingTaskIdList) {
+        for (Long precedingTaskId : precedingTaskIds) {
+            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId)))
                 return false;
         }
         return true;

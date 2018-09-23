@@ -32,33 +32,21 @@ public class AddOneTaskTest extends FillBaseTemplate {
     public void init() {
         super.init();
         String name = taskFactory.generateName();
-
-        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
-        Long assigneeId = assigneeDTO.getId();
-
-        List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
-        List<Long> precedingTaskIds = new ArrayList<>();
-
-        for (int i = 1; i < 4; i++) {
-            TaskDTO precedingTaskDTO = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), TaskDTO.class, i).getBody();
-            precedingTaskIds.add(precedingTaskDTO.getId());
-            precedingTaskDTOs.add(precedingTaskDTO);
-        }
-
+        List<Long> precedingTasksIds = new ArrayList<>();
+        Integer estimatedTime = taskFactory.generateEstimatedTime();
+        LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
-        Integer estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
 
-        Type type = Type.ORDER;
-        Long reference = 1L;
+        Long assigneeId = 2L;
+        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
+        for (long i = 1; i <= 4; i++)
+            precedingTasksIds.add(i);
 
-        taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
-                null, type, reference, scheduledTime);
-
-        taskDTO = new TaskDTO(name, assigneeDTO, precedingTaskDTOs, details, estimatedTimeInMinutes, type, reference);
+        taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
+                null, null, details, null, null);
+        taskDTO = new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
     }
 
     @Test

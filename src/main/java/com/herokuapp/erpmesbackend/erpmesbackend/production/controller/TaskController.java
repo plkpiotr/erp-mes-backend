@@ -6,6 +6,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.TaskRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
@@ -48,18 +49,18 @@ public class TaskController {
         return new TaskDTO(taskRepository.findById(id).get());
     }
 
-    @GetMapping(value = "/employees/{id}/tasks")
-    @ResponseStatus(HttpStatus.OK)
-    public List<TaskDTO> getTasksByAssignee(@PathVariable("id") Long id) {
-        checkIfAssigneeExists(id);
-        if (!taskRepository.findByAssigneeId(id).isPresent()) {
-            return new ArrayList<>();
-        }
-        List<Task> tasks = taskRepository.findByAssigneeId(id).get();
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
-        return taskDTOs;
-    }
+//    @GetMapping(value = "/employees/{id}/tasks")
+//    @ResponseStatus(HttpStatus.OK)
+//    public List<TaskDTO> getTasksByAssignee(@PathVariable("id") Long id) {
+//        checkIfAssigneeExists(id);
+//        if (!taskRepository.findByAssigneeId(id).isPresent()) {
+//            return new ArrayList<>();
+//        }
+//        List<Task> tasks = taskRepository.findByAssigneeId(id).get();
+//        List<TaskDTO> taskDTOs = new ArrayList<>();
+//        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+//        return taskDTOs;
+//    }
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
@@ -72,34 +73,48 @@ public class TaskController {
             assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
         }
 
-        List<Task> precedingTasks = new ArrayList<>();
-        if (taskRequest.getPrecedingTaskIds() != null) {
+        List<Long> precedingTaskIds = new ArrayList<>();
+        if (taskRequest.getPrecedingTaskIds() != null && !taskRequest.getPrecedingTaskIds().isEmpty()) {
             taskRequest.getPrecedingTaskIds().forEach(this::checkIfTaskExists);
-            taskRequest.getPrecedingTaskIds().forEach(id -> precedingTasks.add(taskRepository.findById(id).get()));
+            precedingTaskIds.addAll(taskRequest.getPrecedingTaskIds());
         }
 
-        String details = taskRequest.getDetails();
-
-        Integer estimatedTimeInMinutes = null;
-        if (taskRequest.getEstimatedTimeInMinutes() != null)
-            estimatedTimeInMinutes = taskRequest.getEstimatedTimeInMinutes();
-
+        Integer estimatedTime = taskRequest.getEstimatedTime();
         LocalDateTime deadline = taskRequest.getDeadline();
 
+        LocalDateTime scheduledTime = null;
+        if (taskRequest.getScheduledTime() != null) {
+            scheduledTime = taskRequest.getScheduledTime();
+        }
+
+        LocalDateTime startTime = null;
+        if (taskRequest.getStartTime() != null) {
+            startTime = taskRequest.getStartTime();
+        }
+
+        LocalDateTime endTime = null;
+        if (taskRequest.getEndTime() != null) {
+            endTime = taskRequest.getEndTime();
+        }
+
+        String details = null;
+        if (taskRequest.getDetails() != null) {
+            details = taskRequest.getDetails();
+        }
+
         Type type = null;
-        if (taskRequest.getType() != null)
+        if (taskRequest.getType() != null) {
             type = taskRequest.getType();
+        }
 
         Long reference = null;
-        if (taskRequest.getReference() != null)
+        if (taskRequest.getReference() != null) {
             reference = taskRequest.getReference();
+        }
 
-        LocalDateTime scheduledTime = null;
-        if (taskRequest.getScheduledTime() != null)
-            scheduledTime = taskRequest.getScheduledTime();
+        Task task = new Task(name, precedingTaskIds, assignee, scheduledTime, estimatedTime, deadline, details, type,
+                reference);
 
-        Task task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, type,
-                reference, scheduledTime);
         taskRepository.save(task);
         return new TaskDTO(task);
     }
@@ -110,50 +125,34 @@ public class TaskController {
         Task task = taskRepository.findById(id).get();
 
         task.setName(taskRequest.getName());
-        task.setAssignee(employeeRepository.findById(taskRequest.getAssigneeId()).get());
 
-        List<Task> precedingTasks = new ArrayList<>();
-        if (taskRequest.getPrecedingTaskIds() != null) {
-            taskRequest.getPrecedingTaskIds().forEach(this::checkIfTaskExists);
-            taskRequest.getPrecedingTaskIds().forEach(index -> precedingTasks.add(taskRepository.findById(index).get()));
-        }
-        task.setPrecedingTasks(precedingTasks);
-
-        task.setDetails(taskRequest.getDetails());
-
-        if (taskRequest.getEstimatedTimeInMinutes() != null)
-            taskRequest.setEstimatedTimeInMinutes(taskRequest.getEstimatedTimeInMinutes());
-
-        task.setDeadline(taskRequest.getDeadline());
-
-        if (taskRequest.getType() != null)
-            taskRequest.setType(taskRequest.getType());
-
-        if (taskRequest.getReference() != null)
-            taskRequest.setReference(taskRequest.getReference());
-
-        if (taskRequest.getScheduledTime() != null)
-            taskRequest.setScheduledTime(taskRequest.getScheduledTime());
-
-        taskRepository.save(task);
-        return HttpStatus.NO_CONTENT;
-    }
-
-    @PatchMapping("/tasks/{id}")
-    public HttpStatus updateTaskCategory(@PathVariable("id") Long id) {
-        checkIfTaskExists(id);
-        Task task = taskRepository.findById(id).get();
-
-        if (task.getCategory().equals(Category.DOING)) {
-            checkIfCategoryOfTaskMayBeDoing(task.getCategory());
-            task.setCategory(Category.DOING);
-            task.setStartTime(LocalDateTime.now());
-        } else if (task.getCategory().equals(Category.DONE)) {
-            checkIfCategoryOfTaskMayBeDone(task.getCategory());
-            task.setCategory(Category.DONE);
-            task.setEndTime(LocalDateTime.now());
+        Employee assignee = null;
+        if (taskRequest.getAssigneeId() != null) {
+            checkIfAssigneeExists(taskRequest.getAssigneeId());
+            assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
         }
 
+        LocalDateTime deadline = taskRequest.getDeadline();
+
+        LocalDateTime scheduledTime = null;
+        if (taskRequest.getScheduledTime() != null) {
+            scheduledTime = taskRequest.getScheduledTime();
+        }
+
+        LocalDateTime startTime = null;
+        if (taskRequest.getStartTime() != null) {
+            startTime = taskRequest.getStartTime();
+        }
+
+        LocalDateTime endTime = null;
+        if (taskRequest.getEndTime() != null) {
+            endTime = taskRequest.getEndTime();
+        }
+
+        String details = null;
+        if (taskRequest.getDetails() != null) {
+            details = taskRequest.getDetails();
+        }
         taskRepository.save(task);
         return HttpStatus.NO_CONTENT;
     }
@@ -162,9 +161,9 @@ public class TaskController {
     public HttpStatus removeTask(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
         List<Task> collected = taskRepository.findAll().stream()
-                .filter(task -> task.getPrecedingTasks().contains(taskRepository.findById(id).get()))
+                .filter(task -> task.getPrecedingTaskIds().contains(id))
                 .collect(Collectors.toList());
-        collected.forEach(task -> task.getPrecedingTasks().remove(taskRepository.findById(id).get()));
+        collected.forEach(task -> task.getPrecedingTaskIds().remove(id));
         taskRepository.delete(taskRepository.findById(id).get());
         return HttpStatus.OK;
     }
