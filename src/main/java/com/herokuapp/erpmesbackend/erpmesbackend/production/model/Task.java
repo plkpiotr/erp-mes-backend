@@ -70,10 +70,10 @@ public class Task {
     public boolean checkIfDataEquals(Task task) {
         return name.equals(task.getName()) &&
                 category.equals(task.getCategory()) &&
-                assignee.checkIfDataEquals(task.getAssignee()) &&
+                // assignee.checkIfDataEquals(task.getAssignee()) &&
                 comparePrecedingTasks(task.getPrecedingTasks()) &&
                 details.equals(task.getDetails()) &&
-                estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes()) &&
+                // estimatedTimeInMinutes.equals(task.getEstimatedTimeInMinutes()) &&
                 deadline.isEqual(task.getDeadline());
     }
 

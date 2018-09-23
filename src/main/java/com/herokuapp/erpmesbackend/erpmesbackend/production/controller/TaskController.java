@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
@@ -33,28 +34,36 @@ public class TaskController {
 
     @GetMapping("/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getAllTasks() {
-        return new ArrayList<>(taskRepository.findAll());
+    public List<TaskDTO> getAllTasks() {
+        List<Task> tasks = taskRepository.findAll();
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+        return taskDTOs;
     }
 
     @GetMapping("/tasks/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public Task getOneTask(@PathVariable("id") Long id) {
+    public TaskDTO getOneTask(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
-        return taskRepository.findById(id).get();
+        return new TaskDTO(taskRepository.findById(id).get());
     }
 
     @GetMapping(value = "/employees/{id}/tasks")
     @ResponseStatus(HttpStatus.OK)
-    public List<Task> getTasksByAssignee(@PathVariable("id") Long id) {
+    public List<TaskDTO> getTasksByAssignee(@PathVariable("id") Long id) {
         checkIfAssigneeExists(id);
-        return taskRepository.findByAssigneeId(id).isPresent() ?
-                taskRepository.findByAssigneeId(id).get() : new ArrayList<>();
+        if (!taskRepository.findByAssigneeId(id).isPresent()) {
+            return new ArrayList<>();
+        }
+        List<Task> tasks = taskRepository.findByAssigneeId(id).get();
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+        return taskDTOs;
     }
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public Task addOneTask(@RequestBody TaskRequest taskRequest) {
+    public TaskDTO addOneTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
 
         Employee assignee = null;
@@ -92,7 +101,7 @@ public class TaskController {
         Task task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, type,
                 reference, scheduledTime);
         taskRepository.save(task);
-        return task;
+        return new TaskDTO(task);
     }
 
     @PutMapping("/tasks/{id}")

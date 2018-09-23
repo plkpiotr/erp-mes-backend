@@ -31,7 +31,7 @@ public class DeleteTaskTest extends FillBaseTemplate {
     }
 
     @Test
-    @Ignore
+    // @Ignore
     public void checkIfResponseDoesNotContainDeletedTask() {
         restTemplate.delete("/tasks/{id}", 1);
 

@@ -54,7 +54,7 @@ public class NotificationDTO {
     }
 
     public boolean checkIfDataEquals(NotificationDTO notification) {
-        return  instruction.equals(notification.getInstruction()) &&
+        return instruction.equals(notification.getInstruction()) &&
                 description.equals(notification.getDescription()) &&
                 notifier.checkIfDataEquals(notification.getNotifier()) &&
                 compareConsignees(notification.getConsignees());

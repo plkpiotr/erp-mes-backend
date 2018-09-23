@@ -1,11 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.production;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,30 +26,29 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AddOneTaskTest extends FillBaseTemplate {
 
-    private Task task;
+    private TaskDTO taskDTO;
 
     @Before
     public void init() {
         super.init();
         String name = taskFactory.generateName();
 
-        Employee assignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
-        Long assigneeId = assignee.getId();
+        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+        Long assigneeId = assigneeDTO.getId();
 
-        List<Task> precedingTasks = new ArrayList<>();
+        List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
         List<Long> precedingTaskIds = new ArrayList<>();
 
         for (int i = 1; i < 4; i++) {
-            Task precedingTask = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Task.class, i).getBody();
-            precedingTaskIds.add(precedingTask.getId());
-            precedingTasks.add(precedingTask);
+            TaskDTO precedingTaskDTO = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
+                    new HttpEntity<>(null, requestHeaders), TaskDTO.class, i).getBody();
+            precedingTaskIds.add(precedingTaskDTO.getId());
+            precedingTaskDTOs.add(precedingTaskDTO);
         }
 
         String details = taskFactory.generateDetails();
-        int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
-        LocalDateTime deadline = taskFactory.generateDeadline();
+        Integer estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
 
         Type type = Type.ORDER;
         Long reference = 1L;
@@ -58,18 +56,18 @@ public class AddOneTaskTest extends FillBaseTemplate {
         LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
         taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
-                deadline, null, null, scheduledTime);
-        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
-                type, reference, scheduledTime);
+                null, type, reference, scheduledTime);
+
+        taskDTO = new TaskDTO(name, assigneeDTO, precedingTaskDTOs, details, estimatedTimeInMinutes, type, reference);
     }
 
     @Test
     public void checkIfResponseContainsAddedTask() {
-        ResponseEntity<Task> taskResponseEntity = restTemplate.postForEntity("/tasks",
-                new HttpEntity<>(taskRequest, requestHeaders),  Task.class);
-        assertThat(taskResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<TaskDTO> taskDTOResponseEntity = restTemplate.postForEntity("/tasks",
+                new HttpEntity<>(taskRequest, requestHeaders),  TaskDTO.class);
+        assertThat(taskDTOResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Task body = taskResponseEntity.getBody();
-        assertTrue(body.checkIfDataEquals(task));
+        TaskDTO body = taskDTOResponseEntity.getBody();
+        assertTrue(body.checkIfDataEquals(taskDTO));
     }
 }
