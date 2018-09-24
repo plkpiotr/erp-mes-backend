@@ -1,11 +1,10 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.production;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -27,49 +26,36 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class AddOneTaskTest extends FillBaseTemplate {
 
-    private Task task;
+    private TaskDTO taskDTO;
 
     @Before
     public void init() {
         super.init();
         String name = taskFactory.generateName();
-
-        Employee assignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
-        Long assigneeId = assignee.getId();
-
-        List<Task> precedingTasks = new ArrayList<>();
-        List<Long> precedingTaskIds = new ArrayList<>();
-
-        for (int i = 1; i < 4; i++) {
-            Task precedingTask = restTemplate.exchange("/tasks/{id}", HttpMethod.GET,
-                    new HttpEntity<>(null, requestHeaders), Task.class, i).getBody();
-            precedingTaskIds.add(precedingTask.getId());
-            precedingTasks.add(precedingTask);
-        }
-
-        String details = taskFactory.generateDetails();
-        int estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
+        List<Long> precedingTasksIds = new ArrayList<>();
+        Integer estimatedTime = taskFactory.generateEstimatedTime();
         LocalDateTime deadline = taskFactory.generateDeadline();
+        String details = taskFactory.generateDetails();
 
-        Type type = Type.ORDER;
-        Long reference = 1L;
+        Long assigneeId = 2L;
+        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
+        for (long i = 1; i <= 4; i++)
+            precedingTasksIds.add(i);
 
-        taskRequest = new TaskRequest(name, assigneeId, precedingTaskIds, details, estimatedTimeInMinutes,
-                deadline, null, null, scheduledTime);
-        task = new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline,
-                type, reference, scheduledTime);
+        taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
+                null, null, details, null, null);
+        taskDTO = new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
     }
 
     @Test
     public void checkIfResponseContainsAddedTask() {
-        ResponseEntity<Task> taskResponseEntity = restTemplate.postForEntity("/tasks",
-                new HttpEntity<>(taskRequest, requestHeaders),  Task.class);
-        assertThat(taskResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+        ResponseEntity<TaskDTO> taskDTOResponseEntity = restTemplate.postForEntity("/tasks",
+                new HttpEntity<>(taskRequest, requestHeaders),  TaskDTO.class);
+        assertThat(taskDTOResponseEntity.getStatusCode()).isEqualTo(HttpStatus.CREATED);
 
-        Task body = taskResponseEntity.getBody();
-        assertTrue(body.checkIfDataEquals(task));
+        TaskDTO body = taskDTOResponseEntity.getBody();
+        assertTrue(body.checkIfDataEquals(taskDTO));
     }
 }

@@ -2,37 +2,30 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.ChannelDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.MessageDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.*;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.*;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.factory.TaskFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.SpecialPlan;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.SpecialPlanRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.EmployeeFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.HolidayFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.HolidayRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Item;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.ItemRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Complaint;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Delivery;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.factory.ShopServiceFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.*;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.DeliveryItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.DeliveryRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Order;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.factory.ShopServiceFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.ItemRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.ShopServiceRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.model.Return;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.EmployeeFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.HolidayFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.HolidayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
@@ -250,38 +243,36 @@ public abstract class FillBaseTemplate {
         }
     }
 
-    protected Task addOneTaskRequest(boolean shouldPost) {
+    protected TaskDTO addOneTaskRequest(boolean shouldPost) {
         String name = taskFactory.generateName();
-        Long assigneeId = 1L;
         List<Long> precedingTasksIds = new ArrayList<>();
+        Long assigneeId = 2L;
+        Integer estimatedTime = taskFactory.generateEstimatedTime();
+        LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
-        Integer estimatedTimeInMinutes = taskFactory.generateEstimatedTimeInMinutes();
-        LocalDateTime deadline = taskFactory.generateDeadline(); // TODO: FILL ORDERS (TYPE + REFERENCE)
-        LocalDateTime scheduledTime = taskFactory.generateScheduledTime();
 
-        TaskRequest taskRequest = new TaskRequest(name, assigneeId, precedingTasksIds, details,
-                estimatedTimeInMinutes, deadline, null, null, scheduledTime);
+        EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        setupToken();
+        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
+                null, null, details, null, null);
+
         if (shouldPost) {
-            restTemplate.postForEntity("/tasks", new HttpEntity<>(taskRequest, requestHeaders), Task.class);
+            setupToken();
+            restTemplate.postForEntity("/tasks", new HttpEntity<>(taskRequest, requestHeaders), TaskDTO.class);
         }
 
-        Employee assignee = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Employee.class, 1).getBody();
-
-        List<Task> precedingTasks = new ArrayList<>();
-        return new Task(name, Category.TODO, assignee, precedingTasks, details, estimatedTimeInMinutes, deadline, null,
-                null, scheduledTime);
+        List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
+        return new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
     }
 
-    protected List<Task> addTaskRequests(boolean shouldPost) {
-        List<Task> tasks = new ArrayList<>();
-        for (int i = 0; i < 3; i++) {
+    protected List<TaskDTO> addTaskRequests(boolean shouldPost) {
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        for (int i = 1; i <= 7; i++) {
             taskRequests.add(new TaskRequest());
-            tasks.add(addOneTaskRequest(shouldPost));
+            taskDTOs.add(addOneTaskRequest(shouldPost));
         }
-        return tasks;
+        return taskDTOs;
     }
 
     protected void addManyHolidayRequests(long employeeId, boolean shouldPost) {

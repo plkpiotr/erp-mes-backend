@@ -31,7 +31,7 @@ public class TaskFactory {
         return generate(DETAILS);
     }
 
-    public int generateEstimatedTimeInMinutes() {
+    public int generateEstimatedTime() {
         return random.nextInt(15) + 5;
     }
 

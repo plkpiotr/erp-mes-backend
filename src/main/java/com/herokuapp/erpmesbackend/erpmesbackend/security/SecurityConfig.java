@@ -76,16 +76,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.GET, "/suggestions", "/suggestions/{id}",
                         "/employees/{id}/suggestions")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.POST, "/suggestions").permitAll()
-                .antMatchers(HttpMethod.PATCH, "/suggestions/{id}")
+                .antMatchers(HttpMethod.POST, "/suggestions")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers(HttpMethod.PUT, "/suggestions/{id}")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/employees/{id}/tasks").permitAll()
+                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/employees/{id}/tasks")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.POST,"/tasks")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.PUT,"/tasks/{id}").permitAll()
-                .antMatchers(HttpMethod.PATCH,"/tasks/{id}").permitAll()
-                .antMatchers(HttpMethod.DELETE,"/tasks", "/tasks/{id}")
-                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
+                .antMatchers(HttpMethod.PUT,"/tasks/{id}")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                            "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers(HttpMethod.DELETE, "/tasks/{id}").permitAll()
                 .antMatchers("/notifications", "/notifications/{id}", "/employees/{id}/notifications")
                     .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
                 .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")
