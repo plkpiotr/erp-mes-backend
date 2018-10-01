@@ -73,8 +73,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .hasAnyAuthority("ADMIN", "ANALYST", "ADMIN_ANALYST")
                 .antMatchers("/orders", "/orders/{id}")
                     .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
-                .antMatchers(HttpMethod.GET, "/suggestions", "/suggestions/{id}", "/employees/{id}/suggestions")
-                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
+                .antMatchers(HttpMethod.GET, "/suggestions", "/suggestions/{id}")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers("/employees/colleagues")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.POST, "/suggestions")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
@@ -90,7 +94,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                             "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.DELETE, "/tasks/{id}").permitAll() // TODO: issue
                 .antMatchers("/notifications", "/notifications/{id}", "/employees/{id}/notifications")
-                    .hasAnyAuthority("ADMIN", "ADMIN_WAREHOUSE", "WAREHOUSE")
+                .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")

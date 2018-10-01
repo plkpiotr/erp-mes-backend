@@ -22,7 +22,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -107,6 +109,21 @@ public class EmployeeController {
         employeeService.checkIfEmployeeExists(id);
         employeeService.checkIfIsManager(id);
         return employeeService.getSubordinates(id);
+    }
+
+    @GetMapping("/employees/colleagues")
+    public List<EmployeeDTO> getColleagues() {
+        List<Employee> employees = employeeRepository.findAll();
+        List<EmployeeDTO> employeeDTOS = employeeService.mapToDtos(employees);
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee author = employeeRepository.findByEmail(username).get();
+
+        return employeeDTOS.stream()
+                .filter(employeeDTO -> !employeeDTO.getEmail().equals(author.getEmail()))
+                .sorted(Comparator.comparing(EmployeeDTO::getRole))
+                .collect(Collectors.toList());
     }
 
     @PostMapping("/employees/{id}/validate-password")

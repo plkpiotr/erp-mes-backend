@@ -12,4 +12,6 @@ import java.util.Optional;
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
     Optional<List<Suggestion>> findByRecipientsId(Long id);
+
+    Optional<List<Suggestion>> findByAuthorId(Long id);
 }

@@ -37,9 +37,9 @@ public class AddOneTaskTest extends FillBaseTemplate {
         LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
 
-        Long assigneeId = 1L;
+        Long assigneeId = 2L;
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
         for (long i = 1; i <= 4; i++)
             precedingTasksIds.add(i);

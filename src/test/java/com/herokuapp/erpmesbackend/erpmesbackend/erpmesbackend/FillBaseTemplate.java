@@ -246,13 +246,13 @@ public abstract class FillBaseTemplate {
     protected TaskDTO addOneTaskRequest(boolean shouldPost) {
         String name = taskFactory.generateName();
         List<Long> precedingTasksIds = new ArrayList<>();
-        Long assigneeId = 1L;
+        Long assigneeId = 2L;
         Integer estimatedTime = taskFactory.generateEstimatedTime();
         LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
 
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
         TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
                 null, null, details, null, null);
