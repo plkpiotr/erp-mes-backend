@@ -44,6 +44,16 @@ public class ItemController {
         return itemRepository.findById(id).get();
     }
 
+    @PostMapping("/items/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Item changeCurrentPrice(@PathVariable("id") long id, @RequestBody double price) {
+        itemService.checkIfItemExists(id);
+        Item item = itemRepository.findById(id).get();
+        item.setCurrentPrice(price);
+        itemRepository.save(item);
+        return item;
+    }
+
     @PostMapping("/items/{id}/supply")
     @ResponseStatus(HttpStatus.OK)
     public Item supplyItem(@PathVariable("id") long id, @RequestBody int q) {
