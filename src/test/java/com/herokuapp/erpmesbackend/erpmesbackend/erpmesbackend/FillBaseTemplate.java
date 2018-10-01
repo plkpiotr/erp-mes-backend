@@ -246,13 +246,13 @@ public abstract class FillBaseTemplate {
     protected TaskDTO addOneTaskRequest(boolean shouldPost) {
         String name = taskFactory.generateName();
         List<Long> precedingTasksIds = new ArrayList<>();
-        Long assigneeId = 2L;
+        Long assigneeId = 1L;
         Integer estimatedTime = taskFactory.generateEstimatedTime();
         LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
 
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
 
         TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
                 null, null, details, null, null);
@@ -268,7 +268,7 @@ public abstract class FillBaseTemplate {
 
     protected List<TaskDTO> addTaskRequests(boolean shouldPost) {
         List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (int i = 1; i <= 7; i++) {
+        for (int i = 1; i <= 8; i++) {
             taskRequests.add(new TaskRequest());
             taskDTOs.add(addOneTaskRequest(shouldPost));
         }
@@ -434,7 +434,7 @@ public abstract class FillBaseTemplate {
         recipientIds.add(1L);
         recipientIds.add(2L);
 
-        SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
+        SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, recipientIds);
 
         if (shouldPost) {
             setupToken();

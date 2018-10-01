@@ -46,7 +46,7 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
             recipientDTOs.add(recipientDTO);
         }
 
-        suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
+        suggestionRequest = new SuggestionRequest(name, description, recipientIds);
         suggestions = new SuggestionDTO(name, description, authorDTO, recipientDTOs);
     }
 

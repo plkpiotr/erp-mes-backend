@@ -10,6 +10,8 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeReposi
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -61,11 +63,9 @@ public class SuggestionController {
         String name = suggestionRequest.getName();
         String details = suggestionRequest.getDescription();
 
-        Employee author = null;
-        if (suggestionRequest.getAuthorId() != null) {
-            checkIfAuthorExists(suggestionRequest.getAuthorId());
-            author = employeeRepository.findById(suggestionRequest.getAuthorId()).get();
-        }
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee author = employeeRepository.findByEmail(username).get();
 
         List<Employee> recipients = new ArrayList<>();
         suggestionRequest.getRecipientIds().forEach(this::checkIfRecipientExists);

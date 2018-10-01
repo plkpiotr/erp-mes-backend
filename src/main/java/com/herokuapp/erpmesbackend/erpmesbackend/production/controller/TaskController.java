@@ -13,6 +13,8 @@ import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestExcept
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -49,18 +51,23 @@ public class TaskController {
         return new TaskDTO(taskRepository.findById(id).get());
     }
 
-//    @GetMapping(value = "/employees/{id}/tasks")
-//    @ResponseStatus(HttpStatus.OK)
-//    public List<TaskDTO> getTasksByAssignee(@PathVariable("id") Long id) {
-//        checkIfAssigneeExists(id);
-//        if (!taskRepository.findByAssigneeId(id).isPresent()) {
-//            return new ArrayList<>();
-//        }
-//        List<Task> tasks = taskRepository.findByAssigneeId(id).get();
-//        List<TaskDTO> taskDTOs = new ArrayList<>();
-//        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
-//        return taskDTOs;
-//    }
+    @GetMapping("/kanban")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TaskDTO> getTasksByAssignee() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee assignee = employeeRepository.findByEmail(username).get();
+
+        checkIfAssigneeExists(assignee.getEmail());
+        if (!taskRepository.findTasksByAssigneeIdOrderByDeadlineDesc(assignee.getId()).isPresent()) {
+            return new ArrayList<>();
+        }
+
+        List<Task> tasks = taskRepository.findTasksByAssigneeIdOrderByDeadlineDesc(assignee.getId()).get();
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+        return taskDTOs;
+    }
 
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
@@ -175,6 +182,11 @@ public class TaskController {
 
     private void checkIfAssigneeExists(Long id) {
         if (!employeeRepository.findById(id).isPresent())
+            throw new NotFoundException("Chosen assignee doesn't exist!");
+    }
+
+    private void checkIfAssigneeExists(String email) {
+        if (!employeeRepository.findByEmail(email).isPresent())
             throw new NotFoundException("Chosen assignee doesn't exist!");
     }
 
