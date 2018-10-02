@@ -35,8 +35,9 @@ public class MessageController {
     @ResponseStatus(HttpStatus.OK)
     public List<MessageDTO> getMessagesByChannelId(@PathVariable ("id") Long id) {
         checkIfChannelExists(id);
-        if (!messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).isPresent())
+        if (!messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).isPresent()) {
             return new ArrayList<>();
+        }
         List<Message> messages = messageRepository.findMessageByChannelIdOrderByCreationTimeDesc(id).get();
         List<MessageDTO> messageDTOs = new ArrayList<>();
         messages.forEach(message -> messageDTOs.add(new MessageDTO(message)));
@@ -61,7 +62,8 @@ public class MessageController {
     }
 
     private void checkIfChannelExists(Long id) {
-        if (!channelRepository.findById(id).isPresent())
+        if (!channelRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such channel doesn't exist!");
+        }
     }
 }

@@ -69,11 +69,10 @@ public class Notification {
     }
 
     private boolean compareConsignees(List<Employee> consigneeList) {
-        if (consigneeList.isEmpty())
-            return true;
         for (Employee employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee)))
+            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }

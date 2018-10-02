@@ -5,6 +5,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.communication.repository.Sugges
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Phase;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Suggestion;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
@@ -14,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -84,15 +86,28 @@ public class SuggestionController {
         return new SuggestionDTO(suggestion);
     }
 
-    @PatchMapping("suggestions/{id}")
-    public HttpStatus updateSuggestionPhase(@PathVariable("id") Long id, @RequestBody Phase phase) {
+    @PutMapping("suggestions/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Suggestion setNextPhase(@PathVariable("id") Long id) {
         checkIfSuggestionExists(id);
         Suggestion suggestion = suggestionRepository.findById(id).get();
 
-        suggestion.setPhase(phase);
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee author = employeeRepository.findByEmail(username).get();
+
+        if (suggestion.getPhase() == Phase.REPORTED) {
+            suggestion.setPhase(Phase.IN_IMPLEMENTATION);
+            suggestion.setStartTime(LocalDateTime.now());
+            suggestion.setStartEmployee(author);
+        } else if (suggestion.getPhase() == Phase.IN_IMPLEMENTATION) {
+            suggestion.setPhase(Phase.IMPLEMENTED);
+            suggestion.setEndTime(LocalDateTime.now());
+            suggestion.setEndEmployee(author);
+        }
 
         suggestionRepository.save(suggestion);
-        return HttpStatus.NO_CONTENT;
+        return suggestion;
     }
 
     private void checkIfSuggestionExists(Long id) {

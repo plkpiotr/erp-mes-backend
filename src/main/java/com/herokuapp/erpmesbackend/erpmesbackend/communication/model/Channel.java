@@ -36,11 +36,10 @@ public class Channel {
     }
 
     private boolean compareParticipants(List<Employee> participantList) {
-        if (participantList.isEmpty())
-            return true;
         for (Employee employee : participants) {
-            if (participantList.stream().noneMatch(t -> t.checkIfDataEquals(employee)))
+            if (participantList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }

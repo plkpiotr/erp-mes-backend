@@ -59,11 +59,13 @@ public class TaskController {
         Employee assignee = employeeRepository.findByEmail(username).get();
 
         checkIfAssigneeExists(assignee.getEmail());
-        if (!taskRepository.findTasksByAssigneeIdOrderByDeadlineDesc(assignee.getId()).isPresent()) {
+        if (!taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineDesc(assignee.getId(),
+                LocalDateTime.now().minusDays(28)).isPresent()) {
             return new ArrayList<>();
         }
 
-        List<Task> tasks = taskRepository.findTasksByAssigneeIdOrderByDeadlineDesc(assignee.getId()).get();
+        List<Task> tasks = taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineDesc(assignee.getId(),
+                LocalDateTime.now().minusDays(28)).get();
         List<TaskDTO> taskDTOs = new ArrayList<>();
         tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
         return taskDTOs;
@@ -164,39 +166,33 @@ public class TaskController {
         return HttpStatus.NO_CONTENT;
     }
 
-    @DeleteMapping("/tasks/{id}")
-    public HttpStatus removeTask(@PathVariable("id") Long id) {
-        checkIfTaskExists(id);
-        List<Task> collected = taskRepository.findAll().stream()
-                .filter(task -> task.getPrecedingTaskIds().contains(id))
-                .collect(Collectors.toList());
-        collected.forEach(task -> task.getPrecedingTaskIds().remove(id));
-        taskRepository.delete(taskRepository.findById(id).get());
-        return HttpStatus.OK;
-    }
-
     private void checkIfTaskExists(Long id) {
-        if (!taskRepository.findById(id).isPresent())
+        if (!taskRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such task doesn't exist!");
+        }
     }
 
     private void checkIfAssigneeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("Chosen assignee doesn't exist!");
+        }
     }
 
     private void checkIfAssigneeExists(String email) {
-        if (!employeeRepository.findByEmail(email).isPresent())
+        if (!employeeRepository.findByEmail(email).isPresent()) {
             throw new NotFoundException("Chosen assignee doesn't exist!");
+        }
     }
 
     private void checkIfCategoryOfTaskMayBeDoing(Category category) {
-        if (!category.equals(Category.TODO))
+        if (!category.equals(Category.TODO)) {
             throw new InvalidRequestException("The task can't have 'DOING' category!");
+        }
     }
 
     private void checkIfCategoryOfTaskMayBeDone(Category category) {
-        if (!category.equals(Category.DOING))
+        if (!category.equals(Category.DOING)) {
             throw new InvalidRequestException("The task can't have 'DONE' category!");
+        }
     }
 }

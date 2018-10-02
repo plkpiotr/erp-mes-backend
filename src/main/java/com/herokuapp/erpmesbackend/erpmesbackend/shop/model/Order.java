@@ -102,11 +102,10 @@ public class Order {
     }
 
     private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {
-        if (deliveryItemList.isEmpty())
-            return true;
         for (DeliveryItem deliveryItem: deliveryItems) {
-            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem)))
+            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem))) {
                 return false;
+            }
         }
         return true;
     }

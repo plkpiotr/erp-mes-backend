@@ -22,20 +22,37 @@ public class SuggestionDTO {
     private List<EmployeeDTO> recipientDTOs;
     private LocalDateTime creationTime;
 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private EmployeeDTO startEmployee;
+    private EmployeeDTO endEmployee;
+
     public SuggestionDTO(Suggestion suggestion) {
         this.id = suggestion.getId();
         this.phase = suggestion.getPhase();
         this.name = suggestion.getName();
         this.description = suggestion.getDescription();
-        if (suggestion.getAuthor() != null)
+
+        if (suggestion.getAuthor() != null) {
             this.authorDTO = new EmployeeDTO(suggestion.getAuthor());
+        }
+
         this.recipientDTOs = new ArrayList<>();
         suggestion.getRecipients().forEach(recipient -> this.recipientDTOs.add(new EmployeeDTO(recipient)));
         this.creationTime = suggestion.getCreationTime();
+
+        if (suggestion.getStartTime() != null) {
+            this.startTime = suggestion.getStartTime();
+            this.startEmployee = new EmployeeDTO(suggestion.getStartEmployee());
+        }
+
+        if (suggestion.getEndTime() != null) {
+            this.startTime = suggestion.getStartTime();
+            this.endEmployee = new EmployeeDTO(suggestion.getEndEmployee());
+        }
     }
 
-    public SuggestionDTO(String name, String description, EmployeeDTO authorDTO,
-                         List<EmployeeDTO> recipientDTOs) {
+    public SuggestionDTO(String name, String description, EmployeeDTO authorDTO, List<EmployeeDTO> recipientDTOs) {
         this.name = name;
         this.description = description;
         this.authorDTO = authorDTO;
@@ -50,11 +67,10 @@ public class SuggestionDTO {
     }
 
     private boolean compareRecipientDTOs(List<EmployeeDTO> recipientDTOList) {
-        if (recipientDTOList.isEmpty())
-            return true;
         for (EmployeeDTO recipientDTO : recipientDTOs) {
-            if (recipientDTOList.stream().noneMatch(t -> t.checkIfDataEquals(recipientDTO)))
+            if (recipientDTOList.stream().noneMatch(t -> t.checkIfDataEquals(recipientDTO))) {
                 return false;
+            }
         }
         return true;
     }

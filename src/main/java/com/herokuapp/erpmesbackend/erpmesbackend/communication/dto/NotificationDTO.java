@@ -61,11 +61,10 @@ public class NotificationDTO {
     }
 
     private boolean compareConsignees(List<EmployeeDTO> consigneeList) {
-        if (consigneeList.isEmpty())
-            return true;
         for (EmployeeDTO employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee)))
+            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }

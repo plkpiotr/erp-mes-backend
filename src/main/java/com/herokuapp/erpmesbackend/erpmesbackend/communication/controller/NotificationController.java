@@ -68,8 +68,9 @@ public class NotificationController {
         String instruction = notificationRequest.getInstruction();
 
         String description = null;
-        if (notificationRequest.getDescription() != null)
+        if (notificationRequest.getDescription() != null) {
             description = notificationRequest.getDescription();
+        }
 
         Employee notifier = null;
         if (notificationRequest.getNotifierId() != null) {
@@ -82,12 +83,14 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
         Type type = null;
-        if (notificationRequest.getType() != null)
+        if (notificationRequest.getType() != null) {
             type = notificationRequest.getType();
+        }
 
         Long reference = null;
-        if (notificationRequest.getReference() != null)
+        if (notificationRequest.getReference() != null) {
             reference = notificationRequest.getReference();
+        }
 
         Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
 
@@ -121,22 +124,26 @@ public class NotificationController {
     }
 
     private void checkIfNotificationExists(Long id) {
-        if (!notificationRepository.findById(id).isPresent())
+        if (!notificationRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such notification doesn't exist!");
+        }
     }
 
     private void checkIfNotifierExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("Chosen notifier doesn't exist!");
+        }
     }
 
     private void checkIfTransfereeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("Chosen transferee doesn't exist!");
+        }
     }
 
     private void checkIfConsigneeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the chosen consignees doesn't exist!");
+        }
     }
 }

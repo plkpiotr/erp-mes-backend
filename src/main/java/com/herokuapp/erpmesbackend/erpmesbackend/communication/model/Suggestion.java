@@ -39,6 +39,15 @@ public class Suggestion {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+    @OneToOne
+    private Employee startEmployee;
+
+    @OneToOne
+    private Employee endEmployee;
+
     public Suggestion(String name, String description, Employee author, List<Employee> recipients) {
         this.phase = Phase.REPORTED;
         this.name = name;
@@ -57,11 +66,10 @@ public class Suggestion {
     }
 
     private boolean compareRecipients(List<Employee> recipientList) {
-        if (recipientList.isEmpty())
-            return true;
         for (Employee employee : recipients) {
-            if (recipientList.stream().noneMatch(r -> r.checkIfDataEquals(employee)))
+            if (recipientList.stream().noneMatch(r -> r.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }
