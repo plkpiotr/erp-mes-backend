@@ -43,6 +43,16 @@ public class DeliveryController {
         return deliveryRepository.findById(id).get();
     }
 
+    @PostMapping("/deliveries/{id}")
+    @ResponseStatus(HttpStatus.OK)
+    public Delivery confirmDelivery(@PathVariable("id") long id) {
+        deliveryService.checkIfDeliveryExists(id);
+        Delivery delivery = deliveryRepository.findById(id).get();
+        delivery.confirm();
+        deliveryRepository.save(delivery);
+        return delivery;
+    }
+
     @GetMapping("/deliveries/recommended-delivery")
     public List<DeliveryItemRequest> recommendDelivery() {
         return deliveryService.getRecommendedDelivery();

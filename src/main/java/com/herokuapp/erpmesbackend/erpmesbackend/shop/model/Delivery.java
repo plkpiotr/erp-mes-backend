@@ -21,6 +21,7 @@ public class Delivery {
 
     private LocalDate scheduledFor;
     private double value;
+    private boolean confirmed;
 
     public Delivery(List<DeliveryItem> deliveryItems, LocalDate scheduledFor) {
         this.deliveryItems = deliveryItems;
@@ -29,6 +30,11 @@ public class Delivery {
                 .map(deliveryItem -> deliveryItem.getItem().getStockPrice()*deliveryItem.getQuantity())
                 .mapToDouble(Double::doubleValue)
                 .sum();
+        this.confirmed = false;
+    }
+
+    public void confirm() {
+        this.confirmed = true;
     }
 
     public boolean checkIfDataEquals(Delivery delivery) {
