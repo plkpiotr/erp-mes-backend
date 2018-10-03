@@ -95,7 +95,7 @@ public class ReportService {
 
     public CurrentReport recalculateCosts(EstimatedCostsRequest request) {
         CurrentReport currentReport = getCurrentReport();
-        EstimatedCosts estimatedCosts = currentReport.getEstimatedCosts();
+        EstimatedCosts estimatedCosts = new EstimatedCosts();
         estimatedCosts.recalculateCosts(request);
         estimatedCostsRepository.save(estimatedCosts);
         currentReport.updateEstimatedCosts(estimatedCosts);
