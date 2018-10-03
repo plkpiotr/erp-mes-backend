@@ -47,6 +47,12 @@ public class Notification {
 
     private Long reference;
 
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+
+    @OneToOne
+    private Employee endEmployee;
+
     public Notification(String instruction, String description, Employee notifier, List<Employee> consignees, Type type,
                         Long reference) {
         this.state = State.REPORTED;

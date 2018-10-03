@@ -25,6 +25,9 @@ public class NotificationDTO {
     private LocalDateTime creationTime;
     private Type type;
     private Long reference;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private EmployeeDTO endEmployee;
 
     public NotificationDTO(Notification notification) {
         this.id = notification.getId();
@@ -41,6 +44,16 @@ public class NotificationDTO {
         this.creationTime = notification.getCreationTime();
         this.type = notification.getType();
         this.reference = notification.getReference();
+
+        if (notification.getStartTime() != null) {
+            this.startTime = notification.getStartTime();
+            this.transferee = new EmployeeDTO(notification.getTransferee());
+        }
+
+        if (notification.getEndTime() != null) {
+            this.endTime = notification.getEndTime();
+            this.endEmployee = new EmployeeDTO(notification.getEndEmployee());
+        }
     }
 
     public NotificationDTO(String instruction, String description, EmployeeDTO notifier,

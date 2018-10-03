@@ -35,7 +35,6 @@ public class AddOneNotificationTest extends FillBaseTemplate {
 
         EmployeeDTO notifier = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
-        Long notifierId = notifier.getId();
 
         List<EmployeeDTO> consignees = new ArrayList<>();
         List<Long> consigneeIds = new ArrayList<>();
@@ -50,7 +49,7 @@ public class AddOneNotificationTest extends FillBaseTemplate {
         Type type = Type.ORDER;
         Long reference = 1L;
 
-        notificationRequest = new NotificationRequest(instruction, description, notifierId, consigneeIds, type, reference);
+        notificationRequest = new NotificationRequest(instruction, description, consigneeIds, type, reference);
         notification = new NotificationDTO(instruction, description, notifier, consignees, type, reference);
 
     }

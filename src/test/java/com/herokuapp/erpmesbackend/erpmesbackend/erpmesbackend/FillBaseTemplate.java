@@ -386,7 +386,6 @@ public abstract class FillBaseTemplate {
     protected NotificationDTO addOneNotificationRequest(boolean shouldPost) {
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
-        Long notifierId = 1L;
 
         List<Long> consigneeIds = new ArrayList<>();
         consigneeIds.add(1L);
@@ -395,7 +394,7 @@ public abstract class FillBaseTemplate {
         Type type = Type.ORDER;
         Long reference = 1L;
 
-        NotificationRequest notificationRequest = new NotificationRequest(instruction, description, notifierId,
+        NotificationRequest notificationRequest = new NotificationRequest(instruction, description,
                 consigneeIds, type, reference);
 
         if (shouldPost) {

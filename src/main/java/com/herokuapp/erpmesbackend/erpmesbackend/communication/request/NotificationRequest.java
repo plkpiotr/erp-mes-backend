@@ -17,11 +17,10 @@ public class NotificationRequest {
     private String instruction;
 
     private String description;
-    private Long notifierId;
 
     @NonNull
     private List<Long> consigneeIds;
 
     private Type type;
-    private Long reference;
+    private Long referenceId;
 }

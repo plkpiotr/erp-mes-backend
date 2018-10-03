@@ -1,14 +1,13 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.communication.controller;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.repository.SuggestionRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Phase;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Suggestion;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.repository.SuggestionRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;

@@ -47,7 +47,7 @@ public class SuggestionDTO {
         }
 
         if (suggestion.getEndTime() != null) {
-            this.startTime = suggestion.getStartTime();
+            this.endTime = suggestion.getEndTime();
             this.endEmployee = new EmployeeDTO(suggestion.getEndEmployee());
         }
     }
