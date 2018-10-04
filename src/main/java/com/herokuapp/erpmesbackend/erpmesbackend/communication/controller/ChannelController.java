@@ -44,7 +44,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     public ChannelDTO getOneChannel(@PathVariable("id") Long id) {
         checkIfChannelExists(id);
-        // TODO: http://bit.ly/2MDblSR
+        // TO_DO: http://bit.ly/2MDblSR
         return new ChannelDTO(channelRepository.findById(id).get());
     }
 
@@ -57,7 +57,7 @@ public class ChannelController {
             return new ArrayList<>();
         }
 
-        // TODO: http://bit.ly/2MDblSR
+        // TO_DO: http://bit.ly/2MDblSR
         List<Channel> channels = channelRepository.findByParticipantsId(id).get();
         List<ChannelDTO> channelDTOs = new ArrayList<>();
         channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));

@@ -31,8 +31,6 @@ public class TaskRequest {
     private LocalDateTime deadline;
 
     private LocalDateTime scheduledTime;
-    private LocalDateTime startTime;
-    private LocalDateTime endTime;
     private String details;
     private Type type;
 }

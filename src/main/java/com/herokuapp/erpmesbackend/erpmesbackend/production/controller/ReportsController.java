@@ -40,7 +40,7 @@ public class ReportsController {
         this.reportService = reportService;
     }
 
-    //TODO: setup only once when the app is up and running, then comment out
+    //TO_DO: setup only once when the app is up and running, then comment out
     @PostConstruct
     public void init() {
         EstimatedCosts estimatedCosts = new EstimatedCosts();

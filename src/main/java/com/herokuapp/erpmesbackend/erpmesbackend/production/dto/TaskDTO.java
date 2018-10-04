@@ -18,6 +18,7 @@ public class TaskDTO {
     private String name;
     private Category category;
     private List<Long> precedingTaskIds;
+    private EmployeeDTO authorDTO;
     private EmployeeDTO assigneeDTO;
     private LocalDateTime creationTime;
     private Integer estimatedTime;
@@ -26,6 +27,8 @@ public class TaskDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String details;
+    private EmployeeDTO startEmployee;
+    private EmployeeDTO endEmployee;
     private Type type;
 
     public TaskDTO(Task task) {
@@ -33,6 +36,7 @@ public class TaskDTO {
         this.name = task.getName();
         this.category = task.getCategory();
         this.precedingTaskIds = task.getPrecedingTaskIds();
+        this.authorDTO = new EmployeeDTO(task.getAuthor());
         this.estimatedTime = task.getEstimatedTime();
         this.creationTime = task.getCreationTime();
         this.deadline = task.getDeadline();
@@ -60,11 +64,23 @@ public class TaskDTO {
         if (task.getType() != null) {
             this.type = task.getType();
         }
+
+        if (task.getStartTime() != null) {
+            this.startTime = task.getStartTime();
+            this.startEmployee = new EmployeeDTO(task.getStartEmployee());
+        }
+
+        if (task.getEndTime() != null) {
+            this.endTime = task.getEndTime();
+            this.endEmployee = new EmployeeDTO(task.getEndEmployee());
+        }
     }
 
-    public TaskDTO(String name, List<Long> precedingTaskIds, EmployeeDTO assigneeDTO, Integer estimatedTime) {
+    public TaskDTO(String name, List<Long> precedingTaskIds, EmployeeDTO authorDTO, EmployeeDTO assigneeDTO,
+                   Integer estimatedTime) {
         this.name = name;
         this.precedingTaskIds = precedingTaskIds;
+        this.authorDTO = authorDTO;
         this.assigneeDTO = assigneeDTO;
         this.estimatedTime = estimatedTime;
     }
@@ -72,6 +88,7 @@ public class TaskDTO {
     public boolean checkIfDataEquals(TaskDTO task) {
         return name.equals(task.getName()) &&
                 comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
+                authorDTO.equals(task.getAuthorDTO()) &&
                 assigneeDTO.equals(task.assigneeDTO) &&
                 estimatedTime.equals(task.estimatedTime);
     }

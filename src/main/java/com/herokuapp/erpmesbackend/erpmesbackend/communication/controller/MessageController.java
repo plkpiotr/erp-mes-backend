@@ -53,7 +53,7 @@ public class MessageController {
 
         // Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         // String username = ((UserDetails) principal).getUsername();
-        // TODO: http://bit.ly/2MDblSR
+        // TO_DO: http://bit.ly/2MDblSR
         Employee author = employeeRepository.findById(1L).get();
 
         Message message = new Message(content, author, id);

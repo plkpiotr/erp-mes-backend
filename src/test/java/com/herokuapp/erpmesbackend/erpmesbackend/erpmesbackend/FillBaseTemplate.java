@@ -254,8 +254,11 @@ public abstract class FillBaseTemplate {
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                null, null, details, null);
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+
+        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline,
+                null, details, null);
 
         if (shouldPost) {
             setupToken();
@@ -263,7 +266,7 @@ public abstract class FillBaseTemplate {
         }
 
         List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
-        return new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
+        return new TaskDTO(name, precedingTasksIds, authorDTO, assigneeDTO, estimatedTime);
     }
 
     protected List<TaskDTO> addTaskRequests(boolean shouldPost) {

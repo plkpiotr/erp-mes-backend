@@ -6,7 +6,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.TaskRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
@@ -20,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -76,6 +74,10 @@ public class TaskController {
     public TaskDTO addOneTask(@RequestBody TaskRequest taskRequest) {
         String name = taskRequest.getName();
 
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee author = employeeRepository.findByEmail(username).get();
+
         Employee assignee = null;
         if (taskRequest.getAssigneeId() != null) {
             checkIfAssigneeExists(taskRequest.getAssigneeId());
@@ -96,16 +98,6 @@ public class TaskController {
             scheduledTime = taskRequest.getScheduledTime();
         }
 
-        LocalDateTime startTime = null;
-        if (taskRequest.getStartTime() != null) {
-            startTime = taskRequest.getStartTime();
-        }
-
-        LocalDateTime endTime = null;
-        if (taskRequest.getEndTime() != null) {
-            endTime = taskRequest.getEndTime();
-        }
-
         String details = null;
         if (taskRequest.getDetails() != null) {
             details = taskRequest.getDetails();
@@ -116,45 +108,30 @@ public class TaskController {
             type = taskRequest.getType();
         }
 
-        Task task = new Task(name, precedingTaskIds, assignee, scheduledTime, estimatedTime, deadline, details, type);
+        Task task = new Task(name, precedingTaskIds, author, assignee, scheduledTime, estimatedTime, deadline, details,
+                type);
 
         taskRepository.save(task);
         return new TaskDTO(task);
     }
 
     @PutMapping("/tasks/{id}")
-    public HttpStatus updateTask(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+    public HttpStatus setNextCategory(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
         checkIfTaskExists(id);
         Task task = taskRepository.findById(id).get();
 
-        task.setName(taskRequest.getName());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee employee = employeeRepository.findByEmail(username).get();
 
-        Employee assignee = null;
-        if (taskRequest.getAssigneeId() != null) {
-            checkIfAssigneeExists(taskRequest.getAssigneeId());
-            assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
-        }
-
-        LocalDateTime deadline = taskRequest.getDeadline();
-
-        LocalDateTime scheduledTime = null;
-        if (taskRequest.getScheduledTime() != null) {
-            scheduledTime = taskRequest.getScheduledTime();
-        }
-
-        LocalDateTime startTime = null;
-        if (taskRequest.getStartTime() != null) {
-            startTime = taskRequest.getStartTime();
-        }
-
-        LocalDateTime endTime = null;
-        if (taskRequest.getEndTime() != null) {
-            endTime = taskRequest.getEndTime();
-        }
-
-        String details = null;
-        if (taskRequest.getDetails() != null) {
-            details = taskRequest.getDetails();
+        if (task.getCategory() == Category.TO_DO) {
+            task.setCategory(Category.DOING);
+            task.setStartTime(LocalDateTime.now());
+            task.setStartEmployee(employee);
+        } else if (task.getCategory() == Category.DOING) {
+            task.setCategory(Category.DONE);
+            task.setEndTime(LocalDateTime.now());
+            task.setEndEmployee(employee);
         }
 
         taskRepository.save(task);
@@ -176,18 +153,6 @@ public class TaskController {
     private void checkIfAssigneeExists(String email) {
         if (!employeeRepository.findByEmail(email).isPresent()) {
             throw new NotFoundException("Chosen assignee doesn't exist!");
-        }
-    }
-
-    private void checkIfCategoryOfTaskMayBeDoing(Category category) {
-        if (!category.equals(Category.TODO)) {
-            throw new InvalidRequestException("The task can't have 'DOING' category!");
-        }
-    }
-
-    private void checkIfCategoryOfTaskMayBeDone(Category category) {
-        if (!category.equals(Category.DOING)) {
-            throw new InvalidRequestException("The task can't have 'DONE' category!");
         }
     }
 }

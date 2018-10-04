@@ -120,16 +120,16 @@ public class NotificationController {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(username).get();
+        Employee employee = employeeRepository.findByEmail(username).get();
 
         if (notification.getState() == State.REPORTED) {
             notification.setState(State.IN_PROGRESS);
             notification.setStartTime(LocalDateTime.now());
-            notification.setTransferee(author);
+            notification.setTransferee(employee);
         } else if (notification.getState() == State.IN_PROGRESS) {
             notification.setState(State.RESOLVED);
             notification.setEndTime(LocalDateTime.now());
-            notification.setEndEmployee(author);
+            notification.setEndEmployee(employee);
 
         }
 

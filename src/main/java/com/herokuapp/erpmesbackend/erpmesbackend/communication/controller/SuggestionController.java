@@ -93,16 +93,16 @@ public class SuggestionController {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(username).get();
+        Employee employee = employeeRepository.findByEmail(username).get();
 
         if (suggestion.getPhase() == Phase.REPORTED) {
             suggestion.setPhase(Phase.IN_IMPLEMENTATION);
             suggestion.setStartTime(LocalDateTime.now());
-            suggestion.setStartEmployee(author);
+            suggestion.setStartEmployee(employee);
         } else if (suggestion.getPhase() == Phase.IN_IMPLEMENTATION) {
             suggestion.setPhase(Phase.IMPLEMENTED);
             suggestion.setEndTime(LocalDateTime.now());
-            suggestion.setEndEmployee(author);
+            suggestion.setEndEmployee(employee);
         }
 
         suggestionRepository.save(suggestion);

@@ -25,11 +25,14 @@ public class Task {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Category category = Category.TODO;
+    private Category category = Category.TO_DO;
 
     @Column(nullable = false)
     @ElementCollection
     private List<Long> precedingTaskIds = new ArrayList<>();
+
+    @OneToOne
+    private Employee author;
 
     @OneToOne
     private Employee assignee;
@@ -48,13 +51,20 @@ public class Task {
     private LocalDateTime endTime;
     private String details;
 
+    @OneToOne
+    private Employee startEmployee;
+
+    @OneToOne
+    private Employee endEmployee;
+
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    public Task(String name, List<Long> precedingTaskIds, Employee assignee, LocalDateTime scheduledTime,
-                Integer estimatedTime, LocalDateTime deadline, String details, Type type) {
+    public Task(String name, List<Long> precedingTaskIds, Employee author, Employee assignee,
+                LocalDateTime scheduledTime, Integer estimatedTime, LocalDateTime deadline, String details, Type type) {
         this.name = name;
         this.precedingTaskIds = precedingTaskIds;
+        this.author = author;
         this.assignee = assignee;
         this.creationTime = LocalDateTime.now();
         this.scheduledTime = scheduledTime;
