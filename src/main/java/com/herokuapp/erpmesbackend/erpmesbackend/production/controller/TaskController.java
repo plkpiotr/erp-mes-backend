@@ -116,13 +116,7 @@ public class TaskController {
             type = taskRequest.getType();
         }
 
-        Long reference = null;
-        if (taskRequest.getReference() != null) {
-            reference = taskRequest.getReference();
-        }
-
-        Task task = new Task(name, precedingTaskIds, assignee, scheduledTime, estimatedTime, deadline, details, type,
-                reference);
+        Task task = new Task(name, precedingTaskIds, assignee, scheduledTime, estimatedTime, deadline, details, type);
 
         taskRepository.save(task);
         return new TaskDTO(task);
@@ -162,6 +156,7 @@ public class TaskController {
         if (taskRequest.getDetails() != null) {
             details = taskRequest.getDetails();
         }
+
         taskRepository.save(task);
         return HttpStatus.NO_CONTENT;
     }

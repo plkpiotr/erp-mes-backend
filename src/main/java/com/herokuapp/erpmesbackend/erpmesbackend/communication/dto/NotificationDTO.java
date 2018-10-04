@@ -24,7 +24,6 @@ public class NotificationDTO {
     private List<EmployeeDTO> consignees;
     private LocalDateTime creationTime;
     private Type type;
-    private Long reference;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private EmployeeDTO endEmployee;
@@ -43,7 +42,6 @@ public class NotificationDTO {
                 .add(new EmployeeDTO(consignee)));
         this.creationTime = notification.getCreationTime();
         this.type = notification.getType();
-        this.reference = notification.getReference();
 
         if (notification.getStartTime() != null) {
             this.startTime = notification.getStartTime();
@@ -56,14 +54,13 @@ public class NotificationDTO {
         }
     }
 
-    public NotificationDTO(String instruction, String description, EmployeeDTO notifier,
-                           List<EmployeeDTO> consignees, Type type, Long reference) {
+    public NotificationDTO(String instruction, String description, EmployeeDTO notifier, List<EmployeeDTO> consignees,
+                           Type type) {
         this.instruction = instruction;
         this.description = description;
         this.notifier = notifier;
         this.consignees = consignees;
         this.type = type;
-        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(NotificationDTO notification) {

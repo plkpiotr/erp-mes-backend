@@ -45,7 +45,7 @@ public class AddOneTaskTest extends FillBaseTemplate {
             precedingTasksIds.add(i);
 
         taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                null, null, details, null, null);
+                null, null, details, null);
         taskDTO = new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
     }
 

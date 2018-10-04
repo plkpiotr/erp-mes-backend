@@ -45,16 +45,14 @@ public class Notification {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    private Long reference;
-
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 
     @OneToOne
     private Employee endEmployee;
 
-    public Notification(String instruction, String description, Employee notifier, List<Employee> consignees, Type type,
-                        Long reference) {
+    public Notification(String instruction, String description, Employee notifier, List<Employee> consignees,
+                        Type type) {
         this.state = State.REPORTED;
         this.instruction = instruction;
         this.description = description;
@@ -63,7 +61,6 @@ public class Notification {
         this.consignees = consignees;
         this.creationTime = LocalDateTime.now();
         this.type = type;
-        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(Notification notification) {

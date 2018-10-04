@@ -22,5 +22,4 @@ public class NotificationRequest {
     private List<Long> consigneeIds;
 
     private Type type;
-    private Long referenceId;
 }

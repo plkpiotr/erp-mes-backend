@@ -51,10 +51,8 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    private Long reference;
-
     public Task(String name, List<Long> precedingTaskIds, Employee assignee, LocalDateTime scheduledTime,
-                Integer estimatedTime, LocalDateTime deadline, String details, Type type, Long reference) {
+                Integer estimatedTime, LocalDateTime deadline, String details, Type type) {
         this.name = name;
         this.precedingTaskIds = precedingTaskIds;
         this.assignee = assignee;
@@ -64,7 +62,6 @@ public class Task {
         this.deadline = deadline;
         this.details = details;
         this.type = type;
-        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(Task task) {

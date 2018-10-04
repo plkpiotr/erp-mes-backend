@@ -27,7 +27,6 @@ public class TaskDTO {
     private LocalDateTime endTime;
     private String details;
     private Type type;
-    private Long reference;
 
     public TaskDTO(Task task) {
         this.id = task.getId();
@@ -60,10 +59,6 @@ public class TaskDTO {
 
         if (task.getType() != null) {
             this.type = task.getType();
-        }
-
-        if (task.getReference() != null) {
-            this.reference = task.getReference();
         }
     }
 

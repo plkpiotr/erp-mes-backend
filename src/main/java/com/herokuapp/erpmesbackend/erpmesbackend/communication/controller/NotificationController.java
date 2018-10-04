@@ -107,12 +107,7 @@ public class NotificationController {
             type = notificationRequest.getType();
         }
 
-        Long reference = null;
-        if (notificationRequest.getReferenceId() != null) {
-            reference = notificationRequest.getReferenceId();
-        }
-
-        Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
+        Notification notification = new Notification(instruction, description, notifier, consignees, type);
 
         notificationRepository.save(notification);
         return new NotificationDTO(notification);

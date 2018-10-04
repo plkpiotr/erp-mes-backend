@@ -255,7 +255,7 @@ public abstract class FillBaseTemplate {
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
         TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                null, null, details, null, null);
+                null, null, details, null);
 
         if (shouldPost) {
             setupToken();
@@ -392,10 +392,8 @@ public abstract class FillBaseTemplate {
         consigneeIds.add(2L);
 
         Type type = Type.ORDER;
-        Long reference = 1L;
 
-        NotificationRequest notificationRequest = new NotificationRequest(instruction, description,
-                consigneeIds, type, reference);
+        NotificationRequest notificationRequest = new NotificationRequest(instruction, description, consigneeIds, type);
 
         if (shouldPost) {
             setupToken();
@@ -412,7 +410,7 @@ public abstract class FillBaseTemplate {
         consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
 
-        return new NotificationDTO(instruction, description, notifier, consignees, type, reference);
+        return new NotificationDTO(instruction, description, notifier, consignees, type);
     }
 
     protected List<NotificationDTO> addNotificationRequests(boolean shouldPost) {

@@ -35,5 +35,4 @@ public class TaskRequest {
     private LocalDateTime endTime;
     private String details;
     private Type type;
-    private Long reference;
 }
