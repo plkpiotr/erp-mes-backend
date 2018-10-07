@@ -258,7 +258,7 @@ public abstract class FillBaseTemplate {
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
 
         TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline,
-                null, details, null);
+                null, details, Type.OTHER);
 
         if (shouldPost) {
             setupToken();

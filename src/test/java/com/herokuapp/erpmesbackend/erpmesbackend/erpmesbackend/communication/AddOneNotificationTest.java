@@ -46,7 +46,7 @@ public class AddOneNotificationTest extends FillBaseTemplate {
             consignees.add(consignee);
         }
 
-        Type type = Type.ORDER;
+        Type type = Type.OTHER;
 
         notificationRequest = new NotificationRequest(instruction, description, consigneeIds, type);
         notification = new NotificationDTO(instruction, description, notifier, consignees, type);

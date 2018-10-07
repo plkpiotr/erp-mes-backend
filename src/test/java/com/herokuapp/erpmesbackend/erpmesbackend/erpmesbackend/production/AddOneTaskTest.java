@@ -2,6 +2,7 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.production;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.FillBaseTemplate;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import org.junit.Before;
@@ -47,7 +48,7 @@ public class AddOneTaskTest extends FillBaseTemplate {
             precedingTasksIds.add(i);
 
         taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                details, null);
+                details, Type.OTHER);
 
         taskDTO = new TaskDTO(name, precedingTasksIds, authorDTO, assigneeDTO, estimatedTime);
     }

@@ -18,8 +18,8 @@ public class SuggestionDTO {
     private Phase phase;
     private String name;
     private String description;
-    private EmployeeDTO authorDTO;
-    private List<EmployeeDTO> recipientDTOs;
+    private EmployeeDTO author;
+    private List<EmployeeDTO> recipients;
     private LocalDateTime creationTime;
 
     private LocalDateTime startTime;
@@ -32,13 +32,9 @@ public class SuggestionDTO {
         this.phase = suggestion.getPhase();
         this.name = suggestion.getName();
         this.description = suggestion.getDescription();
-
-        if (suggestion.getAuthor() != null) {
-            this.authorDTO = new EmployeeDTO(suggestion.getAuthor());
-        }
-
-        this.recipientDTOs = new ArrayList<>();
-        suggestion.getRecipients().forEach(recipient -> this.recipientDTOs.add(new EmployeeDTO(recipient)));
+        this.author = new EmployeeDTO(suggestion.getAuthor());
+        this.recipients = new ArrayList<>();
+        suggestion.getRecipients().forEach(recipient -> this.recipients.add(new EmployeeDTO(recipient)));
         this.creationTime = suggestion.getCreationTime();
 
         if (suggestion.getStartTime() != null) {
@@ -52,22 +48,22 @@ public class SuggestionDTO {
         }
     }
 
-    public SuggestionDTO(String name, String description, EmployeeDTO authorDTO, List<EmployeeDTO> recipientDTOs) {
+    public SuggestionDTO(String name, String description, EmployeeDTO author, List<EmployeeDTO> recipientDTOs) {
         this.name = name;
         this.description = description;
-        this.authorDTO = authorDTO;
-        this.recipientDTOs = recipientDTOs;
+        this.author = author;
+        this.recipients = recipientDTOs;
     }
 
     public boolean checkIfDataEquals(SuggestionDTO suggestionDTO) {
         return name.equals(suggestionDTO.getName()) &&
                 description.equals(suggestionDTO.getDescription()) &&
-                // authorDTO.equals(suggestionDTO.getAuthorDTO()) &&
-                compareRecipientDTOs(suggestionDTO.getRecipientDTOs());
+                // author.equals(suggestionDTO.getAuthor()) &&
+                compareRecipientDTOs(suggestionDTO.getRecipients());
     }
 
     private boolean compareRecipientDTOs(List<EmployeeDTO> recipientDTOList) {
-        for (EmployeeDTO recipientDTO : recipientDTOs) {
+        for (EmployeeDTO recipientDTO : recipients) {
             if (recipientDTOList.stream().noneMatch(t -> t.checkIfDataEquals(recipientDTO))) {
                 return false;
             }

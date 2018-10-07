@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
@@ -8,8 +9,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.TaskRepos
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -84,8 +83,9 @@ public class TaskController {
             assignee = employeeRepository.findById(taskRequest.getAssigneeId()).get();
         }
 
-        List<Long> precedingTaskIds = new ArrayList<>();
-        if (taskRequest.getPrecedingTaskIds() != null && !taskRequest.getPrecedingTaskIds().isEmpty()) {
+        List<Long> precedingTaskIds = null;
+        if (taskRequest.getPrecedingTaskIds() != null) {
+            precedingTaskIds = new ArrayList<>();
             taskRequest.getPrecedingTaskIds().forEach(this::checkIfTaskExists);
             precedingTaskIds.addAll(taskRequest.getPrecedingTaskIds());
         }

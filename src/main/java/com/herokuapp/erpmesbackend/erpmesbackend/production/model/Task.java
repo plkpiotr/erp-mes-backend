@@ -27,7 +27,6 @@ public class Task {
     @Enumerated(EnumType.STRING)
     private Category category = Category.TO_DO;
 
-    @Column(nullable = false)
     @ElementCollection
     private List<Long> precedingTaskIds = new ArrayList<>();
 
@@ -57,6 +56,7 @@ public class Task {
     @OneToOne
     private Employee endEmployee;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Type type;
 

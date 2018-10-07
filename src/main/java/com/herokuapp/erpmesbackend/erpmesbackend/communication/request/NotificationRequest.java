@@ -21,5 +21,6 @@ public class NotificationRequest {
     @NonNull
     private List<Long> consigneeIds;
 
+    @NonNull
     private Type type;
 }

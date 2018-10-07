@@ -42,6 +42,7 @@ public class Notification {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Type type;
 

@@ -34,12 +34,8 @@ public class NotificationDTO {
         this.instruction = notification.getInstruction();
         this.description = notification.getDescription();
         this.notifier = new EmployeeDTO(notification.getNotifier());
-        if (notification.getTransferee() != null) {
-            this.transferee = new EmployeeDTO(notification.getTransferee());
-        }
         this.consignees = new ArrayList<>();
-        notification.getConsignees().forEach(consignee -> this.consignees
-                .add(new EmployeeDTO(consignee)));
+        notification.getConsignees().forEach(consignee -> this.consignees.add(new EmployeeDTO(consignee)));
         this.creationTime = notification.getCreationTime();
         this.type = notification.getType();
 

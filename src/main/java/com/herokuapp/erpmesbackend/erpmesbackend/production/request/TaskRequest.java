@@ -19,8 +19,7 @@ public class TaskRequest {
     @NonNull
     private String name;
 
-    @NonNull
-    private List<Long> precedingTaskIds = new ArrayList<>();
+    private List<Long> precedingTaskIds;
 
     private Long assigneeId;
 
@@ -32,5 +31,7 @@ public class TaskRequest {
 
     private LocalDateTime scheduledTime;
     private String details;
+
+    @NonNull
     private Type type;
 }

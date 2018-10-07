@@ -92,7 +92,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(HttpMethod.PUT,"/tasks/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                             "WAREHOUSE", "ADMIN_WAREHOUSE")
-                .antMatchers("/notifications", "/notifications/{id}", "/employees/{id}/notifications")
+                .antMatchers("/notifications", "/notifications/{id}")
                 .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")

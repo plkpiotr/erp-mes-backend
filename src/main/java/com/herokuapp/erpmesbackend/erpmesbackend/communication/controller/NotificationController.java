@@ -102,10 +102,7 @@ public class NotificationController {
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Type type = null;
-        if (notificationRequest.getType() != null) {
-            type = notificationRequest.getType();
-        }
+        Type type = notificationRequest.getType();
 
         Notification notification = new Notification(instruction, description, notifier, consignees, type);
 
