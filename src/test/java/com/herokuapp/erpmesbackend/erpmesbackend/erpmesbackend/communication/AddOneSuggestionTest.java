@@ -34,7 +34,6 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
 
         EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
-        Long authorId = authorDTO.getId();
 
         List<EmployeeDTO> recipientDTOs = new ArrayList<>();
         List<Long> recipientIds = new ArrayList<>();
@@ -46,7 +45,7 @@ public class AddOneSuggestionTest extends FillBaseTemplate {
             recipientDTOs.add(recipientDTO);
         }
 
-        suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
+        suggestionRequest = new SuggestionRequest(name, description, recipientIds);
         suggestions = new SuggestionDTO(name, description, authorDTO, recipientDTOs);
     }
 

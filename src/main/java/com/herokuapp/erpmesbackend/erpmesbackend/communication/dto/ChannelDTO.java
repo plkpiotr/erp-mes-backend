@@ -34,11 +34,10 @@ public class ChannelDTO {
     }
 
     private boolean compareParticipantDTOs(List<EmployeeDTO> participantDTOList) {
-        if (participantDTOList.isEmpty())
-            return true;
         for (EmployeeDTO participantDTO : participantDTOs) {
-            if (participantDTOList.stream().noneMatch(t -> t.checkIfDataEquals(participantDTO)))
+            if (participantDTOList.stream().noneMatch(t -> t.checkIfDataEquals(participantDTO))) {
                 return false;
+            }
         }
         return true;
     }

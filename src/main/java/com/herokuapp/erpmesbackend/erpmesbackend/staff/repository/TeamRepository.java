@@ -11,5 +11,6 @@ import java.util.Optional;
 public interface TeamRepository extends JpaRepository<Team, Long> {
 
     Optional<Team> findByManagerId(Long id);
+
     Team findByRole(Role role);
 }

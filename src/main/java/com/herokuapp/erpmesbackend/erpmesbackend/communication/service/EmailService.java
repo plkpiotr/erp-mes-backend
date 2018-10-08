@@ -95,7 +95,7 @@ public class EmailService {
         String subject = "Status change for complaint " + complaint.getId();
         String details = "Hello, " + complaint.getFirstName() + "! \n\n The state of your complaint (id: " +
                 complaint.getId() + ") has been changed to " + status + ". ";
-        if (status.equals("ACCEPTED")) {
+        if (status.equals("IN_PROGRESS")) {
             details += "You will get your resolution details in another message";
         }
         details += FOOTER;

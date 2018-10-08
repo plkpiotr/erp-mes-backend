@@ -44,7 +44,7 @@ public class ChannelController {
     @ResponseStatus(HttpStatus.OK)
     public ChannelDTO getOneChannel(@PathVariable("id") Long id) {
         checkIfChannelExists(id);
-        // TODO: http://bit.ly/2MDblSR
+        // TO_DO: http://bit.ly/2MDblSR
         return new ChannelDTO(channelRepository.findById(id).get());
     }
 
@@ -53,10 +53,11 @@ public class ChannelController {
     public List<ChannelDTO> getChannelsByParticipant(@PathVariable("id") Long id) {
         checkIfParticipantExists(id);
 
-        if (!channelRepository.findByParticipantsId(id).isPresent())
+        if (!channelRepository.findByParticipantsId(id).isPresent()) {
             return new ArrayList<>();
+        }
 
-        // TODO: http://bit.ly/2MDblSR
+        // TO_DO: http://bit.ly/2MDblSR
         List<Channel> channels = channelRepository.findByParticipantsId(id).get();
         List<ChannelDTO> channelDTOs = new ArrayList<>();
         channels.forEach(channel -> channelDTOs.add(new ChannelDTO(channel)));
@@ -106,25 +107,20 @@ public class ChannelController {
     }
 
     private void checkIfChannelExists(Long id) {
-        if (!channelRepository.findById(id).isPresent())
+        if (!channelRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such channel doesn't exist!");
+        }
     }
 
     private void checkIfParticipantExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the participant doesn't exist!");
+        }
     }
 
     private void checkIfParticipantListIsEmpty(List<Long> participantIds) {
-        if (participantIds.isEmpty())
+        if (participantIds.isEmpty()) {
             throw new InvalidRequestException("List of participants can't be empty!");
-    }
-
-    // TODO: http://bit.ly/2MDblSR
-    private void checkIfEmployeeHasAccess(Long id) {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails) principal).getUsername();
-        if (!channelRepository.findByParticipantsEmail(username).isPresent())
-            throw new ForbiddenException("You don't have access to this resource!");
+        }
     }
 }

@@ -254,8 +254,11 @@ public abstract class FillBaseTemplate {
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
 
-        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                null, null, details, null, null);
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+
+        TaskRequest taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline,
+                null, details, Type.OTHER);
 
         if (shouldPost) {
             setupToken();
@@ -263,12 +266,12 @@ public abstract class FillBaseTemplate {
         }
 
         List<TaskDTO> precedingTaskDTOs = new ArrayList<>();
-        return new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
+        return new TaskDTO(name, precedingTasksIds, authorDTO, assigneeDTO, estimatedTime);
     }
 
     protected List<TaskDTO> addTaskRequests(boolean shouldPost) {
         List<TaskDTO> taskDTOs = new ArrayList<>();
-        for (int i = 1; i <= 7; i++) {
+        for (int i = 1; i <= 8; i++) {
             taskRequests.add(new TaskRequest());
             taskDTOs.add(addOneTaskRequest(shouldPost));
         }
@@ -386,17 +389,14 @@ public abstract class FillBaseTemplate {
     protected NotificationDTO addOneNotificationRequest(boolean shouldPost) {
         String instruction = notificationFactory.generateInstruction();
         String description = notificationFactory.generateDescription();
-        Long notifierId = 1L;
 
         List<Long> consigneeIds = new ArrayList<>();
         consigneeIds.add(1L);
         consigneeIds.add(2L);
 
         Type type = Type.ORDER;
-        Long reference = 1L;
 
-        NotificationRequest notificationRequest = new NotificationRequest(instruction, description, notifierId,
-                consigneeIds, type, reference);
+        NotificationRequest notificationRequest = new NotificationRequest(instruction, description, consigneeIds, type);
 
         if (shouldPost) {
             setupToken();
@@ -413,7 +413,7 @@ public abstract class FillBaseTemplate {
         consignees.add(restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody());
 
-        return new NotificationDTO(instruction, description, notifier, consignees, type, reference);
+        return new NotificationDTO(instruction, description, notifier, consignees, type);
     }
 
     protected List<NotificationDTO> addNotificationRequests(boolean shouldPost) {
@@ -434,7 +434,7 @@ public abstract class FillBaseTemplate {
         recipientIds.add(1L);
         recipientIds.add(2L);
 
-        SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, authorId, recipientIds);
+        SuggestionRequest suggestionRequest = new SuggestionRequest(name, description, recipientIds);
 
         if (shouldPost) {
             setupToken();

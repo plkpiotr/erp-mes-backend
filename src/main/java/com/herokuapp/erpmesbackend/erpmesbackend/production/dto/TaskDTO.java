@@ -18,7 +18,8 @@ public class TaskDTO {
     private String name;
     private Category category;
     private List<Long> precedingTaskIds;
-    private EmployeeDTO assigneeDTO;
+    private EmployeeDTO author;
+    private EmployeeDTO assignee;
     private LocalDateTime creationTime;
     private Integer estimatedTime;
     private LocalDateTime deadline;
@@ -26,20 +27,23 @@ public class TaskDTO {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private String details;
+    private EmployeeDTO startEmployee;
+    private EmployeeDTO endEmployee;
     private Type type;
-    private Long reference;
 
     public TaskDTO(Task task) {
         this.id = task.getId();
         this.name = task.getName();
         this.category = task.getCategory();
         this.precedingTaskIds = task.getPrecedingTaskIds();
+        this.author = new EmployeeDTO(task.getAuthor());
         this.estimatedTime = task.getEstimatedTime();
         this.creationTime = task.getCreationTime();
         this.deadline = task.getDeadline();
+        this.type = task.getType();
 
         if (task.getAssignee() != null) {
-            this.assigneeDTO = new EmployeeDTO(task.getAssignee());
+            this.assignee = new EmployeeDTO(task.getAssignee());
         }
 
         if (task.getScheduledTime() != null) {
@@ -58,33 +62,39 @@ public class TaskDTO {
             this.details = task.getDetails();
         }
 
-        if (task.getType() != null) {
-            this.type = task.getType();
+        if (task.getStartTime() != null) {
+            this.startTime = task.getStartTime();
+            this.startEmployee = new EmployeeDTO(task.getStartEmployee());
         }
 
-        if (task.getReference() != null) {
-            this.reference = task.getReference();
+        if (task.getEndTime() != null) {
+            this.endTime = task.getEndTime();
+            this.endEmployee = new EmployeeDTO(task.getEndEmployee());
         }
     }
 
-    public TaskDTO(String name, List<Long> precedingTaskIds, EmployeeDTO assigneeDTO, Integer estimatedTime) {
+    public TaskDTO(String name, List<Long> precedingTaskIds, EmployeeDTO author, EmployeeDTO assignee,
+                   Integer estimatedTime) {
         this.name = name;
         this.precedingTaskIds = precedingTaskIds;
-        this.assigneeDTO = assigneeDTO;
+        this.author = author;
+        this.assignee = assignee;
         this.estimatedTime = estimatedTime;
     }
 
     public boolean checkIfDataEquals(TaskDTO task) {
         return name.equals(task.getName()) &&
                 comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
-                assigneeDTO.equals(task.assigneeDTO) &&
+                author.equals(task.getAuthor()) &&
+                assignee.equals(task.assignee) &&
                 estimatedTime.equals(task.estimatedTime);
     }
 
     private boolean comparePrecedingTaskIds(List<Long> precedingTaskIdList) {
         for (Long precedingTaskId : precedingTaskIds) {
-            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId)))
+            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId))) {
                 return false;
+            }
         }
         return true;
     }

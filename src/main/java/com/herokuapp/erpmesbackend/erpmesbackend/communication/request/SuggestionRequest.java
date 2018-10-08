@@ -18,8 +18,6 @@ public class SuggestionRequest {
     @NonNull
     private String description;
 
-    private Long authorId;
-
     @NonNull
     private List<Long> recipientIds;
 }

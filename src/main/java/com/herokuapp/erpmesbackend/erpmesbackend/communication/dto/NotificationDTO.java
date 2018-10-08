@@ -24,7 +24,9 @@ public class NotificationDTO {
     private List<EmployeeDTO> consignees;
     private LocalDateTime creationTime;
     private Type type;
-    private Long reference;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
+    private EmployeeDTO endEmployee;
 
     public NotificationDTO(Notification notification) {
         this.id = notification.getId();
@@ -32,25 +34,29 @@ public class NotificationDTO {
         this.instruction = notification.getInstruction();
         this.description = notification.getDescription();
         this.notifier = new EmployeeDTO(notification.getNotifier());
-        if (notification.getTransferee() != null) {
-            this.transferee = new EmployeeDTO(notification.getTransferee());
-        }
         this.consignees = new ArrayList<>();
-        notification.getConsignees().forEach(consignee -> this.consignees
-                .add(new EmployeeDTO(consignee)));
+        notification.getConsignees().forEach(consignee -> this.consignees.add(new EmployeeDTO(consignee)));
         this.creationTime = notification.getCreationTime();
         this.type = notification.getType();
-        this.reference = notification.getReference();
+
+        if (notification.getStartTime() != null) {
+            this.startTime = notification.getStartTime();
+            this.transferee = new EmployeeDTO(notification.getTransferee());
+        }
+
+        if (notification.getEndTime() != null) {
+            this.endTime = notification.getEndTime();
+            this.endEmployee = new EmployeeDTO(notification.getEndEmployee());
+        }
     }
 
-    public NotificationDTO(String instruction, String description, EmployeeDTO notifier,
-                           List<EmployeeDTO> consignees, Type type, Long reference) {
+    public NotificationDTO(String instruction, String description, EmployeeDTO notifier, List<EmployeeDTO> consignees,
+                           Type type) {
         this.instruction = instruction;
         this.description = description;
         this.notifier = notifier;
         this.consignees = consignees;
         this.type = type;
-        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(NotificationDTO notification) {
@@ -61,11 +67,10 @@ public class NotificationDTO {
     }
 
     private boolean compareConsignees(List<EmployeeDTO> consigneeList) {
-        if (consigneeList.isEmpty())
-            return true;
         for (EmployeeDTO employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee)))
+            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }

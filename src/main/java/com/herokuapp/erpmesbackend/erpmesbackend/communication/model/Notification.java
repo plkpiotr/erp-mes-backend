@@ -42,13 +42,18 @@ public class Notification {
     @Column(nullable = false)
     private LocalDateTime creationTime;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    private Long reference;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
 
-    public Notification(String instruction, String description, Employee notifier, List<Employee> consignees, Type type,
-                        Long reference) {
+    @OneToOne
+    private Employee endEmployee;
+
+    public Notification(String instruction, String description, Employee notifier, List<Employee> consignees,
+                        Type type) {
         this.state = State.REPORTED;
         this.instruction = instruction;
         this.description = description;
@@ -57,7 +62,6 @@ public class Notification {
         this.consignees = consignees;
         this.creationTime = LocalDateTime.now();
         this.type = type;
-        this.reference = reference;
     }
 
     public boolean checkIfDataEquals(Notification notification) {
@@ -69,11 +73,10 @@ public class Notification {
     }
 
     private boolean compareConsignees(List<Employee> consigneeList) {
-        if (consigneeList.isEmpty())
-            return true;
         for (Employee employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee)))
+            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
                 return false;
+            }
         }
         return true;
     }

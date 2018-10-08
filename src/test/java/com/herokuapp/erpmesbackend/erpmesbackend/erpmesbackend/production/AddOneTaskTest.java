@@ -37,6 +37,9 @@ public class AddOneTaskTest extends FillBaseTemplate {
         LocalDateTime deadline = taskFactory.generateDeadline();
         String details = taskFactory.generateDetails();
 
+        EmployeeDTO authorDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 1).getBody();
+
         Long assigneeId = 2L;
         EmployeeDTO assigneeDTO = restTemplate.exchange("/employees/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), EmployeeDTO.class, 2).getBody();
@@ -45,8 +48,9 @@ public class AddOneTaskTest extends FillBaseTemplate {
             precedingTasksIds.add(i);
 
         taskRequest = new TaskRequest(name, precedingTasksIds, assigneeId, estimatedTime, deadline, null,
-                null, null, details, null, null);
-        taskDTO = new TaskDTO(name, precedingTasksIds, assigneeDTO, estimatedTime);
+                details, Type.OTHER);
+
+        taskDTO = new TaskDTO(name, precedingTasksIds, authorDTO, assigneeDTO, estimatedTime);
     }
 
     @Test

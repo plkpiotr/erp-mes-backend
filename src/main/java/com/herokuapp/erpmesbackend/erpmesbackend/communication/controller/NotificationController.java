@@ -1,21 +1,25 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.communication.controller;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.repository.NotificationRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.State;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.repository.NotificationRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.shop.repository.OrderRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.shop.repository.OrderRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -36,10 +40,28 @@ public class NotificationController {
     @GetMapping("/notifications")
     @ResponseStatus(HttpStatus.OK)
     public List<NotificationDTO> getAllNotifications() {
-        List<Notification> notifications = notificationRepository.findAll();
-        List<NotificationDTO> notificationDTOS = new ArrayList<>();
-        notifications.forEach(notification -> notificationDTOS.add(new NotificationDTO(notification)));
-        return notificationDTOS;
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee notifier = employeeRepository.findByEmail(username).get();
+        List<Notification> notifications = new ArrayList<>();
+        List<Notification> ownNotifications = new ArrayList<>();
+
+        if (notifier.isManager()) {
+            notifications = notificationRepository.findAll();
+        } else {
+            if (notificationRepository.findByConsigneesId(notifier.getId()).isPresent()) {
+                notifications = notificationRepository.findByConsigneesId(notifier.getId()).get();
+            }
+            if (notificationRepository.findByNotifierId(notifier.getId()).isPresent()) {
+                ownNotifications = notificationRepository.findByNotifierId(notifier.getId()).get();
+                notifications.addAll(ownNotifications);
+                notifications = notifications.stream().distinct().collect(Collectors.toList());
+            }
+        }
+
+        List<NotificationDTO> notificationDTOs = new ArrayList<>();
+        notifications.forEach(notification -> notificationDTOs.add(new NotificationDTO(notification)));
+        return notificationDTOs;
     }
 
     @GetMapping("/notifications/{id}")
@@ -68,45 +90,48 @@ public class NotificationController {
         String instruction = notificationRequest.getInstruction();
 
         String description = null;
-        if (notificationRequest.getDescription() != null)
+        if (notificationRequest.getDescription() != null) {
             description = notificationRequest.getDescription();
-
-        Employee notifier = null;
-        if (notificationRequest.getNotifierId() != null) {
-            checkIfNotifierExists(notificationRequest.getNotifierId());
-            notifier = employeeRepository.findById(notificationRequest.getNotifierId()).get();
         }
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee notifier = employeeRepository.findByEmail(username).get();
 
         List<Employee> consignees = new ArrayList<>();
         notificationRequest.getConsigneeIds().forEach(this::checkIfConsigneeExists);
         notificationRequest.getConsigneeIds().forEach(id -> consignees.add(employeeRepository.findById(id).get()));
 
-        Type type = null;
-        if (notificationRequest.getType() != null)
-            type = notificationRequest.getType();
+        Type type = notificationRequest.getType();
 
-        Long reference = null;
-        if (notificationRequest.getReference() != null)
-            reference = notificationRequest.getReference();
-
-        Notification notification = new Notification(instruction, description, notifier, consignees, type, reference);
+        Notification notification = new Notification(instruction, description, notifier, consignees, type);
 
         notificationRepository.save(notification);
         return new NotificationDTO(notification);
     }
 
     @PutMapping("notifications/{id}")
-    public HttpStatus updateTransfereeNotification(@PathVariable("id") Long id, @RequestBody Long transfereeId) {
+    public Notification setNextState(@PathVariable("id") Long id) {
         checkIfNotifierExists(id);
         Notification notification = notificationRepository.findById(id).get();
 
-        if (transfereeId != null) {
-            checkIfTransfereeExists(transfereeId);
-            notification.setTransferee(employeeRepository.findById(transfereeId).get());
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee employee = employeeRepository.findByEmail(username).get();
+
+        if (notification.getState() == State.REPORTED) {
+            notification.setState(State.IN_PROGRESS);
+            notification.setStartTime(LocalDateTime.now());
+            notification.setTransferee(employee);
+        } else if (notification.getState() == State.IN_PROGRESS) {
+            notification.setState(State.RESOLVED);
+            notification.setEndTime(LocalDateTime.now());
+            notification.setEndEmployee(employee);
+
         }
 
         notificationRepository.save(notification);
-        return HttpStatus.NO_CONTENT;
+        return notification;
     }
 
     @PatchMapping("notification/{id}")
@@ -121,22 +146,26 @@ public class NotificationController {
     }
 
     private void checkIfNotificationExists(Long id) {
-        if (!notificationRepository.findById(id).isPresent())
+        if (!notificationRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such notification doesn't exist!");
+        }
     }
 
     private void checkIfNotifierExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("Chosen notifier doesn't exist!");
+        }
     }
 
     private void checkIfTransfereeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("Chosen transferee doesn't exist!");
+        }
     }
 
     private void checkIfConsigneeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent())
+        if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the chosen consignees doesn't exist!");
+        }
     }
 }
