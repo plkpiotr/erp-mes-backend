@@ -56,6 +56,18 @@ public class PlanningController {
         return planningService.getOrdersForDay(when).size();
     }
 
+    @GetMapping("/scheduled-returns")
+    @ResponseStatus(HttpStatus.OK)
+    public int getReturnsScheduledForDay(@RequestParam("when") String when) {
+        return planningService.getReturnsForDay(when).size();
+    }
+
+    @GetMapping("/scheduled-complaints")
+    @ResponseStatus(HttpStatus.OK)
+    public int getComplaintsScheduledForDay(@RequestParam("when") String when) {
+        return planningService.getComplaintsForDay(when).size();
+    }
+
     @GetMapping("/special-plans")
     @ResponseStatus(HttpStatus.OK)
     public List<SpecialPlan> getSpecialPlans() {
