@@ -50,7 +50,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         http.cors().and().csrf().disable().
                 authorizeRequests()
                 .antMatchers(HttpMethod.POST, "/generate-token").permitAll()
-                .antMatchers(HttpMethod.GET, "/employees").permitAll()
                 .antMatchers(HttpMethod.POST, "/employees").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/employees/{id}").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET, "/profiles/{id}/contract")

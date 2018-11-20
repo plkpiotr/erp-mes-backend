@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.staff.service;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotAManagerException;
@@ -9,6 +10,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.HolidayRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.TeamRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,14 +29,17 @@ public class EmployeeService {
     private final ContractRepository contractRepository;
     private final TeamRepository teamRepository;
     private final BCryptPasswordEncoder bcryptEncoder;
+    private final HolidayRepository holidayRepository;
 
     @Autowired
     public EmployeeService(EmployeeRepository employeeRepository, ContractRepository contractRepository,
-                           TeamRepository teamRepository, BCryptPasswordEncoder bcryptEncoder) {
+                           TeamRepository teamRepository, BCryptPasswordEncoder bcryptEncoder,
+                           HolidayRepository holidayRepository) {
         this.employeeRepository = employeeRepository;
         this.contractRepository = contractRepository;
         this.teamRepository = teamRepository;
         this.bcryptEncoder = bcryptEncoder;
+        this.holidayRepository = holidayRepository;
     }
 
     public void checkIfCanBeAdded(EmployeeRequest request) {
@@ -62,8 +67,14 @@ public class EmployeeService {
 
     public void removeEmployee(Employee employee) {
         removeFromTeam(employee);
+        removeHolidays(employee);
         employeeRepository.delete(employee);
         contractRepository.delete(employee.getContract());
+    }
+
+    private void removeHolidays(Employee employee) {
+        Optional<List<Holiday>> byEmployeeId = holidayRepository.findByEmployeeId(employee.getId());
+        byEmployeeId.ifPresent(holidays -> holidays.forEach(holiday -> holidayRepository.delete(holiday)));
     }
 
     public void checkIfIsManager(Long id) {
