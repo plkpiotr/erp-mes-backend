@@ -48,12 +48,10 @@ public class TaskController {
         return new TaskDTO(taskRepository.findById(id).get());
     }
 
-    @GetMapping("/kanban")
+    @GetMapping("/kanban/{id}")
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskDTO> getTasksByAssignee() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails) principal).getUsername();
-        Employee assignee = employeeRepository.findByEmail(username).get();
+    public List<TaskDTO> getTasksByAssignee(@PathVariable("id") Long id) {
+        Employee assignee = employeeRepository.findById(id).get();
 
         checkIfAssigneeExists(assignee.getEmail());
         if (!taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineDesc(assignee.getId(),
