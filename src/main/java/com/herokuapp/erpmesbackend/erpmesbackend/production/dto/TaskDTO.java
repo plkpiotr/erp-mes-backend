@@ -86,7 +86,6 @@ public class TaskDTO {
         return name.equals(task.getName()) &&
                 comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
                 author.equals(task.getAuthor()) &&
-                assignee.equals(task.assignee) &&
                 estimatedTime.equals(task.estimatedTime);
     }
 

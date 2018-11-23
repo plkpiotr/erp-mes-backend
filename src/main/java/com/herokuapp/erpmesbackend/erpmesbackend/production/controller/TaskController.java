@@ -114,7 +114,8 @@ public class TaskController {
     }
 
     @PutMapping("/tasks/{id}")
-    public HttpStatus setNextCategory(@PathVariable("id") Long id, @RequestBody TaskRequest taskRequest) {
+    @ResponseStatus(HttpStatus.OK)
+    public Task setNextCategory(@PathVariable("id") Long id) {
         checkIfTaskExists(id);
         Task task = taskRepository.findById(id).get();
 
@@ -133,7 +134,22 @@ public class TaskController {
         }
 
         taskRepository.save(task);
-        return HttpStatus.NO_CONTENT;
+        return task;
+    }
+
+    @PutMapping("/tasks/{id}/assign")
+    public HttpStatus assignToMe(@PathVariable("id") Long id) {
+        checkIfTaskExists(id);
+        Task task = taskRepository.findById(id).get();
+
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        Employee employee = employeeRepository.findByEmail(username).get();
+
+        task.setAssignee(employee);
+        taskRepository.save(task);
+
+        return HttpStatus.OK;
     }
 
     private void checkIfTaskExists(Long id) {
