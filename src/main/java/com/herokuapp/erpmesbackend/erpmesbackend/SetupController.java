@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
+@CrossOrigin(origins = "*")
 public class SetupController {
 
     private final EmployeeRepository employeeRepository;
@@ -55,8 +56,7 @@ public class SetupController {
     @GetMapping("/check-setup")
     @ResponseStatus(HttpStatus.OK)
     public boolean isInitialized() {
-        Optional<List<Employee>> findAdmin = employeeRepository.findByRole(Role.ADMIN);
-        return !findAdmin.isPresent() || findAdmin.get().isEmpty();
+        return employeeRepository.findByRole(Role.ADMIN).isPresent();
     }
 
     @PostMapping("/setup-admin")
@@ -76,16 +76,10 @@ public class SetupController {
     @ResponseStatus(HttpStatus.CREATED)
     public HttpStatus setupTeams() {
         List<Team> teams = teamRepository.findAll();
-        if (teams != null || !teams.isEmpty()) {
+        if (!teams.isEmpty()) {
             throw new InvalidRequestException("Teams were already setup!");
         }
-        Optional<List<Employee>> findAdmin = employeeRepository.findByRole(Role.ADMIN);
-        if (!findAdmin.isPresent() || findAdmin.get().isEmpty()) {
-            throw new InvalidRequestException("ADMIN hasn't been setup yet!");
-        }
-        Team team = new Team(Role.ADMIN);
-        team.addEmployee(findAdmin.get().get(0));
-        teamRepository.save(team);
+        teamRepository.save(new Team(Role.ADMIN));
         teamRepository.save(new Team(Role.ACCOUNTANT));
         teamRepository.save(new Team(Role.ANALYST));
         teamRepository.save(new Team(Role.WAREHOUSE));
@@ -96,7 +90,7 @@ public class SetupController {
     @ResponseStatus(HttpStatus.CREATED)
     public HttpStatus setupDailyPlan() {
         List<DailyPlan> findDailyPlans = dailyPlanRepository.findAll();
-        if (findDailyPlans != null || !findDailyPlans.isEmpty()) {
+        if (!findDailyPlans.isEmpty()) {
             throw new InvalidRequestException("Daily plan has already been setup!");
         }
         dailyPlanRepository.save(new DailyPlan());
@@ -108,8 +102,7 @@ public class SetupController {
     public CurrentReport setupReports() {
         List<EstimatedCosts> findEstimatedCosts = estimatedCostsRepository.findAll();
         List<CurrentReport> findCurrentReports = currentReportRepository.findAll();
-        if (findEstimatedCosts != null || !findEstimatedCosts.isEmpty() || findCurrentReports != null ||
-                !findCurrentReports.isEmpty()) {
+        if (!findEstimatedCosts.isEmpty() || !findCurrentReports.isEmpty()) {
             throw new InvalidRequestException("Reports have already been setup!");
         }
         EstimatedCosts estimatedCosts = new EstimatedCosts();
