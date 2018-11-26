@@ -17,7 +17,7 @@ public class EmailConfig {
         mailSender.setPort(587);
 
         mailSender.setUsername("erp.mes123@gmail.com");
-        mailSender.setPassword("meserpmeserp");
+        mailSender.setPassword("erpmeserpmes");
 
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
