@@ -1,18 +1,17 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.production.service.PlanningService;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.DailyPlan;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.SpecialPlan;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.DailyPlanRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.SpecialPlanRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.DailyPlanRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.SpecialPlanRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.service.PlanningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -31,11 +30,6 @@ public class PlanningController {
         this.dailyPlanRepository = dailyPlanRepository;
         this.specialPlanRepository = specialPlanRepository;
         this.planningService = planningService;
-    }
-
-    @PostConstruct
-    public void init() {
-        dailyPlanRepository.save(new DailyPlan());
     }
 
     @GetMapping("/daily-plan")

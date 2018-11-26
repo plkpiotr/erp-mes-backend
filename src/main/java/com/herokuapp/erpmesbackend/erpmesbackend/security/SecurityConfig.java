@@ -49,7 +49,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable().
                 authorizeRequests()
-                .antMatchers(HttpMethod.POST, "/generate-token").permitAll()
+                .antMatchers(HttpMethod.POST, "/generate-token", "/setup-admin", "/setup-teams",
+                        "/setup-daily-plan", "/setup-reports").permitAll()
+                .antMatchers(HttpMethod.GET, "/check-setup").permitAll()
                 .antMatchers(HttpMethod.POST, "/employees").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.DELETE, "/employees/{id}").hasAuthority("ADMIN")
                 .antMatchers(HttpMethod.GET, "/profiles/{id}/contract")
