@@ -27,7 +27,7 @@ public class InboxService {
 
         try {
             Store store = session.getStore("imaps");
-            store.connect("smtp.gmail.com", "erp.mes123@gmail.com", "meserpmeserp");
+            store.connect("smtp.gmail.com", "erp.mes123@gmail.com", "erpmeserpmes");
 
             Folder folder = store.getFolder("inbox");
             folder.open(Folder.READ_ONLY);

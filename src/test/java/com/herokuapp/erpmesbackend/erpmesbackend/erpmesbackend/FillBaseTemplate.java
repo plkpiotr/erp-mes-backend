@@ -23,7 +23,12 @@ import com.herokuapp.erpmesbackend.erpmesbackend.shop.request.ShopServiceRequest
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.EmployeeFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.factory.HolidayFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Contract;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Holiday;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.AdminRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.ContractRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.HolidayRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -116,6 +121,7 @@ public abstract class FillBaseTemplate {
     }
 
     protected void init() {
+        setup();
         setupToken();
         if (emptyResponse("/employees/3")) {
             addEmployeeRequests(true);
@@ -150,6 +156,16 @@ public abstract class FillBaseTemplate {
         if (outboxEmpty()) {
             addManyEmailEntityRequests(true);
         }
+    }
+
+    protected void setup() {
+        ContractRequest contractRequest = new ContractRequest("123", 26, 50000);
+        AdminRequest adminRequest = new AdminRequest("Szef", "Ceo", "szef.ceo@company.com",
+                "haslo123", contractRequest);
+        restTemplate.postForEntity("/setup-admin", adminRequest, String.class);
+        restTemplate.postForEntity("/setup-teams", null, String.class);
+        restTemplate.postForEntity("/setup-daily-plan", null, String.class);
+        restTemplate.postForEntity("/setup-reports", null, String.class);
     }
 
     protected void setupToken() {

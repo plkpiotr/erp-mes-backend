@@ -1,16 +1,13 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.staff.controller;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.TeamRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Team;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.TeamDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.TeamRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,16 +22,6 @@ public class TeamController {
     public TeamController(TeamRepository teamRepository, EmployeeRepository employeeRepository) {
         this.teamRepository = teamRepository;
         this.employeeRepository = employeeRepository;
-    }
-
-    @PostConstruct
-    public void setupTeams() {
-        Team team = new Team(Role.ADMIN);
-        team.addEmployee(employeeRepository.findById(1L).get());
-        teamRepository.save(team);
-        teamRepository.save(new Team(Role.ACCOUNTANT));
-        teamRepository.save(new Team(Role.ANALYST));
-        teamRepository.save(new Team(Role.WAREHOUSE));
     }
 
     @GetMapping("/teams")

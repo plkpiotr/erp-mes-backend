@@ -1,18 +1,17 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.staff.controller;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Contract;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.service.EmailService;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.service.InboxService;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.service.EmployeeService;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.ForbiddenException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.UserDTO;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Contract;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.ContractRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.service.EmployeeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,7 +19,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -45,16 +43,6 @@ public class EmployeeController {
         this.emailService = emailService;
         this.bcryptEncoder = bcryptEncoder;
         this.employeeService = employeeService;
-    }
-
-    @PostConstruct
-    public void init() {
-        Contract contract = new Contract("123", 26, 50000);
-        Employee ceo = new Employee("Szef", "Ceo", "szef.ceo@company.com", Role.ADMIN,
-                contract);
-        ceo.changePassword(bcryptEncoder.encode("haslo123"));
-        contractRepository.save(contract);
-        employeeRepository.save(ceo);
     }
 
     @GetMapping("/employees")
