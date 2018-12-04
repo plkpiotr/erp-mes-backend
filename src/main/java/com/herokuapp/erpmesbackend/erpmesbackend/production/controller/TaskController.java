@@ -54,12 +54,12 @@ public class TaskController {
         Employee assignee = employeeRepository.findById(id).get();
 
         checkIfAssigneeExists(assignee.getEmail());
-        if (!taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineDesc(assignee.getId(),
+        if (!taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineAsc(assignee.getId(),
                 LocalDateTime.now().minusDays(28)).isPresent()) {
             return new ArrayList<>();
         }
 
-        List<Task> tasks = taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineDesc(assignee.getId(),
+        List<Task> tasks = taskRepository.findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineAsc(assignee.getId(),
                 LocalDateTime.now().minusDays(28)).get();
         List<TaskDTO> taskDTOs = new ArrayList<>();
         tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
