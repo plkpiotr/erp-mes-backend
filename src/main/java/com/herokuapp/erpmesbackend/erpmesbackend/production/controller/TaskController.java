@@ -6,7 +6,9 @@ import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Task;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.TaskRepository;
+import com.herokuapp.erpmesbackend.erpmesbackend.production.request.AssignmentRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +68,43 @@ public class TaskController {
         return taskDTOs;
     }
 
+    @GetMapping("/assignment")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TaskDTO> getTasksByAssigneeIsNull() {
+        if (!taskRepository.findTaskByAssigneeIsNull().isPresent()) {
+            return new ArrayList<>();
+        }
+
+        List<Task> tasks = taskRepository.findTaskByAssigneeIsNull().get();
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+        return taskDTOs;
+    }
+
+    @PutMapping("/assignment")
+    @ResponseStatus(HttpStatus.OK)
+    public List<TaskDTO> assignToEmployees(@RequestBody AssignmentRequest assignmentRequest) {
+        assignmentRequest.getTaskIds().forEach(this::checkIfTaskExists);
+        List<Long> taskIds = new ArrayList<>(assignmentRequest.getTaskIds());
+        List<Task> tasks = new ArrayList<>();
+
+        assignmentRequest.getAssigneeIds().forEach(this::checkIfAssigneeExists);
+        List<Long> assigneeIds = new ArrayList<>(assignmentRequest.getAssigneeIds());
+        List<Employee> assignees = new ArrayList<>();
+
+        LocalDateTime startTime = assignmentRequest.getStartTime();
+
+        taskIds.forEach(id -> tasks.add(taskRepository.findById(id).get()));
+        assigneeIds.forEach(id -> assignees.add(employeeRepository.findById(id).get()));
+
+        tasks.forEach(task -> task.setAssignee(assignees.get(0)));
+        tasks.forEach(taskRepository::save);
+
+        List<TaskDTO> taskDTOs = new ArrayList<>();
+        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
+        return taskDTOs;
+    }
+
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDTO addOneTask(@RequestBody TaskRequest taskRequest) {
@@ -106,8 +145,7 @@ public class TaskController {
             type = taskRequest.getType();
         }
 
-        Task task = new Task(name, precedingTaskIds, author, assignee, scheduledTime, estimatedTime, deadline, details,
-                type);
+        Task task = new Task(name, precedingTaskIds, author, assignee, scheduledTime, estimatedTime, deadline, details, type);
 
         taskRepository.save(task);
         return new TaskDTO(task);

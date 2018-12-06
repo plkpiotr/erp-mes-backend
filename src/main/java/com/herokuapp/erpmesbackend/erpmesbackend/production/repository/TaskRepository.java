@@ -15,4 +15,6 @@ import java.util.Optional;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     Optional<List<Task>> findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineAsc(Long id, LocalDateTime creationTime);
+
+    Optional<List<Task>> findTaskByAssigneeIsNull();
 }
