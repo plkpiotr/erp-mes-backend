@@ -106,17 +106,16 @@ public class TaskController {
         Collections.shuffle(assigneeIds, new Random(seed));
 
         List<Task> sortedTasks = tasks.stream()
-                .sorted((t1, t2) -> Task.compareTo(t2, t1))
+                .sorted(Task::compare)
                 .collect(Collectors.toList());
 
-        Iterator<Task> it = sortedTasks.iterator();
         while (counter.isBefore(endTime)) { // przechodź po czasie
             if (schedule.containsValue(counter)) { // jeśli jest określona godzina
                 for (Map.Entry<Long, LocalDateTime> entry: schedule.entrySet()) { // przechodź po pracownikach i godzinach dostępu
                     if (entry.getValue().isEqual(counter)) { // jeśli godzina dostępu jest równa określonej godzinie (bo może być nie tylko dla jednego pracownika)
                         for (int i = 0; i < sortedTasks.size(); i++) { // przechodź po zadaniach
                             if (assigned.containsAll(sortedTasks.get(i).getPrecedingTaskIds())) { // jeśli spotkasz zadanie nie posiadające poprzedziających zadań lub zawierające zadania już wykonane
-                                sortedTasks.get(i).setAssignee(employeeRepository.findById(1L).get()); // ustaw temu zadaniu pracownika, dla którego go sprawdzasz
+                                sortedTasks.get(i).setAssignee(employeeRepository.findById(entry.getKey()).get()); // ustaw temu zadaniu pracownika, dla którego go sprawdzasz
                                 sortedTasks.get(i).setScheduledTime(counter);
                                 assigned.add(sortedTasks.get(i).getId());
                                 entry.setValue(counter.plusMinutes(sortedTasks.get(i).getEstimatedTime())); // ustaw w grafiku, aby nowe zadanie mógł wziąć później
