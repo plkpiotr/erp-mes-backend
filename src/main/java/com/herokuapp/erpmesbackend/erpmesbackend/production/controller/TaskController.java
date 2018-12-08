@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
@@ -85,48 +86,51 @@ public class TaskController {
     public HttpStatus assignToEmployees(@RequestBody AssignmentRequest assignmentRequest) {
         assignmentRequest.getTaskIds().forEach(this::checkIfTaskExists);
         List<Long> taskIds = new ArrayList<>(assignmentRequest.getTaskIds());
-        List<Task> tasks = new ArrayList<>();
-        List<Long> assigned = new ArrayList<>();
 
         assignmentRequest.getAssigneeIds().forEach(this::checkIfAssigneeExists);
         List<Long> assigneeIds = new ArrayList<>(assignmentRequest.getAssigneeIds());
-        List<Employee> assignees = new ArrayList<>();
+
+        HashMap<Long, LocalDateTime> ongoing = new HashMap<>();
+        HashMap<Long, LocalDateTime> schedule = new HashMap<>();
+        List<Long> done = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
 
         LocalDateTime startTime = assignmentRequest.getStartTime();
-        LocalDateTime counter = assignmentRequest.getStartTime();
-        LocalDateTime endTime = assignmentRequest.getStartTime().toLocalDate().atTime(16, 0, 0, 0);
+        LocalDateTime currentTime = assignmentRequest.getStartTime();
+        LocalDateTime endTime = assignmentRequest.getEndTime();
 
-        HashMap<Long, LocalDateTime> schedule = new HashMap<>(); // employee's id and busy time
         assigneeIds.forEach(id -> schedule.put(employeeRepository.findById(id).get().getId(), startTime));
-
         taskIds.forEach(id -> tasks.add(taskRepository.findById(id).get()));
-        assigneeIds.forEach(id -> assignees.add(employeeRepository.findById(id).get()));
 
         long seed = System.nanoTime();
         Collections.shuffle(assigneeIds, new Random(seed));
 
-        List<Task> sortedTasks = tasks.stream()
-                .sorted(Task::compare)
-                .collect(Collectors.toList());
+        List<Task> sortedTasks = tasks.stream().sorted(Task::compare).collect(Collectors.toList());
 
-        while (counter.isBefore(endTime)) { // przechodź po czasie
-            if (schedule.containsValue(counter)) { // jeśli jest określona godzina
-                for (Map.Entry<Long, LocalDateTime> entry: schedule.entrySet()) { // przechodź po pracownikach i godzinach dostępu
-                    if (entry.getValue().isEqual(counter)) { // jeśli godzina dostępu jest równa określonej godzinie (bo może być nie tylko dla jednego pracownika)
-                        for (int i = 0; i < sortedTasks.size(); i++) { // przechodź po zadaniach
-                            if (assigned.containsAll(sortedTasks.get(i).getPrecedingTaskIds())) { // jeśli spotkasz zadanie nie posiadające poprzedziających zadań lub zawierające zadania już wykonane
-                                sortedTasks.get(i).setAssignee(employeeRepository.findById(entry.getKey()).get()); // ustaw temu zadaniu pracownika, dla którego go sprawdzasz
-                                sortedTasks.get(i).setScheduledTime(counter);
-                                assigned.add(sortedTasks.get(i).getId());
-                                entry.setValue(counter.plusMinutes(sortedTasks.get(i).getEstimatedTime())); // ustaw w grafiku, aby nowe zadanie mógł wziąć później
-                                sortedTasks.remove(i);
-                                break;
-                            }
+        while (currentTime.isBefore(endTime)) {
+            if (ongoing.containsValue(currentTime)) {
+                for (Map.Entry<Long, LocalDateTime> entry: ongoing.entrySet()) {
+                    if (entry.getValue().isEqual(currentTime)) {
+                        done.add(entry.getKey());
+                    }
+                }
+            }
+            for (Map.Entry<Long, LocalDateTime> entry: schedule.entrySet()) {
+                if (entry.getValue().isEqual(currentTime) || entry.getValue().isBefore(currentTime)) {
+                    for (int i = 0; i < sortedTasks.size(); i++) {
+                        if (done.containsAll(sortedTasks.get(i).getPrecedingTaskIds())) {
+                            sortedTasks.get(i).setAssignee(employeeRepository.findById(entry.getKey()).get());
+                            sortedTasks.get(i).setScheduledTime(currentTime);
+                            checkIfTasksCanBeAssigned(currentTime.plusMinutes(sortedTasks.get(i).getEstimatedTime()), endTime);
+                            ongoing.put(sortedTasks.get(i).getId(), currentTime.plusMinutes(sortedTasks.get(i).getEstimatedTime()));
+                            entry.setValue(currentTime.plusMinutes(sortedTasks.get(i).getEstimatedTime()));
+                            sortedTasks.remove(i);
+                            break;
                         }
                     }
                 }
             }
-            counter = counter.plusMinutes(1);
+            currentTime = currentTime.plusMinutes(1);
         }
 
         tasks.forEach(taskRepository::save);
@@ -216,6 +220,12 @@ public class TaskController {
         taskRepository.save(task);
 
         return HttpStatus.OK;
+    }
+
+    private void checkIfTasksCanBeAssigned(LocalDateTime counter, LocalDateTime endTime) {
+        if (counter.isAfter(endTime)) {
+            throw new InvalidRequestException("Too many tasks in a such short time!");
+        }
     }
 
     private void checkIfTaskExists(Long id) {

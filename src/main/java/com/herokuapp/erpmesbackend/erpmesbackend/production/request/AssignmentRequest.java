@@ -21,4 +21,7 @@ public class AssignmentRequest {
 
     @NonNull
     private LocalDateTime startTime;
+
+    @NonNull
+    private LocalDateTime endTime;
 }
