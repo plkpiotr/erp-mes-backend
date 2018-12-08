@@ -23,9 +23,4 @@ public class DeliveryItem {
         this.item = item;
         this.quantity = quantity;
     }
-
-    public boolean checkIfDataEquals(DeliveryItem deliveryItem) {
-        return item.checkIfDataEquals(deliveryItem.getItem()) &&
-                quantity == deliveryItem.getQuantity();
-    }
 }

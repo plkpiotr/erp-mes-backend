@@ -64,13 +64,4 @@ public class Employee {
         this.password = newPassword;
         this.isPasswordValid = true;
     }
-
-    public boolean checkIfDataEquals(Employee employee) {
-        return firstName.equals(employee.getFirstName()) &&
-                lastName.equals(employee.getLastName()) &&
-                email.equals(employee.getEmail()) &&
-                role.equals(employee.getRole()) &&
-                (isPasswordValid == employee.isPasswordValid()) &&
-                contract.checkIfDataEquals(employee.getContract());
-    }
 }

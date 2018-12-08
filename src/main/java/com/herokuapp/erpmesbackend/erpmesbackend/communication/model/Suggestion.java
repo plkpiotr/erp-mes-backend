@@ -56,21 +56,4 @@ public class Suggestion {
         this.recipients = recipients;
         this.creationTime = LocalDateTime.now();
     }
-
-    public boolean checkIfDataEquals(Suggestion suggestion) {
-        return name.equals(suggestion.getName()) &&
-                phase.equals(suggestion.getPhase()) &&
-                description.equals(suggestion.getDescription()) &&
-                // author.checkIfDataEquals(suggestion.getAuthor()) &&
-                compareRecipients(suggestion.recipients);
-    }
-
-    private boolean compareRecipients(List<Employee> recipientList) {
-        for (Employee employee : recipients) {
-            if (recipientList.stream().noneMatch(r -> r.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

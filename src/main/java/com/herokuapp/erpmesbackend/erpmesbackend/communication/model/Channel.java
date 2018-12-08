@@ -29,18 +29,4 @@ public class Channel {
         this.name = name;
         this.participants = participants;
     }
-
-    public boolean checkIfDataEquals(Channel channel) {
-        return name.equals(channel.getName()) &&
-                compareParticipants(channel.getParticipants());
-    }
-
-    private boolean compareParticipants(List<Employee> participantList) {
-        for (Employee employee : participants) {
-            if (participantList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

@@ -61,29 +61,4 @@ public class Return {
     public void updateStatus(ReturnStatus status) {
         this.status = status;
     }
-
-    public boolean checkIfDataEquals(Return r) {
-        return status.equals(r.getStatus()) &&
-                firstName.equals(r.getFirstName()) &&
-                lastName.equals(r.getLastName()) &&
-                email.equals(r.getEmail()) &&
-                phoneNumber.equals(r.getPhoneNumber()) &&
-                street.equals(r.getStreet()) &&
-                houseNumber.equals(r.getHouseNumber()) &&
-                city.equals(r.getCity()) &&
-                postalCode.equals(r.getPostalCode()) &&
-                compareDeliveryItems(r.getDeliveryItems()) &&
-                scheduledFor.isEqual(r.getScheduledFor()) &&
-                value.equals(r.getValue());
-    }
-
-    private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {
-        if (deliveryItemList.isEmpty())
-            return true;
-        for (DeliveryItem deliveryItem : deliveryItems) {
-            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem)))
-                return false;
-        }
-        return true;
-    }
 }

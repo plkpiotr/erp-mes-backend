@@ -37,12 +37,4 @@ public class EmailEntity {
         this.emailType = emailType;
         this.timestamp = timestamp;
     }
-
-    public boolean checkIfDataEquals(EmailEntity emailEntity) {
-        return email.equals(emailEntity.getEmail()) &&
-                subject.equals(emailEntity.getSubject()) &&
-                content.equals(emailEntity.getContent()) &&
-                emailType.equals(emailEntity.getEmailType()) &&
-                timestamp.equals(emailEntity.getTimestamp());
-    }
 }

@@ -26,19 +26,4 @@ public class TeamDTO {
             team.getEmployees().forEach(employee -> employees.add(new EmployeeDTO(employee)));
         }
     }
-
-    public boolean checkIfDataEquals(TeamDTO teamDTO) {
-        return role.equals(teamDTO.getRole()) &&
-                manager.checkIfDataEquals(teamDTO.getManager()) &&
-                compareEmployees(teamDTO.getEmployees());
-    }
-
-    private boolean compareEmployees(List<EmployeeDTO> employeeList) {
-        for (EmployeeDTO employee : employees) {
-            if (employeeList.stream().noneMatch(e -> e.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

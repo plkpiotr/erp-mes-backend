@@ -36,20 +36,4 @@ public class Delivery {
     public void confirm() {
         this.confirmed = true;
     }
-
-    public boolean checkIfDataEquals(Delivery delivery) {
-        return scheduledFor.equals(delivery.getScheduledFor()) &&
-                value == delivery.getValue() &&
-                compareItems(delivery.getDeliveryItems());
-    }
-
-    private boolean compareItems(List<DeliveryItem> deliveryItemsToCompare) {
-        for (DeliveryItem item : deliveryItemsToCompare) {
-            if (deliveryItems.stream()
-                    .noneMatch(deliveryItem -> deliveryItem.checkIfDataEquals(item))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
