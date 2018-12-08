@@ -81,20 +81,4 @@ public class TaskDTO {
         this.assignee = assignee;
         this.estimatedTime = estimatedTime;
     }
-
-    public boolean checkIfDataEquals(TaskDTO task) {
-        return name.equals(task.getName()) &&
-                comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
-                author.equals(task.getAuthor()) &&
-                estimatedTime.equals(task.estimatedTime);
-    }
-
-    private boolean comparePrecedingTaskIds(List<Long> precedingTaskIdList) {
-        for (Long precedingTaskId : precedingTaskIds) {
-            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

@@ -73,19 +73,4 @@ public class Task {
         this.details = details;
         this.type = type;
     }
-
-    public boolean checkIfDataEquals(Task task) {
-        return name.equals(task.getName()) &&
-                comparePrecedingTaskIds(task.getPrecedingTaskIds()) &&
-                estimatedTime.equals(task.getEstimatedTime());
-
-    }
-
-    private boolean comparePrecedingTaskIds(List<Long> precedingTaskIdList) {
-        for (Long precedingTaskId : precedingTaskIds) {
-            if (precedingTaskIdList.stream().noneMatch(id -> id.equals(precedingTaskId)))
-                return false;
-        }
-        return true;
-    }
 }

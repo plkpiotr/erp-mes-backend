@@ -27,13 +27,4 @@ public class UserDTO {
         this.contract = employee.getContract();
         this.isPasswordValid = employee.isPasswordValid();
     }
-
-    public boolean checkIfDataEquals(UserDTO userDTO) {
-        return firstName.equals(userDTO.getFirstName()) &&
-                lastName.equals(userDTO.getLastName()) &&
-                email.equals(userDTO.getEmail()) &&
-                role.equals(userDTO.getRole()) &&
-                (isPasswordValid == userDTO.isPasswordValid()) &&
-                contract.checkIfDataEquals(userDTO.getContract());
-    }
 }

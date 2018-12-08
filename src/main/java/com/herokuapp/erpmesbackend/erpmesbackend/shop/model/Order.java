@@ -84,29 +84,4 @@ public class Order {
             .sum();
         this.submissionDate = LocalDate.now();
     }
-
-    public boolean checkIfDataEquals(Order order) {
-        return status.equals(order.getStatus()) &&
-                firstName.equals(order.getFirstName()) &&
-                lastName.equals(order.getLastName()) &&
-                email.equals(order.getEmail()) &&
-                phoneNumber.equals(order.getPhoneNumber()) &&
-                street.equals(order.getStreet()) &&
-                houseNumber.equals(order.getHouseNumber()) &&
-                city.equals(order.getCity()) &&
-                postalCode.equals(order.getPostalCode()) &&
-                compareDeliveryItems(order.getDeliveryItems()) &&
-                scheduledFor.isEqual(order.getScheduledFor()) &&
-                value.equals(order.getValue()) &&
-                submissionDate.equals(order.getSubmissionDate());
-    }
-
-    private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {
-        for (DeliveryItem deliveryItem: deliveryItems) {
-            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

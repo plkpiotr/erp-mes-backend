@@ -53,19 +53,4 @@ public class Team {
     public void removeEmployee(Employee employee) {
         employees.remove(employee);
     }
-
-    public boolean checkIfDataEquals(Team team) {
-        return role.equals(team.getRole()) &&
-                manager.checkIfDataEquals(team.getManager()) &&
-                compareEmployees(team.getEmployees());
-    }
-
-    private boolean compareEmployees(List<Employee> employeeList) {
-        for (Employee employee : employees) {
-            if (employeeList.stream().noneMatch(e -> e.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

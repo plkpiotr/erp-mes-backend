@@ -26,10 +26,4 @@ public class Contract {
         this.daysOffPerYear = daysOffPerYear;
         this.salary = salary;
     }
-
-    public boolean checkIfDataEquals(Contract contract) {
-        return accountNumber.equals(contract.getAccountNumber()) &&
-                daysOffPerYear == contract.getDaysOffPerYear() &&
-                salary == contract.getSalary();
-    }
 }

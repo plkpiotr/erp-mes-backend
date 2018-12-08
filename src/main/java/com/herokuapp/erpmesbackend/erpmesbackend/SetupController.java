@@ -7,6 +7,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Role;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Team;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.ContractRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.TeamRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.AdminRequest;
@@ -28,29 +29,24 @@ public class SetupController {
 
     private final EmployeeRepository employeeRepository;
     private final BCryptPasswordEncoder bcryptEncoder;
-    private final EmployeeService employeeService;
     private final TeamRepository teamRepository;
     private final DailyPlanRepository dailyPlanRepository;
     private final CurrentReportRepository currentReportRepository;
-    private final MonthlyReportRepository monthlyReportRepository;
     private final EstimatedCostsRepository estimatedCostsRepository;
-    private final ExpenseRepository expenseRepository;
+    private final ContractRepository contractRepository;
 
     @Autowired
     public SetupController(EmployeeRepository employeeRepository, BCryptPasswordEncoder bcryptEncoder,
-                           EmployeeService employeeService, TeamRepository teamRepository,
-                           DailyPlanRepository dailyPlanRepository, CurrentReportRepository currentReportRepository,
-                           MonthlyReportRepository monthlyReportRepository,
-                           EstimatedCostsRepository estimatedCostsRepository, ExpenseRepository expenseRepository) {
+                           TeamRepository teamRepository, DailyPlanRepository dailyPlanRepository,
+                           CurrentReportRepository currentReportRepository,
+                           EstimatedCostsRepository estimatedCostsRepository, ContractRepository contractRepository) {
         this.employeeRepository = employeeRepository;
         this.bcryptEncoder = bcryptEncoder;
-        this.employeeService = employeeService;
         this.teamRepository = teamRepository;
         this.dailyPlanRepository = dailyPlanRepository;
         this.currentReportRepository = currentReportRepository;
-        this.monthlyReportRepository = monthlyReportRepository;
         this.estimatedCostsRepository = estimatedCostsRepository;
-        this.expenseRepository = expenseRepository;
+        this.contractRepository = contractRepository;
     }
 
     @GetMapping("/check-setup")
@@ -68,7 +64,8 @@ public class SetupController {
         }
         Employee employee = request.extractUser();
         employee.encodePassword(bcryptEncoder.encode(employee.getPassword()));
-        employeeService.saveEmployee(employee);
+        contractRepository.save(employee.getContract());
+        employeeRepository.save(employee);
         return new EmployeeDTO(employee);
     }
 
@@ -79,7 +76,13 @@ public class SetupController {
         if (!teams.isEmpty()) {
             throw new InvalidRequestException("Teams were already setup!");
         }
-        teamRepository.save(new Team(Role.ADMIN));
+        Optional<List<Employee>> findAdmin = employeeRepository.findByRole(Role.ADMIN);
+        if (!findAdmin.isPresent()) {
+            throw new InvalidRequestException("The system needs an ADMIN first!");
+        }
+        Team admins = new Team(Role.ADMIN);
+        admins.addEmployee(findAdmin.get().get(0));
+        teamRepository.save(admins);
         teamRepository.save(new Team(Role.ACCOUNTANT));
         teamRepository.save(new Team(Role.ANALYST));
         teamRepository.save(new Team(Role.WAREHOUSE));
@@ -110,23 +113,23 @@ public class SetupController {
         CurrentReport currentReport = new CurrentReport(estimatedCosts);
         currentReportRepository.save(currentReport);
 
-        //this is only for testing purposes!!!
-        Month months[] = {Month.FEBRUARY, Month.MARCH, Month.APRIL, Month.MAY, Month.JUNE};
-        for (Month month : months) {
-            currentReport.setStartDate(LocalDate.of(2018, month, 1));
-            Expense expense = new Expense(ExpenseType.SALARIES, 120000.00);
-            currentReport.addExpense(expense);
-            expenseRepository.save(expense);
-            currentReport.addIncome(50000.00);
-            MonthlyReport monthlyReport = new MonthlyReport(currentReport);
-            monthlyReport.setIncome(new ArrayList<>(currentReport.getIncome()));
-            monthlyReport.setExpenses(new ArrayList<>(currentReport.getExpenses()));
-            monthlyReportRepository.save(monthlyReport);
-            currentReport.clearReport();
-        }
-        //only for saving tests
-        currentReport.setStartDate(LocalDate.of(2018, Month.JULY, 1));
-        currentReportRepository.save(currentReport);
+//        //this is only for testing purposes!!!
+//        Month months[] = {Month.FEBRUARY, Month.MARCH, Month.APRIL, Month.MAY, Month.JUNE};
+//        for (Month month : months) {
+//            currentReport.setStartDate(LocalDate.of(2018, month, 1));
+//            Expense expense = new Expense(ExpenseType.SALARIES, 120000.00);
+//            currentReport.addExpense(expense);
+//            expenseRepository.save(expense);
+//            currentReport.addIncome(50000.00);
+//            MonthlyReport monthlyReport = new MonthlyReport(currentReport);
+//            monthlyReport.setIncome(new ArrayList<>(currentReport.getIncome()));
+//            monthlyReport.setExpenses(new ArrayList<>(currentReport.getExpenses()));
+//            monthlyReportRepository.save(monthlyReport);
+//            currentReport.clearReport();
+//        }
+//        //only for saving tests
+//        currentReport.setStartDate(LocalDate.of(2018, Month.JULY, 1));
+//        currentReportRepository.save(currentReport);
 
         return currentReport;
     }

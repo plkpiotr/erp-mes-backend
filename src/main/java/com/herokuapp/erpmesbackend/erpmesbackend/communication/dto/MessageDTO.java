@@ -30,10 +30,4 @@ public class MessageDTO {
         this.authorDTO = authorDTO;
         this.channelId = channelId;
     }
-
-    public boolean checkIfDataEquals(MessageDTO messageDTO) {
-        return content.equals(messageDTO.getContent()) &&
-                authorDTO.checkIfDataEquals(messageDTO.getAuthorDTO()) &&
-                channelId.equals(messageDTO.getChannelId());
-    }
 }

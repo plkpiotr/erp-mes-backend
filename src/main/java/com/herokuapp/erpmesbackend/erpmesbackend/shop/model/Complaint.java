@@ -75,32 +75,4 @@ public class Complaint {
     public void updateResolution(Resolution resolution) {
         this.resolution = resolution;
     }
-
-    public boolean checkIfDataEquals(Complaint complaint) {
-        return status.equals(complaint.getStatus()) &&
-                requestedResolution.equals(complaint.getRequestedResolution()) &&
-                resolution.equals(complaint.getResolution()) &&
-                firstName.equals(complaint.getFirstName()) &&
-                lastName.equals(complaint.getLastName()) &&
-                email.equals(complaint.getEmail()) &&
-                phoneNumber.equals(complaint.getPhoneNumber()) &&
-                street.equals(complaint.getStreet()) &&
-                houseNumber.equals(complaint.getHouseNumber()) &&
-                city.equals(complaint.getCity()) &&
-                postalCode.equals(complaint.getPostalCode()) &&
-                compareDeliveryItems(complaint.getDeliveryItems()) &&
-                scheduledFor.isEqual(complaint.getScheduledFor()) &&
-                value.equals(complaint.getValue()) &&
-                fault.equals(complaint.getFault());
-    }
-
-    private boolean compareDeliveryItems(List<DeliveryItem> deliveryItemList) {
-        if (deliveryItemList.isEmpty())
-            return true;
-        for (DeliveryItem deliveryItem : deliveryItems) {
-            if (deliveryItemList.stream().noneMatch(i -> i.checkIfDataEquals(deliveryItem)))
-                return false;
-        }
-        return true;
-    }
 }

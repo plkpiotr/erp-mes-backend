@@ -56,6 +56,10 @@ public class ReportService {
 
     public void saveReport() {
         CurrentReport currentReport = getCurrentReport();
+        if (currentReport.getExpenses().stream()
+                .noneMatch(expense -> expense.getExpenseType().equals(ExpenseType.SALARIES))) {
+            paySalaries(currentReport);
+        }
         MonthlyReport monthlyReport = new MonthlyReport(currentReport);
         monthlyReport.setIncome(new ArrayList<>(currentReport.getIncome()));
         monthlyReport.setExpenses(new ArrayList<>(currentReport.getExpenses()));

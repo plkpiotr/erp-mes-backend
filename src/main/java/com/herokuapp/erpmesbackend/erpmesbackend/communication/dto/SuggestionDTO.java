@@ -54,20 +54,4 @@ public class SuggestionDTO {
         this.author = author;
         this.recipients = recipientDTOs;
     }
-
-    public boolean checkIfDataEquals(SuggestionDTO suggestionDTO) {
-        return name.equals(suggestionDTO.getName()) &&
-                description.equals(suggestionDTO.getDescription()) &&
-                // author.equals(suggestionDTO.getAuthor()) &&
-                compareRecipientDTOs(suggestionDTO.getRecipients());
-    }
-
-    private boolean compareRecipientDTOs(List<EmployeeDTO> recipientDTOList) {
-        for (EmployeeDTO recipientDTO : recipients) {
-            if (recipientDTOList.stream().noneMatch(t -> t.checkIfDataEquals(recipientDTO))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
