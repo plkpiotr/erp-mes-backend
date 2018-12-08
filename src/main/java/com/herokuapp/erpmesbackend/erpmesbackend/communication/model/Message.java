@@ -36,10 +36,4 @@ public class Message {
         this.creationTime = LocalDateTime.now();
         this.channelId = channelId;
     }
-
-    public boolean checkIfDataEquals(Message message) {
-        return content.equals(message.getContent()) &&
-                author.checkIfDataEquals(message.getAuthor()) &&
-                channelId.equals(message.getChannelId());
-    }
 }

@@ -60,12 +60,12 @@ public class EmployeeController {
     @ResponseStatus(HttpStatus.CREATED)
     public EmployeeDTO addNewEmployee(@RequestBody EmployeeRequest request) {
         Employee employee = request.extractUser();
+        employeeService.checkIfCanBeAdded(request);
         emailService.sendMessage(employee.getEmail(), "Your first login password",
                 Collections.singletonList("Your automatically generated password is: " +
                         employee.getPassword() +
                         ". You will be prompt to change it after your first login attempt."));
         employee.encodePassword(bcryptEncoder.encode(employee.getPassword()));
-        employeeService.checkIfCanBeAdded(request);
         employeeService.saveEmployee(employee);
         return new EmployeeDTO(employee);
     }

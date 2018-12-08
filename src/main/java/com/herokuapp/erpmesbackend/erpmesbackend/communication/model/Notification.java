@@ -63,21 +63,4 @@ public class Notification {
         this.creationTime = LocalDateTime.now();
         this.type = type;
     }
-
-    public boolean checkIfDataEquals(Notification notification) {
-        return state.equals(notification.getState()) &&
-                instruction.equals(notification.getInstruction()) &&
-                description.equals(notification.getDescription()) &&
-                notifier.checkIfDataEquals(notification.getNotifier()) &&
-                compareConsignees(notification.getConsignees());
-    }
-
-    private boolean compareConsignees(List<Employee> consigneeList) {
-        for (Employee employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

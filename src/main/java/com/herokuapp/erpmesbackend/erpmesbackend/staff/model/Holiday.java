@@ -58,11 +58,4 @@ public class Holiday {
         }
         return days;
     }
-
-    public boolean checkIfDataEquals(Holiday holiday) {
-        return startDate.equals(holiday.getStartDate()) &&
-                duration == holiday.getDuration() &&
-                approvalState.equals(holiday.getApprovalState()) &&
-                employee.checkIfDataEquals(holiday.getEmployee());
-    }
 }

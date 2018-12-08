@@ -41,11 +41,4 @@ public class Item {
     public void sell(int q) {
         quantity -= q;
     }
-
-    public boolean checkIfDataEquals(Item item) {
-        return name.equals(item.getName()) &&
-                stockPrice == item.getStockPrice() &&
-                originalPrice == item.getOriginalPrice() &&
-                currentPrice == item.getCurrentPrice();
-    }
 }

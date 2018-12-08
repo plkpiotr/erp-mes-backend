@@ -27,18 +27,4 @@ public class ChannelDTO {
         this.name = name;
         this.participantDTOs = participantDTOs;
     }
-
-    public boolean checkIfDataEquals(ChannelDTO channelDTO) {
-        return name.equals(channelDTO.getName()) &&
-                compareParticipantDTOs(channelDTO.getParticipantDTOs());
-    }
-
-    private boolean compareParticipantDTOs(List<EmployeeDTO> participantDTOList) {
-        for (EmployeeDTO participantDTO : participantDTOs) {
-            if (participantDTOList.stream().noneMatch(t -> t.checkIfDataEquals(participantDTO))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

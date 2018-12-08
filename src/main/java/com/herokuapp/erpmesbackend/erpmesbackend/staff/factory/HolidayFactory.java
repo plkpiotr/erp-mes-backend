@@ -28,4 +28,8 @@ public class HolidayFactory {
     public HolidayRequest generateHolidayRequest() {
         return new HolidayRequest(generateStartDate(), generateDuration(), HolidayType.VACATION);
     }
+
+    public HolidayRequest generateHolidayRequestWithType(HolidayType type) {
+        return new HolidayRequest(generateStartDate(), generateDuration(), type);
+    }
 }

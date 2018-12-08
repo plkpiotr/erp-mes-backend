@@ -31,13 +31,4 @@ public class SpecialPlan {
         this.returnsPerDay = returnsPerDay;
         this.complaintsResolvedPerDay = complaintsResolvedPerDay;
     }
-
-    public boolean checkIfDataEquals(SpecialPlan specialPlan) {
-        return description.equals(specialPlan.getDescription()) &&
-                day.equals(specialPlan.getDay()) &&
-                employeesPerDay == specialPlan.getEmployeesPerDay() &&
-                ordersPerDay == specialPlan.getOrdersPerDay() &&
-                returnsPerDay == specialPlan.getReturnsPerDay() &&
-                complaintsResolvedPerDay == specialPlan.getComplaintsResolvedPerDay();
-    }
 }

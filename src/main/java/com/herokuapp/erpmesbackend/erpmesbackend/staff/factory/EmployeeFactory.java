@@ -28,11 +28,7 @@ public class EmployeeFactory {
     }
 
     private String generateEmail(String firstName, String lastName) {
-        return firstName.toLowerCase() + "." + lastName.toLowerCase() + "@domain.com";
-    }
-
-    public String generateRandomEmail() {
-        return generateEmail(generate(FIRST_NAMES), generate(LAST_NAMES));
+        return firstName.toLowerCase() + "." + lastName.toLowerCase() + r.nextInt() + "@domain.com";
     }
 
     public Role generateRole() {
@@ -64,6 +60,13 @@ public class EmployeeFactory {
                 r.nextDouble()+2000.00);
     }
 
+    public EmployeeRequest generateEmployeeRequestWithRole(Role role) {
+        String firstName = generate(FIRST_NAMES);
+        String lastName = generate(LAST_NAMES);
+        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
+                role, generateContractRequest());
+    }
+
     public EmployeeRequest generateEmployeeRequest() {
         String firstName = generate(FIRST_NAMES);
         String lastName = generate(LAST_NAMES);
@@ -84,28 +87,4 @@ public class EmployeeFactory {
         return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
                 generateNonAdminRole(), generateContractRequest());
     }
-
-    public EmployeeRequest generateCeoRequest() {
-        String firstName = generate(FIRST_NAMES);
-        String lastName = generate(LAST_NAMES);
-        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                Role.ADMIN, generateContractRequest());
-    }
-
-    public Employee generateEmployee() {
-        return generateEmployeeRequest().extractUser();
-    }
-
-    public Employee generateAdmin() {
-        return generateAdminRequest().extractUser();
-    }
-
-    public Employee generateNonAdmin() {
-        return generateNonAdminRequest().extractUser();
-    }
-
-    public Employee generateCeo() {
-        return generateCeoRequest().extractUser();
-    }
-
 }

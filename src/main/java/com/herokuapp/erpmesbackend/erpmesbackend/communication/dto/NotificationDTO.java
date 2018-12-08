@@ -58,20 +58,4 @@ public class NotificationDTO {
         this.consignees = consignees;
         this.type = type;
     }
-
-    public boolean checkIfDataEquals(NotificationDTO notification) {
-        return instruction.equals(notification.getInstruction()) &&
-                description.equals(notification.getDescription()) &&
-                notifier.checkIfDataEquals(notification.getNotifier()) &&
-                compareConsignees(notification.getConsignees());
-    }
-
-    private boolean compareConsignees(List<EmployeeDTO> consigneeList) {
-        for (EmployeeDTO employee : consignees) {
-            if (consigneeList.stream().noneMatch(t -> t.checkIfDataEquals(employee))) {
-                return false;
-            }
-        }
-        return true;
-    }
 }
