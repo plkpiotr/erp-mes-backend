@@ -8,7 +8,6 @@ import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.TaskRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.AssignmentRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.dto.EmployeeDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.EmployeeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +17,8 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @CrossOrigin(origins = "*")
@@ -83,26 +82,56 @@ public class TaskController {
 
     @PutMapping("/assignment")
     @ResponseStatus(HttpStatus.OK)
-    public List<TaskDTO> assignToEmployees(@RequestBody AssignmentRequest assignmentRequest) {
+    public HttpStatus assignToEmployees(@RequestBody AssignmentRequest assignmentRequest) {
         assignmentRequest.getTaskIds().forEach(this::checkIfTaskExists);
         List<Long> taskIds = new ArrayList<>(assignmentRequest.getTaskIds());
         List<Task> tasks = new ArrayList<>();
+        List<Long> assigned = new ArrayList<>();
 
         assignmentRequest.getAssigneeIds().forEach(this::checkIfAssigneeExists);
         List<Long> assigneeIds = new ArrayList<>(assignmentRequest.getAssigneeIds());
         List<Employee> assignees = new ArrayList<>();
 
         LocalDateTime startTime = assignmentRequest.getStartTime();
+        LocalDateTime counter = assignmentRequest.getStartTime();
+        LocalDateTime endTime = assignmentRequest.getStartTime().toLocalDate().atTime(16, 0, 0, 0);
+
+        HashMap<Long, LocalDateTime> schedule = new HashMap<>(); // employee's id and busy time
+        assigneeIds.forEach(id -> schedule.put(employeeRepository.findById(id).get().getId(), startTime));
 
         taskIds.forEach(id -> tasks.add(taskRepository.findById(id).get()));
         assigneeIds.forEach(id -> assignees.add(employeeRepository.findById(id).get()));
 
-        tasks.forEach(task -> task.setAssignee(assignees.get(0)));
-        tasks.forEach(taskRepository::save);
+        long seed = System.nanoTime();
+        Collections.shuffle(assigneeIds, new Random(seed));
 
-        List<TaskDTO> taskDTOs = new ArrayList<>();
-        tasks.forEach(task -> taskDTOs.add(new TaskDTO(task)));
-        return taskDTOs;
+        List<Task> sortedTasks = tasks.stream()
+                .sorted((t1, t2) -> Task.compareTo(t2, t1))
+                .collect(Collectors.toList());
+
+        Iterator<Task> it = sortedTasks.iterator();
+        while (counter.isBefore(endTime)) { // przechodź po czasie
+            if (schedule.containsValue(counter)) { // jeśli jest określona godzina
+                for (Map.Entry<Long, LocalDateTime> entry: schedule.entrySet()) { // przechodź po pracownikach i godzinach dostępu
+                    if (entry.getValue().isEqual(counter)) { // jeśli godzina dostępu jest równa określonej godzinie (bo może być nie tylko dla jednego pracownika)
+                        for (int i = 0; i < sortedTasks.size(); i++) { // przechodź po zadaniach
+                            if (assigned.containsAll(sortedTasks.get(i).getPrecedingTaskIds())) { // jeśli spotkasz zadanie nie posiadające poprzedziających zadań lub zawierające zadania już wykonane
+                                sortedTasks.get(i).setAssignee(employeeRepository.findById(1L).get()); // ustaw temu zadaniu pracownika, dla którego go sprawdzasz
+                                sortedTasks.get(i).setScheduledTime(counter);
+                                assigned.add(sortedTasks.get(i).getId());
+                                entry.setValue(counter.plusMinutes(sortedTasks.get(i).getEstimatedTime())); // ustaw w grafiku, aby nowe zadanie mógł wziąć później
+                                sortedTasks.remove(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            counter = counter.plusMinutes(1);
+        }
+
+        tasks.forEach(taskRepository::save);
+        return HttpStatus.OK;
     }
 
     @PostMapping("/tasks")

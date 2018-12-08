@@ -88,4 +88,17 @@ public class Task {
         }
         return true;
     }
+
+    public static int compareTo(Task t1, Task t2) {
+        Integer sizePrecedingTasksFirst = t1.getPrecedingTaskIds().size();
+        Integer sizePrecedingTasksSecond = t2.getPrecedingTaskIds().size();
+        int sizePrecedingTasks = sizePrecedingTasksFirst.compareTo(sizePrecedingTasksSecond);
+        int estimatedTime =  t1.getEstimatedTime().compareTo(t2.getEstimatedTime());
+
+        if (sizePrecedingTasks == 0) {
+            return estimatedTime == 0 ? sizePrecedingTasks : estimatedTime;
+        } else {
+            return sizePrecedingTasks;
+        }
+    }
 }
