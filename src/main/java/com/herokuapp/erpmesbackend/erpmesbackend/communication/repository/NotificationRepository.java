@@ -2,11 +2,25 @@ package com.herokuapp.erpmesbackend.erpmesbackend.communication.repository;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Notification;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
+
+    long countNotificationsByTransfereeIdAndCreationTimeAfter(Long id, LocalDateTime timeRange);
+
+    long countNotificationsByConsigneesIdAndCreationTimeAfter(Long id, LocalDateTime timeRange);
+
+    @Query(value = "SELECT avg(n.start_time - n.creation_time) FROM notification n GROUP BY :transferee_id",
+            nativeQuery = true)
+    long countAverageDifferenceBetweenStartTimeAndCreationTime(@Param("transferee_id") Long transferee_id);
+
+    @Query(value = "SELECT avg(n.start_time - n.creation_time) FROM notification n", nativeQuery = true)
+    long countAverageDifferenceBetweenStartTimeAndCreationTime();
 
     Optional<List<Notification>> findByConsigneesId(Long id);
 
