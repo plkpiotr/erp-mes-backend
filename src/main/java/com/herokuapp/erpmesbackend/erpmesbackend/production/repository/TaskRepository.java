@@ -16,13 +16,13 @@ import java.util.Optional;
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
-    long countTasksByCreationTimeAfter(LocalDateTime timeRange);
-
     long countTasksByAssigneeIdAndCreationTimeAfter(Long id, LocalDateTime timeRange);
 
-    long countTasksByCategoryAndCreationTimeAfter(Category category, LocalDateTime timeRange);
+    long countTasksByCreationTimeAfter(LocalDateTime timeRange);
 
     long countTasksByAssigneeIdAndCategoryAndCreationTimeAfter(Long id, Category category, LocalDateTime timeRange);
+
+    long countTasksByCategoryAndCreationTimeAfter(Category category, LocalDateTime timeRange);
 
     @Query(value = "SELECT COUNT(t.id) FROM task t WHERE t.assignee_id = :assignee_id AND t.category = 'DONE' " +
             "AND t.end_time <= t.deadline", nativeQuery = true)
@@ -32,17 +32,17 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             nativeQuery = true)
     long countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline();
 
-    @Query(value = "SELECT avg(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING' GROUP BY :id",
+    @Query(value = "SELECT avg(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING' GROUP BY :assignee_id",
             nativeQuery = true)
     long countAverageDifferenceBetweenStartTimeAndCreationTime(@Param("assignee_id") Long assignee_id);
-
-    @Query(value = "SELECT sum(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING' GROUP BY :id",
-            nativeQuery = true)
-    long countSumDifferenceBetweenStartTimeAndCreationTime(@Param("assignee_id") Long assignee_id);
 
     @Query(value = "SELECT avg(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING'",
             nativeQuery = true)
     long countAverageDifferenceBetweenStartTimeAndCreationTime();
+
+    @Query(value = "SELECT sum(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING' GROUP BY :assignee_id",
+            nativeQuery = true)
+    long countSumDifferenceBetweenStartTimeAndCreationTime(@Param("assignee_id") Long assignee_id);
 
     @Query(value = "SELECT sum(t.start_time - t.creation_time) FROM task t WHERE t.category = 'DOING'",
             nativeQuery = true)

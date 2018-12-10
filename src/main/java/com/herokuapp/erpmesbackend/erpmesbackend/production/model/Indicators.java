@@ -22,8 +22,25 @@ public class Indicators {
     private long numberTasksEmployeeDoneBeforeDeadline;
     private long numberTasksEverybodyDoneBeforeDeadline;
 
-    private long averageTimeEmployeeBetweenStartTimeAndCreationTime;
-    private long averageTimeEverybodyBetweenStartTimeAndCreationTime;
+    private long averageTimeTasksEmployeeBetweenStartTimeAndCreationTime;
+    private long averageTimeTasksEverybodyBetweenStartTimeAndCreationTime;
 
-    private long sumTimeEmployeeBetweenStartTimeAndCreationTime
+    private long sumTimeTasksEmployeeBetweenStartTimeAndCreationTime;
+    private long sumTimeTasksEveryBodyBetweenStartTimeAndCreationTime;
+
+    private long numberNotificationsAsTransferee;
+    private long numberNotificationsAsConsignee;
+
+    private long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
+    private long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
+
+    private long numberSuggestionsEmployee;
+    private long numberSuggestionsEverybody;
+
+    private long numberSuggestionsEmployeeReported;
+    private long numberSuggestionsEverybodyReported;
+    private long numberSuggestionsEmployeeInImplementation;
+    private long numberSuggestionsEverybodyInImplementation;
+    private long numberSuggestionsEmployeeImplemented;
+    private long numberSuggestionsEverybodyImplemented;
 }

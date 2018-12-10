@@ -12,13 +12,13 @@ import java.util.Optional;
 @Repository
 public interface SuggestionRepository extends JpaRepository<Suggestion, Long> {
 
-    long countSuggestionsByCreationTimeAfter(LocalDateTime timeRange);
-
     long countSuggestionsByAuthorIdAndCreationTimeAfter(Long id, LocalDateTime timeRange);
 
-    long countSuggestionsByPhaseAndCreationTimeAfter(Phase phase, LocalDateTime timeRange);
+    long countSuggestionsByCreationTimeAfter(LocalDateTime timeRange);
 
     long countSuggestionsByAuthorIdAndPhaseAndCreationTimeAfter(Long id, Phase phase, LocalDateTime timeRange);
+
+    long countSuggestionsByPhaseAndCreationTimeAfter(Phase phase, LocalDateTime timeRange);
 
     Optional<List<Suggestion>> findByRecipientsId(Long id);
 
