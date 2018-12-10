@@ -85,12 +85,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.PUT, "/suggestions/{id}")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}")
+                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}", "/assignment")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.POST,"/tasks")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.PUT,"/tasks/{id}", "/tasks/{id}/assign")
+                .antMatchers(HttpMethod.PUT,"/tasks/{id}", "/tasks/{id}/assign", "/assignment")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                             "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers("/notifications", "/notifications/{id}")

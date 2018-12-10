@@ -8,6 +8,7 @@ import lombok.Setter;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -72,5 +73,16 @@ public class Task {
         this.deadline = deadline;
         this.details = details;
         this.type = type;
+    }
+
+    public static int compare(Task t1, Task t2) {
+        Integer sizePrecedingTasksFirst = t1.getPrecedingTaskIds().size();
+        Integer sizePrecedingTasksSecond = t2.getPrecedingTaskIds().size();
+        int comparison = sizePrecedingTasksFirst.compareTo(sizePrecedingTasksSecond);
+
+        if (comparison == 0) {
+            comparison = t1.getEstimatedTime().compareTo(t2.getEstimatedTime());
+        }
+        return comparison;
     }
 }
