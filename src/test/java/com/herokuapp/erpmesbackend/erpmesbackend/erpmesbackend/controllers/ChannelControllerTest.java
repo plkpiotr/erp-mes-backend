@@ -63,7 +63,7 @@ public class ChannelControllerTest extends TestConfig {
     }
 
     @Test
-    public void shuldReturn404NotFound() {
+    public void shouldReturn404NotFound() {
         ResponseEntity<String> exchange = restTemplate.exchange("/channels/{id}", HttpMethod.GET,
                 new HttpEntity<>(null, requestHeaders), String.class, 1234);
         assertThat(exchange.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);

@@ -4,6 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,20 +22,20 @@ public class Indicators {
     private long numberTasksEmployeeDone;
     private long numberTasksEverybodyDone;
 
-    private long numberTasksEmployeeDoneBeforeDeadline;
-    private long numberTasksEverybodyDoneBeforeDeadline;
+    private Long numberTasksEmployeeDoneBeforeDeadline;
+    private Long numberTasksEverybodyDoneBeforeDeadline;
 
-    private long averageTimeTasksEmployeeBetweenStartTimeAndCreationTime;
-    private long averageTimeTasksEverybodyBetweenStartTimeAndCreationTime;
+    private Long averageTimeTasksEmployeeBetweenStartTimeAndCreationTime;
+    private Long averageTimeTasksEverybodyBetweenStartTimeAndCreationTime;
 
-    private long sumTimeTasksEmployeeBetweenStartTimeAndCreationTime;
-    private long sumTimeTasksEveryBodyBetweenStartTimeAndCreationTime;
+    private Long sumTimeTasksEmployeeBetweenStartTimeAndCreationTime;
+    private Long sumTimeTasksEveryBodyBetweenStartTimeAndCreationTime;
 
     private long numberNotificationsAsTransferee;
     private long numberNotificationsAsConsignee;
 
-    private long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
-    private long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
+    private Long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
+    private Long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
 
     private long numberSuggestionsEmployee;
     private long numberSuggestionsEverybody;

@@ -15,12 +15,13 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
 
     long countNotificationsByConsigneesIdAndCreationTimeAfter(Long id, LocalDateTime timeRange);
 
-    @Query(value = "SELECT avg(n.start_time - n.creation_time) FROM notification n GROUP BY :transferee_id",
+    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(n.start_time - n.creation_time) FROM notification n WHERE transferee_id = :transferee_id))",
             nativeQuery = true)
-    long countAverageDifferenceBetweenStartTimeAndCreationTime(@Param("transferee_id") Long transferee_id);
+    Long countAverageDifferenceBetweenStartTimeAndCreationTime(@Param("transferee_id") Long transferee_id);
 
-    @Query(value = "SELECT avg(n.start_time - n.creation_time) FROM notification n", nativeQuery = true)
-    long countAverageDifferenceBetweenStartTimeAndCreationTime();
+    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(n.start_time - n.creation_time) FROM notification n))",
+            nativeQuery = true)
+    Long countAverageDifferenceBetweenStartTimeAndCreationTime();
 
     Optional<List<Notification>> findByConsigneesId(Long id);
 
