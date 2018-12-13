@@ -26,8 +26,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             " t.end_time <= t.deadline", nativeQuery = true)
     Long countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(@Param("assignee_id") Long assignee_id);
 
-    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT COUNT(t.id) FROM task t WHERE t.category = 'DONE' AND" +
-            " t.end_time <= t.deadline))", nativeQuery = true)
+    @Query(value = "SELECT COUNT(t.id) FROM task t WHERE t.category = 'DONE' AND t.end_time <= t.deadline",
+            nativeQuery = true)
     Long countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline();
 
     @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.start_time - t.creation_time) FROM task t WHERE" +
@@ -37,14 +37,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.start_time - t.creation_time) FROM task t WHERE" +
             " t.category = 'DOING'))", nativeQuery = true)
     Long countAverageDifferenceBetweenStartTimeAndCreationTime();
-
-    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT sum(t.start_time - t.creation_time) FROM task t WHERE" +
-            " t.category = 'DOING' AND t.assignee_id = :assignee_id))", nativeQuery = true)
-    Long countSumDifferenceBetweenStartTimeAndCreationTime(@Param("assignee_id") Long assignee_id);
-
-    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT sum(t.start_time - t.creation_time) FROM task t WHERE" +
-            " t.category = 'DOING'))", nativeQuery = true)
-    Long countSumDifferenceBetweenStartTimeAndCreationTime();
 
     Optional<List<Task>> findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineAsc(Long id,LocalDateTime timeRange);
 

@@ -4,9 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,15 +25,6 @@ public class Indicators {
     private Long averageTimeTasksEmployeeBetweenStartTimeAndCreationTime;
     private Long averageTimeTasksEverybodyBetweenStartTimeAndCreationTime;
 
-    private Long sumTimeTasksEmployeeBetweenStartTimeAndCreationTime;
-    private Long sumTimeTasksEveryBodyBetweenStartTimeAndCreationTime;
-
-    private long numberNotificationsAsTransferee;
-    private long numberNotificationsAsConsignee;
-
-    private Long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
-    private Long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
-
     private long numberSuggestionsEmployee;
     private long numberSuggestionsEverybody;
 
@@ -46,4 +34,10 @@ public class Indicators {
     private long numberSuggestionsEverybodyInImplementation;
     private long numberSuggestionsEmployeeImplemented;
     private long numberSuggestionsEverybodyImplemented;
+
+    private long numberNotificationsAsTransferee;
+    private long numberNotificationsAsConsignee;
+
+    private Long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
+    private Long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
 }

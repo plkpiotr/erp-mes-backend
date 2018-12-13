@@ -39,8 +39,8 @@ public class IndicatorsController {
         Indicators i = new Indicators();
         LocalDateTime timeRange = LocalDateTime.now().minusDays(28);
 
-        i.setNumberTasksEmployee(taskRepository.countTasksByCreationTimeAfter(timeRange));
-        i.setNumberTasksEverybody(taskRepository.countTasksByAssigneeIdAndCreationTimeAfter(id, timeRange));
+        i.setNumberTasksEmployee(taskRepository.countTasksByAssigneeIdAndCreationTimeAfter(id, timeRange));
+        i.setNumberTasksEverybody(taskRepository.countTasksByCreationTimeAfter(timeRange));
 
         i.setNumberTasksEmployeeToDo(taskRepository.countTasksByAssigneeIdAndCategoryAndCreationTimeAfter(id, Category.TO_DO, timeRange));
         i.setNumberTasksEverybodyToDo(taskRepository.countTasksByCategoryAndCreationTimeAfter(Category.TO_DO, timeRange));
@@ -49,12 +49,12 @@ public class IndicatorsController {
         i.setNumberTasksEmployeeDone(taskRepository.countTasksByAssigneeIdAndCategoryAndCreationTimeAfter(id, Category.DONE, timeRange));
         i.setNumberTasksEverybodyDone(taskRepository.countTasksByCategoryAndCreationTimeAfter(Category.DONE, timeRange));
 
-//        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id) != null) {
-//            i.setNumberTasksEmployeeDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id));
-//        }
-//        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline() != null) {
-//            i.setNumberTasksEverybodyDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline());
-//        }
+        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id) != null) {
+            i.setNumberTasksEmployeeDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id));
+        }
+        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline() != null) {
+            i.setNumberTasksEverybodyDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline());
+        }
 
         if (taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null) {
             i.setAverageTimeTasksEmployeeBetweenStartTimeAndCreationTime(taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id));
@@ -62,21 +62,6 @@ public class IndicatorsController {
         if (taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null) {
             i.setAverageTimeTasksEverybodyBetweenStartTimeAndCreationTime(taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime());
         }
-
-        if (taskRepository.countSumDifferenceBetweenStartTimeAndCreationTime(id) != null) {
-            i.setSumTimeTasksEmployeeBetweenStartTimeAndCreationTime(taskRepository.countSumDifferenceBetweenStartTimeAndCreationTime(id));
-        }
-        if (taskRepository.countSumDifferenceBetweenStartTimeAndCreationTime() != null) {
-            i.setSumTimeTasksEveryBodyBetweenStartTimeAndCreationTime(taskRepository.countSumDifferenceBetweenStartTimeAndCreationTime());
-        }
-
-        i.setNumberNotificationsAsTransferee(notificationRepository.countNotificationsByTransfereeIdAndCreationTimeAfter(id, timeRange));
-        i.setNumberNotificationsAsConsignee(notificationRepository.countNotificationsByConsigneesIdAndCreationTimeAfter(id, timeRange));
-
-        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null)
-            i.setAverageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id));
-        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null)
-            i.setAverageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime());
 
         i.setNumberSuggestionsEmployee(suggestionRepository.countSuggestionsByAuthorIdAndCreationTimeAfter(id, timeRange));
         i.setNumberSuggestionsEverybody(suggestionRepository.countSuggestionsByCreationTimeAfter(timeRange));
@@ -87,6 +72,14 @@ public class IndicatorsController {
         i.setNumberSuggestionsEverybodyInImplementation(suggestionRepository.countSuggestionsByPhaseAndCreationTimeAfter(Phase.IN_IMPLEMENTATION, timeRange));
         i.setNumberSuggestionsEmployeeImplemented(suggestionRepository.countSuggestionsByAuthorIdAndPhaseAndCreationTimeAfter(id, Phase.IMPLEMENTED, timeRange));
         i.setNumberSuggestionsEverybodyImplemented(suggestionRepository.countSuggestionsByPhaseAndCreationTimeAfter(Phase.IMPLEMENTED, timeRange));
+
+        i.setNumberNotificationsAsTransferee(notificationRepository.countNotificationsByTransfereeIdAndCreationTimeAfter(id, timeRange));
+        i.setNumberNotificationsAsConsignee(notificationRepository.countNotificationsByConsigneesIdAndCreationTimeAfter(id, timeRange));
+
+        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null)
+            i.setAverageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id));
+        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null)
+            i.setAverageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime());
 
         return i;
     }
