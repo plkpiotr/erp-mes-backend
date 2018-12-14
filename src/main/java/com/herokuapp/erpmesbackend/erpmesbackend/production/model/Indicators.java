@@ -22,9 +22,6 @@ public class Indicators {
     private Long numberTasksEmployeeDoneBeforeDeadline;
     private Long numberTasksEverybodyDoneBeforeDeadline;
 
-    private Long averageTimeTasksEmployeeBetweenStartTimeAndCreationTime;
-    private Long averageTimeTasksEverybodyBetweenStartTimeAndCreationTime;
-
     private long numberSuggestionsEmployee;
     private long numberSuggestionsEverybody;
 
@@ -38,6 +35,12 @@ public class Indicators {
     private long numberNotificationsAsTransferee;
     private long numberNotificationsAsConsignee;
 
+    private Long averageTimeTasksEmployeeBetweenDeadlineAndEndTime;
+    private Long averageTimeTasksEverybodyBetweenDeadlineAndEndTime;
+
     private Long averageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime;
     private Long averageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime;
+
+    private Long averageTimeNotificationsEmployeeBetweenEndTimeAndStartTime;
+    private Long averageTimeNotificationsEverybodyBetweenEndTimeAndStartTime;
 }

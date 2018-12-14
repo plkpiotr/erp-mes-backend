@@ -30,13 +30,13 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             nativeQuery = true)
     Long countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline();
 
-    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.start_time - t.creation_time) FROM task t WHERE" +
-            " t.category = 'DOING' AND t.assignee_id = :assignee_id))", nativeQuery = true)
-    Long countAverageDifferenceBetweenStartTimeAndCreationTime(@Param("assignee_id") Long assignee_id);
+    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.deadline - t.end_time) FROM task t WHERE" +
+            " t.category = 'DONE' AND t.assignee_id = :assignee_id))", nativeQuery = true)
+    Long countAverageDifferenceBetweenDeadlineAndEndTime(@Param("assignee_id") Long assignee_id);
 
-    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.start_time - t.creation_time) FROM task t WHERE" +
-            " t.category = 'DOING'))", nativeQuery = true)
-    Long countAverageDifferenceBetweenStartTimeAndCreationTime();
+    @Query(value = "SELECT EXTRACT(EPOCH FROM (SELECT avg(t.deadline - t.end_time) FROM task t WHERE" +
+            " t.category = 'DONE'))", nativeQuery = true)
+    Long countAverageDifferenceBetweenDeadlineAndEndTime();
 
     Optional<List<Task>> findTasksByAssigneeIdAndCreationTimeAfterOrderByDeadlineAsc(Long id,LocalDateTime timeRange);
 

@@ -49,19 +49,12 @@ public class IndicatorsController {
         i.setNumberTasksEmployeeDone(taskRepository.countTasksByAssigneeIdAndCategoryAndCreationTimeAfter(id, Category.DONE, timeRange));
         i.setNumberTasksEverybodyDone(taskRepository.countTasksByCategoryAndCreationTimeAfter(Category.DONE, timeRange));
 
-        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id) != null) {
+//        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id) != null) {
             i.setNumberTasksEmployeeDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline(id));
-        }
-        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline() != null) {
+//        }
+//        if (taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline() != null) {
             i.setNumberTasksEverybodyDoneBeforeDeadline(taskRepository.countDoneTasksByAssigneeIdAndEndTimeIsLessThanDeadline());
-        }
-
-        if (taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null) {
-            i.setAverageTimeTasksEmployeeBetweenStartTimeAndCreationTime(taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id));
-        }
-        if (taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null) {
-            i.setAverageTimeTasksEverybodyBetweenStartTimeAndCreationTime(taskRepository.countAverageDifferenceBetweenStartTimeAndCreationTime());
-        }
+//        }
 
         i.setNumberSuggestionsEmployee(suggestionRepository.countSuggestionsByAuthorIdAndCreationTimeAfter(id, timeRange));
         i.setNumberSuggestionsEverybody(suggestionRepository.countSuggestionsByCreationTimeAfter(timeRange));
@@ -76,10 +69,26 @@ public class IndicatorsController {
         i.setNumberNotificationsAsTransferee(notificationRepository.countNotificationsByTransfereeIdAndCreationTimeAfter(id, timeRange));
         i.setNumberNotificationsAsConsignee(notificationRepository.countNotificationsByConsigneesIdAndCreationTimeAfter(id, timeRange));
 
-        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null)
+//        if (taskRepository.countAverageDifferenceBetweenDeadlineAndEndTime(id) != null) {
+            i.setAverageTimeTasksEmployeeBetweenDeadlineAndEndTime(taskRepository.countAverageDifferenceBetweenDeadlineAndEndTime(id));
+//        }
+//        if (taskRepository.countAverageDifferenceBetweenDeadlineAndEndTime() != null) {
+            i.setAverageTimeTasksEverybodyBetweenDeadlineAndEndTime(taskRepository.countAverageDifferenceBetweenDeadlineAndEndTime());
+//        }
+
+//        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id) != null) {
             i.setAverageTimeNotificationsEmployeeBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime(id));
-        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null)
+//        }
+//        if (notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime() != null) {
             i.setAverageTimeNotificationsEverybodyBetweenStartTimeAndCreationTime(notificationRepository.countAverageDifferenceBetweenStartTimeAndCreationTime());
+//        }
+
+//        if (notificationRepository.countAverageDifferenceBetweenEndTimeAndStartTime(id) != null) {
+            i.setAverageTimeNotificationsEmployeeBetweenEndTimeAndStartTime(notificationRepository.countAverageDifferenceBetweenEndTimeAndStartTime(id));
+//        }
+//        if (notificationRepository.countAverageDifferenceBetweenEndTimeAndStartTime() != null) {
+            i.setAverageTimeNotificationsEverybodyBetweenEndTimeAndStartTime(notificationRepository.countAverageDifferenceBetweenEndTimeAndStartTime());
+//        }
 
         return i;
     }
