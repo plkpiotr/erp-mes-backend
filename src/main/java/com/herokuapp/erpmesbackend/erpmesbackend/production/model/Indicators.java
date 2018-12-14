@@ -32,9 +32,6 @@ public class Indicators {
     private long numberSuggestionsEmployeeImplemented;
     private long numberSuggestionsEverybodyImplemented;
 
-    private long numberNotificationsAsTransferee;
-    private long numberNotificationsAsConsignee;
-
     private Long averageTimeTasksEmployeeBetweenDeadlineAndEndTime;
     private Long averageTimeTasksEverybodyBetweenDeadlineAndEndTime;
 
