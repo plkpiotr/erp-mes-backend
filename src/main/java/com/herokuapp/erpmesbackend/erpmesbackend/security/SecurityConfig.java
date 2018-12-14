@@ -85,7 +85,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.PUT, "/suggestions/{id}")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}", "/assignment")
+                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}", "/assignment",
+                        "/indicators/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.POST,"/tasks")
