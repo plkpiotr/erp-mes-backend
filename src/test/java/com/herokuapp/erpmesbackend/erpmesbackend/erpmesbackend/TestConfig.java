@@ -1,12 +1,9 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.ChannelDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.ChannelFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.NotificationFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.SuggestionFactory;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.ChannelRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
@@ -54,7 +51,6 @@ public abstract class TestConfig {
     private final ShopServiceFactory shopServiceFactory;
     private final TaskFactory taskFactory;
     private final NotificationFactory notificationFactory;
-    private final ChannelFactory channelFactory;
     private final SuggestionFactory suggestionFactory;
     protected final List<EmployeeRequest> employeeRequests;
     protected final List<HolidayRequest> holidayRequests;
@@ -66,7 +62,6 @@ public abstract class TestConfig {
     protected final List<SpecialPlanRequest> specialPlanRequests;
     protected final List<TaskRequest> taskRequests;
     protected final List<NotificationRequest> notificationRequests;
-    protected final List<ChannelRequest> channelRequests;
     protected final List<SuggestionRequest> suggestionRequests;
 
     public TestConfig() {
@@ -75,7 +70,6 @@ public abstract class TestConfig {
         shopServiceFactory = new ShopServiceFactory();
         taskFactory = new TaskFactory();
         notificationFactory = new NotificationFactory();
-        channelFactory = new ChannelFactory();
         suggestionFactory = new SuggestionFactory();
         employeeRequests = new ArrayList<>();
         holidayRequests = new ArrayList<>();
@@ -87,7 +81,6 @@ public abstract class TestConfig {
         specialPlanRequests = new ArrayList<>();
         taskRequests = new ArrayList<>();
         notificationRequests = new ArrayList<>();
-        channelRequests = new ArrayList<>();
         suggestionRequests = new ArrayList<>();
     }
 
@@ -316,27 +309,6 @@ public abstract class TestConfig {
             }
             notificationRequests.forEach(request -> restTemplate.postForEntity("/notifications",
                     new HttpEntity<>(request, requestHeaders), NotificationDTO.class));
-        }
-    }
-
-    protected ChannelRequest getOneChannelRequestWithIds(Long... ids) {
-        String name = channelFactory.generateName();
-        List<Long> participantsIds = new ArrayList<>(Arrays.asList(ids));
-
-        return new ChannelRequest(name, participantsIds);
-    }
-
-    protected void setupChannels() {
-        setupEmployees();
-        ChannelDTO[] body = restTemplate.exchange("/channels", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), ChannelDTO[].class).getBody();
-        if (channelRequests.isEmpty() && body.length == 0) {
-            for (int i = 0; i < 5; i++) {
-                Long[] ids = {(long) (i + 1), (long) (i + 2)};
-                channelRequests.add(getOneChannelRequestWithIds(ids));
-            }
-            channelRequests.forEach(request -> restTemplate.postForEntity("/channels",
-                    new HttpEntity<>(request, requestHeaders), ChannelDTO.class));
         }
     }
 
