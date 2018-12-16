@@ -73,19 +73,19 @@ public class DeliveryService {
         if (orders == null || orders.size() == 0) {
             return deliveryItems;
         }
-        items.forEach(item -> {
-            final int[] sum = {0};
-            orders.forEach(order -> {
-                order.getDeliveryItems().forEach(deliveryItem -> {
+        for (Item item : items) {
+            int sum = 0;
+            for (Order order : orders) {
+                for (DeliveryItem deliveryItem: order.getDeliveryItems()) {
                     if (deliveryItem.getItem().getId() == item.getId()) {
-                        sum[0] += deliveryItem.getQuantity();
+                        sum += deliveryItem.getQuantity();
                     }
-                });
-            });
-            if (sum[0] > 0) {
-                deliveryItems.add(new DeliveryItemRequest(item.getId(), sum[0]));
+                }
             }
-        });
+            if (sum > 0) {
+                deliveryItems.add(new DeliveryItemRequest(item.getId(), sum));
+            }
+        }
         return deliveryItems;
     }
 }
