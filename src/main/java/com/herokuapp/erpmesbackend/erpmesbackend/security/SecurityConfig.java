@@ -85,8 +85,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.PUT, "/suggestions/{id}")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}", "/assignment",
-                        "/indicators/{id}")
+                .antMatchers(HttpMethod.GET,"/tasks", "/tasks/{id}", "/kanban/{id}", "/indicators/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers(HttpMethod.POST,"/tasks")
@@ -95,11 +94,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                             "WAREHOUSE", "ADMIN_WAREHOUSE")
                 .antMatchers("/notifications", "/notifications/{id}")
-                .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
-                        "WAREHOUSE", "ADMIN_WAREHOUSE")
-                .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers("/socket/**", "/app", "/chat","/send/message")
+                    .permitAll()
+                .antMatchers("/assignment")
+                    .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
