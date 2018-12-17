@@ -19,8 +19,8 @@ public class WebSocketController {
     }
 
     @MessageMapping("/send/message")
-    public void onReceivedMesage(String message) {
+    public void onReceivedMessage(String message) {
         this.template.convertAndSend("/chat",
-                new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
+                new SimpleDateFormat("HH:mm:ss").format(new Date()) + " | " + message);
     }
 }

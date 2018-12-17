@@ -96,7 +96,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/notifications", "/notifications/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
-                .antMatchers("/socket/**", "/app", "/chat","/send/message")
+                .antMatchers("/app", "/chat","/send/message")
+                    .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
+                        "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers("/socket/**")
                     .permitAll()
                 .antMatchers("/assignment")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
