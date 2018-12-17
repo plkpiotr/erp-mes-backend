@@ -1,8 +1,12 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.*;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.EmailFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.NotificationFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.SuggestionFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.*;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.EmailEntityRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.factory.TaskFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.TaskRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.security.Credentials;
@@ -55,8 +59,6 @@ public abstract class FillBaseTemplate {
     protected List<ShopServiceRequest> returnRequests;
     protected List<ShopServiceRequest> complaintRequests;
     protected List<EmailEntityRequest> emailEntityRequests;
-    protected List<ChannelRequest> channelRequests;
-    protected List<MessageRequest> messageRequests;
 
     protected EmployeeFactory employeeFactory;
     protected TaskFactory taskFactory;
@@ -65,8 +67,6 @@ public abstract class FillBaseTemplate {
     protected SuggestionFactory suggestionFactory;
     protected ShopServiceFactory shopServiceFactory;
     protected EmailFactory emailFactory;
-    protected ChannelFactory channelFactory;
-    protected MessageFactory messageFactory;
 
     public FillBaseTemplate() {
         employeeFactory = new EmployeeFactory();
@@ -76,8 +76,6 @@ public abstract class FillBaseTemplate {
         suggestionFactory = new SuggestionFactory();
         shopServiceFactory = new ShopServiceFactory();
         emailFactory = new EmailFactory();
-        channelFactory = new ChannelFactory();
-        messageFactory = new MessageFactory();
 
         employeeRequests = new ArrayList<>();
         adminRequests = new ArrayList<>();
@@ -92,8 +90,6 @@ public abstract class FillBaseTemplate {
         returnRequests = new ArrayList<>();
         complaintRequests = new ArrayList<>();
         emailEntityRequests = new ArrayList<>();
-        channelRequests = new ArrayList<>();
-        messageRequests = new ArrayList<>();
     }
 
     protected void init() {
