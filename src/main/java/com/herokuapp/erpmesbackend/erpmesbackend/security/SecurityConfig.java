@@ -105,8 +105,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .permitAll()
                 .antMatchers("/assignment")
                     .hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT", "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
-                .anyRequest().authenticated()
-                .and()
+                .antMatchers("/emails/*").hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT",
+                                    "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
+                .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
         http
