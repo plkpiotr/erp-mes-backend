@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,8 +41,9 @@ public class HolidayController {
     @PostMapping("/employees/{id}/holidays")
     @ResponseStatus(HttpStatus.CREATED)
     public Holiday addNewHoliday(@PathVariable("id") long id,
-                                 @RequestBody HolidayRequest request) {
+                                 @RequestBody HolidayRequest request) throws AccessDeniedException {
         employeeService.checkIfEmployeeExists(id);
+        employeeService.checkIfUserLoggedIn(id);
         if (request.getHolidayType().equals(HolidayType.VACATION)) {
             holidayService.checkIfCanTakeDaysOff(id, request);
         }

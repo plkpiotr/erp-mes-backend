@@ -100,6 +100,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/channels", "/channels/{id}", "/employees/{id}/channels", "/messages/{id}")
                     .hasAnyAuthority("ADMIN", "ACCOUNTANT", "ADMIN_ACCOUNTANT", "ANALYST", "ADMIN_ANALYST",
                         "WAREHOUSE", "ADMIN_WAREHOUSE")
+                .antMatchers("/emails/*").hasAnyAuthority("ADMIN", "ADMIN_ACCOUNTANT",
+                    "ADMIN_ANALYST", "ADMIN_WAREHOUSE")
                 .anyRequest().authenticated()
                 .and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()

@@ -14,9 +14,12 @@ import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.HolidayReposit
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.TeamRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.EmployeeRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -171,5 +174,14 @@ public class EmployeeService {
                     .collect(Collectors.toList());
         }
         return employeeDTOS;
+    }
+
+    public void checkIfUserLoggedIn(long id) throws AccessDeniedException {
+        Employee employee = employeeRepository.findById(id).get();
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = ((UserDetails) principal).getUsername();
+        if (!username.equals(employee.getEmail())) {
+            throw new AccessDeniedException("User is not logged in!");
+        }
     }
 }
