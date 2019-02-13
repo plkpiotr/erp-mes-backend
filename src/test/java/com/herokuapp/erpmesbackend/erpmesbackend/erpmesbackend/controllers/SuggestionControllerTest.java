@@ -45,7 +45,7 @@ public class SuggestionControllerTest extends TestConfig {
     }
 
     @Test
-    public void readOneNotificationTest() {
+    public void readOneSuggestionTest() {
         for (int i = 0; i < suggestionRequests.size(); i++) {
             ResponseEntity<SuggestionDTO> forEntity = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
                     new HttpEntity<>(null, requestHeaders), SuggestionDTO.class, i + 1);
@@ -55,7 +55,7 @@ public class SuggestionControllerTest extends TestConfig {
     }
 
     @Test
-    public void addOneNotificationTest() {
+    public void addOneSuggestionTest() {
         Long[] ids = {2L, 3L};
         SuggestionRequest oneSuggestionRequestWithIds = getOneSuggestionRequestWithIds(ids);
         ResponseEntity<SuggestionDTO> suggestionDTOResponseEntity = restTemplate.postForEntity("/suggestions",

@@ -157,12 +157,6 @@ public class NotificationController {
         }
     }
 
-    private void checkIfTransfereeExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Chosen transferee doesn't exist!");
-        }
-    }
-
     private void checkIfConsigneeExists(Long id) {
         if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the chosen consignees doesn't exist!");

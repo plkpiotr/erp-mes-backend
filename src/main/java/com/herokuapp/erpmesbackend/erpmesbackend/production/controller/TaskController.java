@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Category;
@@ -69,6 +70,7 @@ public class TaskController {
     @PostMapping("/tasks")
     @ResponseStatus(HttpStatus.CREATED)
     public TaskDTO addOneTask(@RequestBody TaskRequest taskRequest) {
+        checkIfDeadlineIsBeforeScheduledTime(taskRequest.getDeadline(), taskRequest.getScheduledTime());
         String name = taskRequest.getName();
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -166,6 +168,12 @@ public class TaskController {
     private void checkIfAssigneeExists(String email) {
         if (!employeeRepository.findByEmail(email).isPresent()) {
             throw new NotFoundException("Chosen assignee doesn't exist!");
+        }
+    }
+
+    private void checkIfDeadlineIsBeforeScheduledTime(LocalDateTime deadline, LocalDateTime scheduledTime) {
+        if (deadline != null && scheduledTime != null && deadline.isBefore(scheduledTime)) {
+            throw new InvalidRequestException("Deadline can't be earlier than scheduled time!");
         }
     }
 }

@@ -1,12 +1,13 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.communication.model;
 
-import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.Type;
+import com.herokuapp.erpmesbackend.erpmesbackend.staff.model.Employee;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -25,8 +26,10 @@ public class Notification {
     private State state;
 
     @Column(nullable = false)
+    @Size(max = 25)
     private String instruction;
 
+    @Size(max = 250)
     private String description;
 
     @OneToOne

@@ -4,9 +4,9 @@ import java.util.Random;
 
 public class SuggestionFactory {
 
-    private final String[] NAMES = {"Przeprowadzić szkolenie z zakresu umiejętności miękkich",
-                                    "Przed następnym podziałem zadań organizować krótkie spotkanie",
-                                    "Zmienić liczbę pracowników przy wysyłaniu przesyłek wielkogabarytowych"};
+    private final String[] NAMES = {"Przeprowadzić szkolenie",
+                                    "Zorganizować spotkanie",
+                                    "Zmienić liczbę osób"};
 
     private final String[] DESCRIPTIONS = {"Propozycja przedstawiana przez wielu współpracowników",
                                            "Zgłoszone po konsultacjach z przełożonym",

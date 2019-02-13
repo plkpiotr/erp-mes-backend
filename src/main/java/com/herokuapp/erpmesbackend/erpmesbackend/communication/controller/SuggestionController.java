@@ -115,12 +115,6 @@ public class SuggestionController {
         }
     }
 
-    private void checkIfAuthorExists(Long id) {
-        if (!employeeRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Chosen author doesn't exist!");
-        }
-    }
-
     private void checkIfRecipientExists(Long id) {
         if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the recipients doesn't exist!");

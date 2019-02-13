@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -24,9 +25,11 @@ public class Suggestion {
     private Phase phase;
 
     @Column(nullable = false)
+    @Size(max = 25)
     private String name;
 
     @Column(nullable = false)
+    @Size(max = 250)
     private String description;
 
     @OneToOne
