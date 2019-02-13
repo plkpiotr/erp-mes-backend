@@ -5,7 +5,7 @@ import java.util.Random;
 public class NotificationFactory {
 
     private String[] INSTRUCTIONS = {"Uszkodzona przesyłka", "Nieopłacone zamówienie",
-            "Brak jednego z przedmiotów"};
+            "Brak jednego przedmiotu"};
 
     private String[] DESCRIPTIONS = {"Zadzwonić do odbiorcy", "Wykonać w pierwszej kolejności",
             "Przesłać uwagi przełożonemu"};

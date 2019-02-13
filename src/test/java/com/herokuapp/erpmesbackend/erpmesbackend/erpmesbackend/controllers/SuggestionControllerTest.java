@@ -2,7 +2,6 @@ package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.controllers;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Phase;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Suggestion;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.TestConfig;
 import org.junit.Before;
@@ -67,14 +66,14 @@ public class SuggestionControllerTest extends TestConfig {
 
     @Test
     public void updateSuggestionPhaseTest() {
-        ResponseEntity<Suggestion> exchange = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Suggestion.class, 1);
+        ResponseEntity<SuggestionDTO> exchange = restTemplate.exchange("/suggestions/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), SuggestionDTO.class, 1);
 
         assertThat(exchange.getBody().getPhase()).isEqualTo(Phase.REPORTED);
 
-        ResponseEntity<Suggestion> suggestionResponseEntity = restTemplate.exchange("/suggestions/{id}",
+        ResponseEntity<SuggestionDTO> suggestionResponseEntity = restTemplate.exchange("/suggestions/{id}",
                 HttpMethod.PUT, new HttpEntity<>(Phase.IN_IMPLEMENTATION.name(), requestHeaders),
-                Suggestion.class, 1);
+                SuggestionDTO.class, 1);
 
         assertThat(suggestionResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(suggestionResponseEntity.getBody().getPhase()).isEqualTo(Phase.IN_IMPLEMENTATION);
