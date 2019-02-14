@@ -7,8 +7,8 @@ import java.util.Random;
 
 public class TaskFactory {
 
-    private final String[] NAMES = {"Zapakować przesyłkę nr 1444", "Zapakować przesyłkę nr 1450",
-            "Wysłać przesyłkę nr 1410", "Wysłać przesyłkę nr 1429", "Wysłać przesyłkę nr 1490"};
+    private final String[] NAMES = {"Wysłać przesyłkę #1425", "Wysłać list #1434",
+            "Przekazać paczkę #1478", "Zapakować list #1447", "Skompletować paczkę #1442"};
 
     private final String[] DETAILS = {"Dodać darmowy upominek", "Zmienić sposób dostarczenia na list ekonomiczny",
             "Zmienić sposób dostarczenia na list priorytetowy", "Nakleić informację: \"Uwaga! Szkło\""};

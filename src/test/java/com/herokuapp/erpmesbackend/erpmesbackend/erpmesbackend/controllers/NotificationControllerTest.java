@@ -1,7 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.controllers;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationDTO;
-import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.Notification;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.State;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.erpmesbackend.TestConfig;
@@ -67,14 +66,14 @@ public class NotificationControllerTest extends TestConfig {
 
     @Test
     public void updateNotificationStateTest() {
-        ResponseEntity<Notification> exchange = restTemplate.exchange("/notifications/{id}", HttpMethod.GET,
-                new HttpEntity<>(null, requestHeaders), Notification.class, 1);
+        ResponseEntity<NotificationDTO> exchange = restTemplate.exchange("/notifications/{id}", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), NotificationDTO.class, 1);
 
         assertThat(exchange.getBody().getState()).isEqualTo(State.REPORTED);
 
-        ResponseEntity<Notification> notificationResponseEntity = restTemplate.exchange("/notifications/{id}",
+        ResponseEntity<NotificationDTO> notificationResponseEntity = restTemplate.exchange("/notifications/{id}",
                 HttpMethod.PUT, new HttpEntity<>(State.IN_PROGRESS.name(), requestHeaders),
-                Notification.class, 1);
+                NotificationDTO.class, 1);
 
         assertThat(notificationResponseEntity.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(notificationResponseEntity.getBody().getState()).isEqualTo(State.IN_PROGRESS);
