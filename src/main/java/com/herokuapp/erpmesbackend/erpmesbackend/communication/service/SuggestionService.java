@@ -54,7 +54,7 @@ public class SuggestionService {
     }
 
     public SuggestionDTO getOneSuggestion(Long id) {
-        checkIfRecipientExists(id);
+        checkIfSuggestionExists(id);
         return new SuggestionDTO(suggestionRepository.findById(id).get());
     }
 
@@ -93,6 +93,11 @@ public class SuggestionService {
         return new SuggestionDTO(suggestion);
     }
 
+    private String getEmailLoggedInUser() {
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ((UserDetails) principal).getUsername();
+    }
+
     private void checkIfSuggestionExists(Long id) {
         if (!suggestionRepository.findById(id).isPresent()) {
             throw new NotFoundException("Such suggestion doesn't exist!");
@@ -103,10 +108,5 @@ public class SuggestionService {
         if (!employeeRepository.findById(id).isPresent()) {
             throw new NotFoundException("At least one of the recipients doesn't exist!");
         }
-    }
-
-    private String getEmailLoggedInUser() {
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ((UserDetails) principal).getUsername();
     }
 }
