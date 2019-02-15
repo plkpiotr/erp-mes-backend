@@ -64,9 +64,7 @@ public class TaskService {
         checkIfDeadlineIsBeforeScheduledTime(taskRequest.getDeadline(), taskRequest.getScheduledTime());
         String name = taskRequest.getName();
 
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(username).get();
+        Employee author = employeeRepository.findByEmail(getEmailLoggedInUser()).get();
 
         Employee assignee = null;
         if (taskRequest.getAssigneeId() != null) {
