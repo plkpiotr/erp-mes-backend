@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 @Entity
@@ -22,6 +22,7 @@ public class Task {
     private Long id;
 
     @Column(nullable = false)
+    @Size(max = 25)
     private String name;
 
     @Column(nullable = false)
@@ -49,6 +50,8 @@ public class Task {
     private LocalDateTime scheduledTime;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    @Size(max = 250)
     private String details;
 
     @OneToOne
@@ -83,6 +86,7 @@ public class Task {
         if (comparison == 0) {
             comparison = t1.getEstimatedTime().compareTo(t2.getEstimatedTime());
         }
+
         return comparison;
     }
 }
