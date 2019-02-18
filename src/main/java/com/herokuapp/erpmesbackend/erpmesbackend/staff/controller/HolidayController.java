@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.staff.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.service.EmployeeService;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.repository.HolidayRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.staff.request.HolidayRequest;
@@ -18,6 +19,8 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class HolidayController {
 
+    private final String HOLIDAY_NOT_FOUND = "Such holiday request doesn't exist!";
+
     private final HolidayRepository holidayRepository;
     private final HolidayService holidayService;
     private final EmployeeService employeeService;
@@ -34,8 +37,8 @@ public class HolidayController {
     @ResponseStatus(HttpStatus.OK)
     public List<Holiday> getAllHolidays(@PathVariable("id") long id) {
         employeeService.checkIfEmployeeExists(id);
-        return holidayRepository.findByEmployeeId(id).isPresent() ?
-                holidayRepository.findByEmployeeId(id).get() : new ArrayList<>();
+        return holidayRepository.findByEmployeeId(id)
+                .orElse(new ArrayList<>());
     }
 
     @PostMapping("/employees/{id}/holidays")
@@ -65,8 +68,9 @@ public class HolidayController {
                                         @RequestBody long holidayId,
                                         @RequestParam(value = "approve") boolean approve) {
         checkEmployees(managerId, subordinateId);
-        checkHoliday(holidayId, subordinateId);
-        Holiday holiday = holidayRepository.findById(holidayId).get();
+        Holiday holiday = holidayRepository.findById(holidayId)
+                .orElseThrow(() -> new NotFoundException(HOLIDAY_NOT_FOUND));
+        holidayService.checkIfHolidayPending(holidayId);
         if (approve) {
             holiday.approve();
         } else {
@@ -80,10 +84,5 @@ public class HolidayController {
         employeeService.checkIfEmployeeExists(managerId);
         employeeService.checkIfIsManager(managerId);
         employeeService.checkIfEmployeeExists(subordinateId);
-    }
-
-    private void checkHoliday(long holidayId, long subordinateId) {
-        holidayService.checkIfHolidayExists(holidayId);
-        holidayService.checkIfHolidayPending(holidayId);
     }
 }

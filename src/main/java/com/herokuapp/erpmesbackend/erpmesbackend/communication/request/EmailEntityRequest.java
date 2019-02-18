@@ -18,8 +18,4 @@ public class EmailEntityRequest {
     @NotNull
     private List<String> content;
 
-    public EmailEntityRequest(String subject, List<String> content) {
-        this.subject = subject;
-        this.content = content;
-    }
 }

@@ -34,7 +34,8 @@ public class HolidayService {
     }
 
     public void checkIfCanTakeDaysOff(long id, HolidayRequest request) {
-        Employee employee = employeeRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
         if (holidayRepository.findByEmployeeId(id).isPresent()) {
             List<Holiday> holidays = holidayRepository.findByEmployeeId(id).get();
             int daysOffTaken = holidays.stream()
@@ -80,20 +81,18 @@ public class HolidayService {
     }
 
     public void checkIfHolidayPending(long id) {
-        if (!holidayRepository.findById(id).get().getApprovalState().equals(ApprovalState.PENDING)) {
+        if (!holidayRepository.findById(id)
+                .orElseThrow(NotFoundException::new)
+                .getApprovalState().equals(ApprovalState.PENDING)) {
             throw new InvalidRequestException("This holiday has already been managed!");
         }
     }
 
-    public void checkIfHolidayExists(long id) {
-        if (!holidayRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Such holiday request doesn't exist!");
-        }
-    }
-
     public Holiday addHoliday(HolidayRequest request, Long id) {
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
         Holiday holiday = new Holiday(request.getStartDate(), request.getDuration(),
-                request.getHolidayType(), employeeRepository.findById(id).get());
+                request.getHolidayType(), employee);
         holidayRepository.save(holiday);
         return holiday;
     }

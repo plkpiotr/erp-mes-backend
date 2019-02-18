@@ -43,19 +43,4 @@ public class Holiday {
     public void decline() {
         approvalState = ApprovalState.DECLINED;
     }
-
-    public LocalDate calculateEndDate() {
-        return startDate.plusDays(duration - 1);
-    }
-
-    public int calculateWorkingDaysOff() {
-        int days = 0;
-        for (int i = 0; i < duration; i++) {
-            if (startDate.plusDays(i).getDayOfWeek() != DayOfWeek.SUNDAY &&
-                    startDate.plusDays(i).getDayOfWeek() != DayOfWeek.SATURDAY) {
-                days++;
-            }
-        }
-        return days;
-    }
 }

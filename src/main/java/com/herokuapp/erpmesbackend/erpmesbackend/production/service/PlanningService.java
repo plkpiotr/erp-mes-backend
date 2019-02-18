@@ -1,6 +1,7 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.service;
 
 import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.InvalidRequestException;
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.DailyPlan;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.DailyPlanRepository;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.request.DailyPlanRequest;
@@ -35,7 +36,8 @@ public class PlanningService {
     }
 
     public DailyPlan updateDailyPlan(DailyPlanRequest request) {
-        DailyPlan dailyPlan = dailyPlanRepository.findById(1L).get();
+        DailyPlan dailyPlan = dailyPlanRepository.findById(1L)
+                .orElseThrow(NotFoundException::new);
         dailyPlan.setEmployeesPerDay(request.getEmployeesPerDay());
         dailyPlan.setOrdersPerDay(request.getOrdersPerDay());
         dailyPlan.setReturnsPerDay(request.getReturnsPerDay());
@@ -47,20 +49,24 @@ public class PlanningService {
     public List<Order> getOrdersForDay(String when) {
         List<Order> orders = orderRepository.findAll();
         LocalDate today = LocalDate.now();
-        if (when.equals("today")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today))
-                    .collect(Collectors.toList());
-        } else if (when.equals("tomorrow")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
-                    .collect(Collectors.toList());
-        } else if (when.equals("in2days")) {
-            orders = orders.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
-                    .collect(Collectors.toList());
-        } else {
-            throw new InvalidRequestException("Invalid query parameter!");
+        switch (when) {
+            case "today":
+                orders = orders.stream()
+                        .filter(order -> order.getScheduledFor().equals(today))
+                        .collect(Collectors.toList());
+                break;
+            case "tomorrow":
+                orders = orders.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
+                        .collect(Collectors.toList());
+                break;
+            case "in2days":
+                orders = orders.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
+                        .collect(Collectors.toList());
+                break;
+            default:
+                throw new InvalidRequestException("Invalid query parameter!");
         }
         return orders;
     }
@@ -68,20 +74,24 @@ public class PlanningService {
     public List<Return> getReturnsForDay(String when) {
         List<Return> returns = returnRepository.findAll();
         LocalDate today = LocalDate.now();
-        if (when.equals("today")) {
-            returns = returns.stream()
-                    .filter(order -> order.getScheduledFor().equals(today))
-                    .collect(Collectors.toList());
-        } else if (when.equals("tomorrow")) {
-            returns = returns.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
-                    .collect(Collectors.toList());
-        } else if (when.equals("in2days")) {
-            returns = returns.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
-                    .collect(Collectors.toList());
-        } else {
-            throw new InvalidRequestException("Invalid query parameter!");
+        switch (when) {
+            case "today":
+                returns = returns.stream()
+                        .filter(order -> order.getScheduledFor().equals(today))
+                        .collect(Collectors.toList());
+                break;
+            case "tomorrow":
+                returns = returns.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
+                        .collect(Collectors.toList());
+                break;
+            case "in2days":
+                returns = returns.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
+                        .collect(Collectors.toList());
+                break;
+            default:
+                throw new InvalidRequestException("Invalid query parameter!");
         }
         return returns;
     }
@@ -89,20 +99,24 @@ public class PlanningService {
     public List<Complaint> getComplaintsForDay(String when) {
         List<Complaint> complaints = complaintRepository.findAll();
         LocalDate today = LocalDate.now();
-        if (when.equals("today")) {
-            complaints = complaints.stream()
-                    .filter(order -> order.getScheduledFor().equals(today))
-                    .collect(Collectors.toList());
-        } else if (when.equals("tomorrow")) {
-            complaints = complaints.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
-                    .collect(Collectors.toList());
-        } else if (when.equals("in2days")) {
-            complaints = complaints.stream()
-                    .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
-                    .collect(Collectors.toList());
-        } else {
-            throw new InvalidRequestException("Invalid query parameter!");
+        switch (when) {
+            case "today":
+                complaints = complaints.stream()
+                        .filter(order -> order.getScheduledFor().equals(today))
+                        .collect(Collectors.toList());
+                break;
+            case "tomorrow":
+                complaints = complaints.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(1)))
+                        .collect(Collectors.toList());
+                break;
+            case "in2days":
+                complaints = complaints.stream()
+                        .filter(order -> order.getScheduledFor().equals(today.plusDays(2)))
+                        .collect(Collectors.toList());
+                break;
+            default:
+                throw new InvalidRequestException("Invalid query parameter!");
         }
         return complaints;
     }

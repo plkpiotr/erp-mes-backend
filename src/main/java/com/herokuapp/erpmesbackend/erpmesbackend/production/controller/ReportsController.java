@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.CurrentReport;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.MonthlyReport;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.CurrentReportRepository;
@@ -19,21 +20,18 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class ReportsController {
 
+    private final String REPORT_NOT_FOUND = "Such report doesn't exist!";
+
     private final CurrentReportRepository currentReportRepository;
     private final MonthlyReportRepository monthlyReportRepository;
-    private final EstimatedCostsRepository estimatedCostsRepository;
-    private final ExpenseRepository expenseRepository;
     private final ReportService reportService;
 
     @Autowired
     public ReportsController(CurrentReportRepository currentReportRepository,
                              MonthlyReportRepository monthlyReportRepository,
-                             EstimatedCostsRepository estimatedCostsRepository,
-                             ExpenseRepository expenseRepository, ReportService reportService) {
+                             ReportService reportService) {
         this.currentReportRepository = currentReportRepository;
         this.monthlyReportRepository = monthlyReportRepository;
-        this.estimatedCostsRepository = estimatedCostsRepository;
-        this.expenseRepository = expenseRepository;
         this.reportService = reportService;
     }
 
@@ -52,8 +50,8 @@ public class ReportsController {
         if (reportService.shouldSaveReport()) {
             reportService.saveReport();
         }
-        reportService.checkIfReportExists(id);
-        return monthlyReportRepository.findById(id).get();
+        return monthlyReportRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(REPORT_NOT_FOUND));
     }
 
     @GetMapping("/current-report")
@@ -62,7 +60,8 @@ public class ReportsController {
         if (reportService.shouldSaveReport()) {
             reportService.saveReport();
         }
-        return currentReportRepository.findById((long) 1).get();
+        return currentReportRepository.findById((long) 1)
+                .orElseThrow(() -> new NotFoundException(REPORT_NOT_FOUND));
     }
 
     @PutMapping("/current-report")

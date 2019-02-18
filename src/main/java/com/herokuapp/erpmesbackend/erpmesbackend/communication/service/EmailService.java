@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,6 +29,7 @@ public class EmailService {
 
     private final String FOOTER = "\n\n This is an automatically generated message. Please do not respond." +
             "\n\n Sincerely, ERP-MES Inc.";
+    private final String NOT_FOUND = "Could not find requested entity!";
 
     @Autowired
     private JavaMailSender javaMailSender;
@@ -48,50 +50,56 @@ public class EmailService {
     }
 
     public void sensNewOrderRegisteredMessage(long id) {
-        Order order = orderRepository.findById(id).get();
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "New order registered.";
         String details = "Hello, " + order.getFirstName() + "! \n\n We have successfully registered " +
                 "your new order (id: " + order.getId() + "). Its current status is: " + order.getStatus() +
                 "." + FOOTER;
-        sendMessage(order.getEmail(), subject, Arrays.asList(details));
+        sendMessage(order.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sendOrderStatusChangeMessage(long id, String status) {
-        Order order = orderRepository.findById(id).get();
+        Order order = orderRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "Status change for order " + order.getId();
         String details = "Hello, " + order.getFirstName() + "! \n\n The state of your order (id: " +
                 order.getId() + ") has been changed to " + status + "." + FOOTER;
-        sendMessage(order.getEmail(), subject, Arrays.asList(details));
+        sendMessage(order.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sendNewReturnRegisteredMessage(long id) {
-        Return r = returnRepository.findById(id).get();
+        Return r = returnRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "New return registered.";
         String details = "Hello, " + r.getFirstName() + "! \n\n We have successfully registered " +
                 "your new return (id: " + r.getId() + "). Its current status is: " + r.getStatus() +
                 "." + FOOTER;
-        sendMessage(r.getEmail(), subject, Arrays.asList(details));
+        sendMessage(r.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sendReturnStatusChangeMessage(long id, String status) {
-        Return r = returnRepository.findById(id).get();
+        Return r = returnRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "Status change for return " + r.getId();
         String details = "Hello, " + r.getFirstName() + "! \n\n The state of your return (id: " +
                 r.getId() + ") has been changed to " + status + "." + FOOTER;
-        sendMessage(r.getEmail(), subject, Arrays.asList(details));
+        sendMessage(r.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sensNewComplaintRegisteredMessage(long id) {
-        Complaint complaint = complaintRepository.findById(id).get();
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "New complaint registered.";
         String details = "Hello, " + complaint.getFirstName() + "! \n\n We have successfully registered " +
                 "your new complaint (id: " + complaint.getId() + "). Its current status is: " +
                 complaint.getStatus() + "." + FOOTER;
-        sendMessage(complaint.getEmail(), subject, Arrays.asList(details));
+        sendMessage(complaint.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sendComplaintStatusChangeMessage(long id, String status) {
-        Complaint complaint = complaintRepository.findById(id).get();
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "Status change for complaint " + complaint.getId();
         String details = "Hello, " + complaint.getFirstName() + "! \n\n The state of your complaint (id: " +
                 complaint.getId() + ") has been changed to " + status + ". ";
@@ -99,27 +107,28 @@ public class EmailService {
             details += "You will get your resolution details in another message";
         }
         details += FOOTER;
-        sendMessage(complaint.getEmail(), subject, Arrays.asList(details));
+        sendMessage(complaint.getEmail(), subject, Collections.singletonList(details));
     }
 
     public void sendComplaintResolutionChangeMessage(long id, String resolution) {
-        Complaint complaint = complaintRepository.findById(id).get();
+        Complaint complaint = complaintRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(NOT_FOUND));
         String subject = "Resolution change for complaint " + complaint.getId();
         String details = "Hello, " + complaint.getFirstName() + "! \n\n The resolution of your complaint (id: " +
                 complaint.getId() + ") will be: " + resolution + "." + FOOTER;
-        sendMessage(complaint.getEmail(), subject, Arrays.asList(details));
+        sendMessage(complaint.getEmail(), subject, Collections.singletonList(details));
     }
 
     public EmailEntity sendMessage(String to, String subject, List<String> content) {
         SimpleMailMessage message = new SimpleMailMessage();
 
-        String text = "";
+        StringBuilder text = new StringBuilder();
         for (String part: content) {
-            text += part;
+            text.append(part);
         }
         message.setTo(to);
         message.setSubject(subject);
-        message.setText(text);
+        message.setText(text.toString());
 
         EmailEntity emailEntity = new EmailEntity(to, subject, content, EmailType.SENT,
                 LocalDateTime.now());
@@ -141,21 +150,15 @@ public class EmailService {
         });
         InboxService inboxService = new InboxService();
         List<EmailEntity> emailEntities = inboxService.readMail();
-        emailEntities.forEach(emailEntity -> emailEntityRepository.save(emailEntity));
+        emailEntities.forEach(emailEntityRepository::save);
         return emailEntityRepository.findAll(new Sort(Sort.Direction.DESC, "timestamp"))
                 .stream()
                 .filter(emailEntity -> emailEntity.getEmailType().equals(EmailType.RECEIVED))
                 .collect(Collectors.toList());
     }
 
-    public void checkIfEmailExists(long id) {
-        if (!emailEntityRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Such emails doesn't exist!");
-        }
-    }
-
-    public void checkIfEmailReceived(long id) {
-        if (emailEntityRepository.findById(id).get().getEmailType().equals(EmailType.SENT)) {
+    public void checkIfEmailReceived(EmailEntity emailEntity) {
+        if (emailEntity.getEmailType().equals(EmailType.SENT)) {
             throw new InvalidRequestException("Don't attempt to reply to yourself!");
         }
     }

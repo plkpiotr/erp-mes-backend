@@ -4,6 +4,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.NotificationD
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.dto.SuggestionDTO;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.NotificationFactory;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.factory.SuggestionFactory;
+import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.NotificationRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.SuggestionRequest;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.dto.TaskDTO;
@@ -98,13 +99,13 @@ public abstract class TestConfig {
         ResponseEntity<String> responseEntity = restTemplate.postForEntity("/generate-token",
                 new Credentials("szef.ceo@company.com",
                         "haslo123"), String.class);
-        String body = responseEntity.getBody();
-        String replace = body.replace("{\"token\":\"", "");
-        String replace1 = replace.replace("\"}", "");
+        String token = responseEntity.getBody()
+                .replace("{\"token\":\"", "")
+                .replace("\"}", "");
         requestHeaders = new HttpHeaders();
         requestHeaders.setContentType(MediaType.APPLICATION_JSON);
         requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        requestHeaders.add("Authorization", "Bearer " + replace1);
+        requestHeaders.add("Authorization", "Bearer " + token);
     }
 
     protected void setupEmployees() {
@@ -142,6 +143,12 @@ public abstract class TestConfig {
                         new HttpEntity<>(request, requestHeaders), Holiday.class, first.get().getId()));
             }
         }
+    }
+
+    protected List<EmailEntity> readOutbox() {
+        ResponseEntity<EmailEntity[]> exchange = restTemplate.exchange("/emails/outbox", HttpMethod.GET,
+                new HttpEntity<>(null, requestHeaders), EmailEntity[].class);
+        return Arrays.asList(exchange.getBody());
     }
 
     protected HolidayRequest getOneHolidayRequest(HolidayType type) {

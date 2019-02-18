@@ -91,12 +91,6 @@ public class ReportService {
         currentReport.addExpense(expense);
     }
 
-    public void checkIfReportExists(long id) {
-        if (!monthlyReportRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Such report doesn't exist!");
-        }
-    }
-
     public CurrentReport recalculateCosts(EstimatedCostsRequest request) {
         CurrentReport currentReport = getCurrentReport();
         EstimatedCosts estimatedCosts = new EstimatedCosts();
@@ -172,7 +166,8 @@ public class ReportService {
     }
 
     private CurrentReport getCurrentReport() {
-        return currentReportRepository.findById((long) 1).get();
+        return currentReportRepository.findById((long) 1)
+                .orElseThrow(NotFoundException::new);
     }
 
     public EstimatedCostsRequest countRecommendations() {

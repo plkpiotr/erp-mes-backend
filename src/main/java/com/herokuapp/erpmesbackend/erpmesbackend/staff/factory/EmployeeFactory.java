@@ -66,25 +66,4 @@ public class EmployeeFactory {
         return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
                 role, generateContractRequest());
     }
-
-    public EmployeeRequest generateEmployeeRequest() {
-        String firstName = generate(FIRST_NAMES);
-        String lastName = generate(LAST_NAMES);
-        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateRole(), generateContractRequest());
-    }
-
-    public EmployeeRequest generateAdminRequest() {
-        String firstName = generate(FIRST_NAMES);
-        String lastName = generate(LAST_NAMES);
-        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateAdminRole(), generateContractRequest());
-    }
-
-    public EmployeeRequest generateNonAdminRequest() {
-        String firstName = generate(FIRST_NAMES);
-        String lastName = generate(LAST_NAMES);
-        return new EmployeeRequest(firstName, lastName, generateEmail(firstName, lastName),
-                generateNonAdminRole(), generateContractRequest());
-    }
 }

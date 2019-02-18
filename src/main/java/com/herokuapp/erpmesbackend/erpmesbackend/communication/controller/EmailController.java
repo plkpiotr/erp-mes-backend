@@ -5,6 +5,7 @@ import com.herokuapp.erpmesbackend.erpmesbackend.communication.request.EmailEnti
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.service.EmailService;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailEntity;
 import com.herokuapp.erpmesbackend.erpmesbackend.communication.model.EmailType;
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 @RestController
 @CrossOrigin("*")
 public class EmailController {
+
+    private final String EMAIL_NOT_FOUND = "Such email doesn't exist!";
 
     private final EmailEntityRepository emailEntityRepository;
     private final EmailService emailService;
@@ -50,26 +53,27 @@ public class EmailController {
     @GetMapping("/emails/{id}")
     @ResponseStatus(HttpStatus.OK)
     public List<EmailEntity> readConversation(@PathVariable("id") long id) {
-        emailService.checkIfEmailExists(id);
-        EmailEntity emailEntity = emailEntityRepository.findById(id).get();
-        return emailEntityRepository.findByEmailOrderByTimestampDesc(emailEntity.getEmail()).get();
+        EmailEntity emailEntity = emailEntityRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND));
+        return emailEntityRepository.findByEmailOrderByTimestampDesc(emailEntity.getEmail())
+                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND));
     }
 
     @PostMapping("/emails/{id}")
     @ResponseStatus(HttpStatus.CREATED)
     public EmailEntity sendMailWithAddrss(@RequestBody EmailEntityRequest request,
                                           @PathVariable("id") long id) {
-        emailService.checkIfEmailExists(id);
-        emailService.checkIfEmailReceived(id);
-        EmailEntity emailEntity = emailEntityRepository.findById(id).get();
+        EmailEntity emailEntity = emailEntityRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND));
+        emailService.checkIfEmailReceived(emailEntity);
         return emailService.sendMessage(emailEntity.getEmail(), request.getSubject(),
                 request.getContent());
     }
 
     @DeleteMapping("/emails/{id}")
     public HttpStatus removeEmail(@PathVariable("id") long id) {
-        emailService.checkIfEmailExists(id);
-        emailEntityRepository.delete(emailEntityRepository.findById(id).get());
+        emailEntityRepository.delete(emailEntityRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMAIL_NOT_FOUND)));
         return HttpStatus.NO_CONTENT;
     }
 }

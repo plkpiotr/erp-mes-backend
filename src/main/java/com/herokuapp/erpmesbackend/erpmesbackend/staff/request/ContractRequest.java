@@ -21,7 +21,7 @@ public class ContractRequest {
     @NotNull
     private double salary;
 
-    public Contract extractContract() {
+    Contract extractContract() {
         return new Contract(accountNumber, daysOffPerYear, salary);
     }
 

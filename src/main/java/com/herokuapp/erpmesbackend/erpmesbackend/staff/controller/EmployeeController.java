@@ -28,18 +28,17 @@ import java.util.stream.Collectors;
 @CrossOrigin(origins = "*")
 public class EmployeeController {
 
+    private final String EMPLOYEE_NOT_FOUND = "Such employee doesn't exist!";
+
     private final EmployeeRepository employeeRepository;
-    private final ContractRepository contractRepository;
     private final EmailService emailService;
     private final BCryptPasswordEncoder bcryptEncoder;
     private final EmployeeService employeeService;
 
     @Autowired
-    public EmployeeController(EmployeeRepository employeeRepository, ContractRepository contractRepository,
-                              EmailService emailService, BCryptPasswordEncoder bcryptEncoder,
-                              EmployeeService employeeService) {
+    public EmployeeController(EmployeeRepository employeeRepository, EmailService emailService,
+                              BCryptPasswordEncoder bcryptEncoder, EmployeeService employeeService) {
         this.employeeRepository = employeeRepository;
-        this.contractRepository = contractRepository;
         this.emailService = emailService;
         this.bcryptEncoder = bcryptEncoder;
         this.employeeService = employeeService;
@@ -73,21 +72,23 @@ public class EmployeeController {
     @GetMapping("/employees/{id}")
     @ResponseStatus(HttpStatus.OK)
     public UserDTO getOneEmployee(@PathVariable("id") long id) {
-        employeeService.checkIfEmployeeExists(id);
         Object principal = SecurityContextHolder.getContext()
                 .getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        if (employeeRepository.findByEmail(username).get().getId() != id &&
-                employeeRepository.findByEmail(username).get().getRole() != Role.ADMIN) {
+        Employee employee = employeeRepository.findByEmail(username)
+                .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND));
+        if (employee.getId() != id && employee.getRole() != Role.ADMIN) {
             throw new ForbiddenException();
         }
-        return new UserDTO(employeeRepository.findById(id).get());
+        return new UserDTO(employeeRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND))
+        );
     }
 
     @DeleteMapping("/employees/{id}")
     public HttpStatus fireEmployee(@PathVariable("id") long id) {
-        employeeService.checkIfEmployeeExists(id);
-        Employee employee = employeeRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND));
         employeeService.removeEmployee(employee);
         return HttpStatus.OK;
     }
@@ -106,7 +107,8 @@ public class EmployeeController {
 
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
-        Employee author = employeeRepository.findByEmail(username).get();
+        Employee author = employeeRepository.findByEmail(username)
+                .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND));
 
         return employeeDTOS.stream()
                 .filter(employeeDTO -> !employeeDTO.getEmail().equals(author.getEmail()))
@@ -134,13 +136,15 @@ public class EmployeeController {
 
     @GetMapping("/profiles/{id}")
     public EmployeeDTO getProfile(@PathVariable("id") long id) {
-        employeeService.checkIfEmployeeExists(id);
-        return new EmployeeDTO(employeeRepository.findById(id).get());
+        return new EmployeeDTO(employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND))
+        );
     }
 
     @GetMapping("profiles/{id}/contract")
     public Contract getContract(@PathVariable("id") long id) {
-        employeeService.checkIfEmployeeExists(id);
-        return employeeRepository.findById(id).get().getContract();
+        return employeeRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(EMPLOYEE_NOT_FOUND))
+                .getContract();
     }
 }

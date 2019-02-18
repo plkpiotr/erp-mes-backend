@@ -77,11 +77,13 @@ public class EmployeeService {
 
     private void removeHolidays(Employee employee) {
         Optional<List<Holiday>> byEmployeeId = holidayRepository.findByEmployeeId(employee.getId());
-        byEmployeeId.ifPresent(holidays -> holidays.forEach(holiday -> holidayRepository.delete(holiday)));
+        byEmployeeId.ifPresent(holidays -> holidays.forEach(holidayRepository::delete));
     }
 
     public void checkIfIsManager(Long id) {
-        if (!employeeRepository.findById(id).get().isManager()) {
+        if (!employeeRepository.findById(id)
+                .orElseThrow(NotFoundException::new)
+                .isManager()) {
             throw new NotAManagerException("This employee is not a manager and therefore can't have subordinates!");
         }
     }
@@ -97,7 +99,8 @@ public class EmployeeService {
     }
 
     public void validatePassword(long id, String password) {
-        Employee employee = employeeRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
         if (employee.isPasswordValid()) {
             throw new InvalidRequestException("This employee has already validated their password!");
         }
@@ -143,7 +146,7 @@ public class EmployeeService {
         teamRepository.save(team);
     }
 
-    public Role mapToNoAdmin(Role role) {
+    private Role mapToNoAdmin(Role role) {
         switch (role) {
             case ADMIN_ACCOUNTANT:
                 return Role.ACCOUNTANT;
@@ -166,7 +169,7 @@ public class EmployeeService {
     public List<EmployeeDTO> filterByPrivilege(List<EmployeeDTO> employeeDTOS, String privilege) {
         if (privilege.equalsIgnoreCase("admin")) {
             return employeeDTOS.stream()
-                    .filter(employee -> employee.isManager())
+                    .filter(EmployeeDTO::isManager)
                     .collect(Collectors.toList());
         } else if (privilege.equalsIgnoreCase("user")) {
             return employeeDTOS.stream()
@@ -177,7 +180,8 @@ public class EmployeeService {
     }
 
     public void checkIfUserLoggedIn(long id) throws AccessDeniedException {
-        Employee employee = employeeRepository.findById(id).get();
+        Employee employee = employeeRepository.findById(id)
+                .orElseThrow(NotFoundException::new);
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = ((UserDetails) principal).getUsername();
         if (!username.equals(employee.getEmail())) {

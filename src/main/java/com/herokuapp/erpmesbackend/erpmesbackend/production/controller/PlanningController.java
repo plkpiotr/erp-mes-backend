@@ -1,5 +1,6 @@
 package com.herokuapp.erpmesbackend.erpmesbackend.production.controller;
 
+import com.herokuapp.erpmesbackend.erpmesbackend.exceptions.NotFoundException;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.DailyPlan;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.model.SpecialPlan;
 import com.herokuapp.erpmesbackend.erpmesbackend.production.repository.DailyPlanRepository;
@@ -35,7 +36,8 @@ public class PlanningController {
     @GetMapping("/daily-plan")
     @ResponseStatus(HttpStatus.OK)
     public DailyPlan getDailyPlan() {
-        return dailyPlanRepository.findById(1L).get();
+        return dailyPlanRepository.findById(1L)
+                .orElseThrow(NotFoundException::new);
     }
 
     @PutMapping("/daily-plan")

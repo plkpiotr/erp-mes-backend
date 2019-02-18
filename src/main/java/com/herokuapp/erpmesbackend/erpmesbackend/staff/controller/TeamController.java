@@ -15,13 +15,13 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class TeamController {
 
+    private final String TEAM_NOT_FOUND = "Such team doesn't exist!";
+
     private final TeamRepository teamRepository;
-    private final EmployeeRepository employeeRepository;
 
     @Autowired
-    public TeamController(TeamRepository teamRepository, EmployeeRepository employeeRepository) {
+    public TeamController(TeamRepository teamRepository) {
         this.teamRepository = teamRepository;
-        this.employeeRepository = employeeRepository;
     }
 
     @GetMapping("/teams")
@@ -35,13 +35,7 @@ public class TeamController {
     @GetMapping("/teams/{id}")
     @ResponseStatus(HttpStatus.OK)
     public TeamDTO getOneTeam(@PathVariable("id") long id) {
-        checkIfTeamExists(id);
-        return new TeamDTO(teamRepository.findById(id).get());
-    }
-
-    private void checkIfTeamExists(Long id) {
-        if (!teamRepository.findById(id).isPresent()) {
-            throw new NotFoundException("Such team doesn't exist!");
-        }
+        return new TeamDTO(teamRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException(TEAM_NOT_FOUND)));
     }
 }
