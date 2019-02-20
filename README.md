@@ -3,17 +3,22 @@
 - [Overview](#1)
 - [Back-end technologies](#2)
 - [ERP features](#3)
-  - [One of them](#3.1)
+  - [Staff management](#3.1)
+  - [Delivery and warehouse management](#3.2)
+  - [Finance management and reporting](#3.3)
+  - [Production planning](#3.4)
+  - [Mailbox](#3.5)
 - [MES features](#4)
   - [Key Performance Indicators](#4.1)
   - [Instant Messenger](#4.2)
   - [Kaizen Teian](#4.3)
   - [Kanban Board](#4.4)
   - [Task scheduling algorithm](#4.5)
-- [Project structure](#5)
-- [Example local configuration](#6)
-- [Front-end repository](#7)
-- [Heroku platform](#8)
+- [Security](#5)
+- [Project structure](#6)
+- [Example local configuration](#7)
+- [Front-end repository](#8)
+- [Heroku platform](#9)
 
 
 ## <a name="1">Overview</a> [&#8250;&#8250;&#8250;](#0)
@@ -39,9 +44,27 @@ The application was equipped with features typical of Enterprise Resource Planni
 
 ## <a name="3">ERP features</a> [&#8250;&#8250;&#8250;](#0)
 
-### <a name="3.1">One of them</a> [&#8250;](#3)
+### <a name="3.1">Staff management</a> [&#8250;](#3)
 
-[one of them]
+The company staff is divided into managers and employees, each of whom is the application's user. In their own profile, each user can, for example, submit holiday requests. Managers can approve such requests for their subordinates. Basic contact information may be found in a user's profile. ![profill](https://user-images.githubusercontent.com/18569675/53121758-35a4dd00-3555-11e9-9c48-90f9d862d370.PNG)
+
+### <a name="3.2">Delivery and warehouse management</a> [&#8250;](#3)
+
+Keeping track of the items stored in the warehouse. Automatic generation of recommended deliveries, based on customer demand and lean management principles. All online store operations (orders, complaints, returns) are immediately reflected on the warehouse state.
+
+### <a name="3.3">Finance management and reporting</a> [&#8250;](#3)
+
+Storing, updating and analysing all the company's financial operations. Automatic generation of monthly reports. Financial estimates for a given period of time (by default: month), which are calculated based on data gatheres by previous reports. ![report](https://user-images.githubusercontent.com/18569675/53122608-43f3f880-3557-11e9-9616-6117540c2ecf.PNG)
+
+### <a name="3.4">Production planning</a> [&#8250;](#3)
+
+Monitoring if the amount of work planned for a given day does not exceed the assumed daily plan and if so - notifying the person responsible. Possibility to introduce special production plans. Making sure all orders, complaints and returns are resolved without delays. ![plan](https://user-images.githubusercontent.com/18569675/53122888-0e034400-3558-11e9-9ff7-9cc5790fe72b.PNG) 
+
+### <a name="3.5">Mailbox</a> [&#8250;](#3)
+
+Automatic generation of first login password and sending it via e-mail when registering a new user. Automatic notifications of order/complaint/return status change sent to customers. Possibility of e-mail communication between the company and its customers.
+
+![mailbox](https://user-images.githubusercontent.com/18569675/53123037-6e928100-3558-11e9-8b30-827bdf7d9eda.PNG)
 
 ## <a name="4">MES features</a> [&#8250;&#8250;&#8250;](#0)
 
@@ -65,7 +88,14 @@ Visualization of tasks created in the last four weeks for on person: ![kanban](h
 
 Planning and reduction of total time allowed for tasks through scheduling algorithm: ![task](https://user-images.githubusercontent.com/21959354/52904779-f7e04580-3230-11e9-8328-4e4e3657c149.png)
 
-## <a name="5">Project structure</a> [&#8250;&#8250;&#8250;](#0)
+## <a name="5">Security</a> [&#8250;&#8250;&#8250;](#0)
+
+- Only registered users can acces the application.
+- Access is granted based on the JWT token sent as request header.
+- Upon first login attempt, a first login password is used and the user needs to set their own password.
+- Each request is filtered by Spring Security mechanisms and access to given resources is granted based on the user's role in the company.
+
+## <a name="6">Project structure</a> [&#8250;&#8250;&#8250;](#0)
 
 ```
 └────src
@@ -122,7 +152,7 @@ Planning and reduction of total time allowed for tasks through scheduling algori
                                 └───controllers
 ```
 
-## <a name="6">Example local configuration</a> [&#8250;&#8250;&#8250;](#0)
+## <a name="7">Example local configuration</a> [&#8250;&#8250;&#8250;](#0)
 
 File application.properties:
 
@@ -133,11 +163,11 @@ spring.datasource.password=postgres1
 spring.jpa.hibernate.ddl-auto=create
 ```
 
-## <a name="7">Front-end repository</a> [&#8250;&#8250;&#8250;](#0)
+## <a name="8">Front-end repository</a> [&#8250;&#8250;&#8250;](#0)
 
 Find front-end repository on Github: [plkpiotr/erp-mes-frontend](https://github.com/plkpiotr/erp-mes-frontend)
 
-## <a name="8">Heroku platform</a> [&#8250;&#8250;&#8250;](#0)
+## <a name="9">Heroku platform</a> [&#8250;&#8250;&#8250;](#0)
 
 Check out ERP-MES: [erp-mes-backend.herokuapp.com](https://erp-mes-backend.herokuapp.com/) and [erp-mes-frontend.herokuapp.com](https://erp-mes-frontend.herokuapp.com/).
 
