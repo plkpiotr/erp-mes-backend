@@ -46,7 +46,9 @@ The application was equipped with features typical of Enterprise Resource Planni
 
 ### <a name="3.1">Staff management</a> [&#8250;](#3)
 
-The company staff is divided into managers and employees, each of whom is the application's user. In their own profile, each user can, for example, submit holiday requests. Managers can approve such requests for their subordinates. Basic contact information may be found in a user's profile. ![profill](https://user-images.githubusercontent.com/18569675/53121758-35a4dd00-3555-11e9-9c48-90f9d862d370.PNG)
+The company staff is divided into managers and employees, each of whom is the application's user. In their own profile, each user can, for example, submit holiday requests. Managers can approve such requests for their subordinates. Basic contact (and contract - although only for the logged in user) information may be found in a user's profile.
+
+![erp1](https://user-images.githubusercontent.com/18569675/53205231-0910c400-362e-11e9-9ee9-7b892223ddbb.PNG)
 
 ### <a name="3.2">Delivery and warehouse management</a> [&#8250;](#3)
 
@@ -54,17 +56,21 @@ Keeping track of the items stored in the warehouse. Automatic generation of reco
 
 ### <a name="3.3">Finance management and reporting</a> [&#8250;](#3)
 
-Storing, updating and analysing all the company's financial operations. Automatic generation of monthly reports. Financial estimates for a given period of time (by default: month), which are calculated based on data gatheres by previous reports. ![report](https://user-images.githubusercontent.com/18569675/53122608-43f3f880-3557-11e9-9616-6117540c2ecf.PNG)
+Storing, updating and analysing all the company's financial operations. Automatic generation of monthly reports. Financial estimates for a given period of time (by default: month), which are calculated based on data gatheres by previous reports.
+
+![erp2](https://user-images.githubusercontent.com/18569675/53205339-4f662300-362e-11e9-9420-b146bd85c36e.PNG)
 
 ### <a name="3.4">Production planning</a> [&#8250;](#3)
 
-Monitoring if the amount of work planned for a given day does not exceed the assumed daily plan and if so - notifying the person responsible. Possibility to introduce special production plans. Making sure all orders, complaints and returns are resolved without delays. ![plan](https://user-images.githubusercontent.com/18569675/53122888-0e034400-3558-11e9-9ff7-9cc5790fe72b.PNG) 
+Monitoring if the amount of work planned for a given day does not exceed the assumed daily plan and if so - notifying the person responsible. Possibility to introduce special production plans. Making sure all orders, complaints and returns are resolved without delays. 
+
+![erp3](https://user-images.githubusercontent.com/18569675/53206128-702f7800-3630-11e9-9fc1-10aacbc0efe8.PNG)
 
 ### <a name="3.5">Mailbox</a> [&#8250;](#3)
 
 Automatic generation of first login password and sending it via e-mail when registering a new user. Automatic notifications of order/complaint/return status change sent to customers. Possibility of e-mail communication between the company and its customers.
 
-![mailbox](https://user-images.githubusercontent.com/18569675/53123037-6e928100-3558-11e9-8b30-827bdf7d9eda.PNG)
+![erp4](https://user-images.githubusercontent.com/18569675/53206234-b1c02300-3630-11e9-9f3c-e641bbca48a1.PNG)
 
 ## <a name="4">MES features</a> [&#8250;&#8250;&#8250;](#0)
 
