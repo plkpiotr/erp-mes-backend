@@ -76,23 +76,33 @@ Automatic generation of first login password and sending it via e-mail when regi
 
 ### <a name="4.1">Key Performance Indicators</a> [&#8250;](#4)
 
-Evaluation of the work-in-progress expressed in mean times, number of tasks and suggestions by category - for one employee and the whole team: ![kpi](https://user-images.githubusercontent.com/21959354/52904777-f7e04580-3230-11e9-85f4-cde2b4736bb7.png)
+Evaluation of the work-in-progress expressed in mean times, number of tasks and suggestions by category - for one employee and the whole team.
+
+![kpi](https://user-images.githubusercontent.com/21959354/52904777-f7e04580-3230-11e9-85f4-cde2b4736bb7.png)
 
 ### <a name="4.2">Instant Messenger</a> [&#8250;](#4)
 
-Providing communication between employees in real time and documenting time and author's initials: ![chat](https://user-images.githubusercontent.com/21959354/52904775-f747af00-3230-11e9-9019-f2dc7d7730cf.png)
+Providing communication between employees in real time and documenting time and author's initials.
+
+![chat](https://user-images.githubusercontent.com/21959354/52904775-f747af00-3230-11e9-9019-f2dc7d7730cf.png)
 
 ### <a name="4.3">Kaizen Teian</a> [&#8250;](#4)
 
-Employee suggestion system with possibility of searching records:![suggestions](https://user-images.githubusercontent.com/21959354/52904778-f7e04580-3230-11e9-8096-c36101a698ff.png)
+Employee suggestion system with possibility of searching records.
+
+![suggestions](https://user-images.githubusercontent.com/21959354/52904778-f7e04580-3230-11e9-8096-c36101a698ff.png)
 
 ### <a name="4.4">Kanban Board</a> [&#8250;](#4)
 
-Visualization of tasks created in the last four weeks for on person: ![kanban](https://user-images.githubusercontent.com/21959354/52904776-f7e04580-3230-11e9-9d3d-affa11a61646.PNG)
+Visualization of tasks created in the last four weeks for one person.
+
+![kanban](https://user-images.githubusercontent.com/21959354/52904776-f7e04580-3230-11e9-9d3d-affa11a61646.PNG)
 
 ### <a name="4.5">Task scheduling algorithm</a> [&#8250;](#4)
 
-Planning and reduction of total time allowed for tasks through scheduling algorithm: ![task](https://user-images.githubusercontent.com/21959354/52904779-f7e04580-3230-11e9-8328-4e4e3657c149.png)
+Planning and reduction of total time allowed for tasks through scheduling algorithm.
+
+![task](https://user-images.githubusercontent.com/21959354/52904779-f7e04580-3230-11e9-8328-4e4e3657c149.png)
 
 ## <a name="5">Security</a> [&#8250;&#8250;&#8250;](#0)
 
@@ -160,7 +170,7 @@ Planning and reduction of total time allowed for tasks through scheduling algori
 
 ## <a name="7">Example local configuration</a> [&#8250;&#8250;&#8250;](#0)
 
-File application.properties:
+`application.properties` file:
 
 ```properties
 spring.datasource.url=jdbc:postgresql://localhost:5432/erpmes
